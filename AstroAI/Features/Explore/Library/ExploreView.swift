@@ -1,0 +1,423 @@
+//
+//  ExploreView.swift
+//  AstroAI
+//
+
+import SwiftUI
+
+struct ExploreView: View {
+    @State private var viewModel: ExploreViewModel
+
+    init(viewModel: ExploreViewModel) {
+        _viewModel = State(initialValue: viewModel)
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                AppTopBar(title: "Explore", onAvatarTap: viewModel.openProfile)
+
+                VStack(alignment: .leading, spacing: Spacing.xl) {
+                    VStack(alignment: .leading, spacing: Spacing.sm) {
+                        searchField
+                        topicRail
+                    }
+
+                    blueprintCard
+
+                    content
+                }
+                .padding(.horizontal, Spacing.margin)
+                .padding(.top, Spacing.sm)
+                .padding(.bottom, Spacing.xl)
+            }
+        }
+        .scrollIndicators(.hidden)
+        .scrollDismissesKeyboard(.immediately)
+        .screenBackground()
+        .toolbarVisibility(.hidden, for: .navigationBar)
+        .task { await viewModel.load() }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if let library = viewModel.library {
+            if viewModel.showsFeatured {
+                featuredCard(library.featured)
+            }
+            if !viewModel.transits.isEmpty {
+                transitsSection(range: library.weekRange)
+            }
+            if !viewModel.tomes.isEmpty {
+                compendiumSection
+            }
+            if viewModel.hasNoResults {
+                Text("No entries match “\(viewModel.searchText)”.")
+                    .font(AppFont.bodyMedium)
+                    .foregroundStyle(AppColor.outline)
+                    .frame(maxWidth: .infinity)
+            }
+            alertCard
+        } else if let error = viewModel.errorMessage {
+            VStack(spacing: Spacing.md) {
+                Text(error)
+                    .font(AppFont.bodyMedium)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .multilineTextAlignment(.center)
+                Button("Try again") { Task { await viewModel.retry() } }
+                    .buttonStyle(.astroSecondary)
+            }
+        } else {
+            ProgressView()
+                .tint(AppColor.primaryContainer)
+                .frame(maxWidth: .infinity, minHeight: 200)
+        }
+    }
+
+    // MARK: - Search & filter
+
+    private var searchField: some View {
+        HStack(spacing: Spacing.sm) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 15))
+            TextField("Search planets, houses, transits, or synastry...", text: $viewModel.searchText)
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.onSurface)
+                .submitLabel(.search)
+                .autocorrectionDisabled()
+            Image(systemName: "slider.horizontal.3")
+                .font(.system(size: 14))
+        }
+        .foregroundStyle(AppColor.outline)
+        .padding(.horizontal, 14)
+        .frame(height: 44)
+        .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.sm))
+        .shadow(color: .black.opacity(0.04), radius: 2, y: 1)
+    }
+
+    private var topicRail: some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: Spacing.xs) {
+                ForEach(ExploreViewModel.Topic.allCases) { topic in
+                    Chip(title: topic.rawValue, isSelected: viewModel.selectedTopic == topic) {
+                        viewModel.select(topic)
+                    }
+                }
+            }
+            .padding(.horizontal, Spacing.margin)
+            .padding(.vertical, Spacing.xs)
+        }
+        .scrollIndicators(.hidden)
+        .padding(.horizontal, -Spacing.margin)
+    }
+
+    // MARK: - Cosmic Blueprint entry
+
+    private var blueprintCard: some View {
+        Button(action: viewModel.openBlueprint) {
+            HStack(spacing: Spacing.md) {
+                NatalWheel(showsSigns: false)
+                    .frame(width: 64, height: 64)
+                    .allowsHitTesting(false)
+
+                VStack(alignment: .leading, spacing: Spacing.xs) {
+                    Eyebrow(text: "Natal Synthesis", icon: "sparkles")
+                    Text("Your Cosmic Blueprint")
+                        .font(AppFont.headlineSmall)
+                        .foregroundStyle(AppColor.onSurface)
+                    Text("Big Three, elemental balance and every placement.")
+                        .font(AppFont.bodySmall)
+                        .foregroundStyle(AppColor.onSurfaceVariant)
+                        .multilineTextAlignment(.leading)
+                }
+
+                Spacer(minLength: 0)
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(AppColor.outline)
+            }
+            .card(.elevated)
+            .shadow(color: .black.opacity(0.04), radius: 4, y: 1)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Featured
+
+    private func featuredCard(_ article: Article) -> some View {
+        Button(action: viewModel.openFeatured) {
+            VStack(alignment: .leading, spacing: 0) {
+                BannerImage(name: "ExploreArchway", height: 192)
+                    .overlay {
+                        LinearGradient(
+                            colors: [.clear, AppColor.surfaceContainerLowest.opacity(0.3), AppColor.surfaceContainerLowest],
+                            startPoint: .top, endPoint: .bottom
+                        )
+                    }
+                    .overlay(alignment: .top) {
+                        HStack {
+                            HStack(spacing: 6) {
+                                Text(article.glyph)
+                                Text(article.eyebrow.uppercased())
+                            }
+                            .font(AppFont.labelSmall)
+                            .tracking(1.4)
+                            .foregroundStyle(AppColor.primary)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(AppColor.surfaceContainerLowest.opacity(0.9), in: .capsule)
+
+                            Spacer()
+
+                            Label(article.meta, systemImage: "clock")
+                                .font(AppFont.labelSmall)
+                                .foregroundStyle(AppColor.secondary)
+                                .padding(.horizontal, Spacing.sm)
+                                .padding(.vertical, 3)
+                                .background(AppColor.secondaryContainer.opacity(0.9), in: .capsule)
+                        }
+                        .padding(12)
+                    }
+
+                VStack(alignment: .leading, spacing: Spacing.xs) {
+                    HStack(spacing: Spacing.sm) {
+                        Circle().fill(AppColor.secondary).frame(width: 5, height: 5)
+                        Text(viewModel.featuredRelevance.uppercased())
+                            .font(AppFont.labelSmall)
+                            .tracking(1)
+                            .foregroundStyle(AppColor.secondary)
+                    }
+                    Text(article.title)
+                        .font(AppFont.headlineMedium)
+                        .foregroundStyle(AppColor.onSurface)
+                        .multilineTextAlignment(.leading)
+                    Text(article.summary)
+                        .font(AppFont.bodyMedium)
+                        .foregroundStyle(AppColor.onSurfaceVariant)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+
+                    HStack {
+                        Text(viewModel.featuredFooter)
+                            .font(.system(size: 12, design: .serif).italic())
+                            .foregroundStyle(AppColor.onSurfaceVariant)
+                        Spacer()
+                        HStack(spacing: 2) {
+                            Text("Read thesis")
+                            Image(systemName: "arrow.right")
+                        }
+                        .font(AppFont.labelMedium)
+                        .foregroundStyle(AppColor.primary)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, Spacing.sm)
+                    .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.sm))
+                    .padding(.top, Spacing.sm)
+                }
+                .padding([.horizontal, .bottom], Spacing.md)
+                .padding(.top, Spacing.xs)
+            }
+            .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.md))
+            .clipShape(.rect(cornerRadius: Radius.md))
+            .shadow(color: .black.opacity(0.05), radius: 3, y: 1)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Weekly Ephemeris
+
+    private func transitsSection(range: String) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            sectionTitle("Weekly Ephemeris", icon: "clock.arrow.circlepath", trailing: range, trailingColor: AppColor.outline)
+            sectionCaption("Precise planetary mechanics, angles of tension, and celestial ingress mapped in real time.")
+
+            VStack(spacing: 10) {
+                ForEach(Array(viewModel.transits.enumerated()), id: \.element.id) { index, transit in
+                    transitRow(transit, tone: TransitTone.allCases[index % TransitTone.allCases.count])
+                }
+            }
+            .padding(.top, Spacing.sm)
+        }
+    }
+
+    private func transitRow(_ transit: Transit, tone: TransitTone) -> some View {
+        HStack(spacing: Spacing.md) {
+            GlyphBadge(glyph: transit.glyph, size: 40, foreground: tone.foreground, background: tone.background)
+
+            VStack(alignment: .leading, spacing: 2) {
+                HStack {
+                    Text(transit.kind.uppercased())
+                        .font(AppFont.labelSmall)
+                        .tracking(1)
+                        .foregroundStyle(tone.foreground)
+                    Spacer()
+                    Text(transit.date)
+                        .font(AppFont.labelSmall)
+                        .foregroundStyle(tone == .rose ? tone.foreground : AppColor.outline)
+                }
+                Text(transit.title)
+                    .font(AppFont.bodyMedium.weight(.medium))
+                    .foregroundStyle(AppColor.onSurface)
+                    .lineLimit(1)
+                Text(transit.detail)
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .lineLimit(1)
+            }
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(AppColor.outline)
+        }
+        .padding(14)
+        .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.md))
+        .shadow(color: .black.opacity(0.04), radius: 2, y: 1)
+    }
+
+    // MARK: - Knowledge Compendium
+
+    private var compendiumSection: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            sectionTitle("Knowledge Compendium", icon: "book", trailing: "Vol. II", trailingColor: AppColor.secondary)
+            sectionCaption("Archetypal treatises, mathematical harmonies, and structural manuals for self-interpretation.")
+
+            VStack(spacing: 0) {
+                ForEach(Array(viewModel.tomes.enumerated()), id: \.element.id) { index, tome in
+                    if index > 0 {
+                        Rectangle()
+                            .fill(AppColor.surfaceContainerHigh)
+                            .frame(height: 1)
+                            .padding(.horizontal, Spacing.md)
+                    }
+                    tomeRow(tome, accent: index.isMultiple(of: 2) ? AppColor.primary : AppColor.secondary)
+                }
+            }
+            .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.md))
+            .shadow(color: .black.opacity(0.04), radius: 2, y: 1)
+            .padding(.top, Spacing.sm)
+        }
+    }
+
+    private func tomeRow(_ tome: Article, accent: Color) -> some View {
+        Button {
+            viewModel.open(tome)
+        } label: {
+            HStack(alignment: .top, spacing: Spacing.md) {
+                Text(tome.glyph)
+                    .font(.system(size: 22, design: .serif).italic())
+                    .foregroundStyle(accent)
+                    .frame(width: 48, height: 48)
+                    .background(AppColor.surfaceContainer, in: .rect(cornerRadius: Radius.sm))
+                    .padding(.top, 2)
+
+                VStack(alignment: .leading, spacing: Spacing.xs) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(tome.eyebrow.uppercased())
+                            .tracking(0.8)
+                        Spacer(minLength: Spacing.sm)
+                        Text(tome.meta)
+                    }
+                    .font(AppFont.labelSmall)
+                    .foregroundStyle(AppColor.outline)
+
+                    Text(tome.title)
+                        .font(AppFont.headlineSmall)
+                        .foregroundStyle(AppColor.onSurface)
+                    Text(tome.summary)
+                        .font(AppFont.bodySmall)
+                        .foregroundStyle(AppColor.onSurfaceVariant)
+                        .lineSpacing(3)
+                }
+                .multilineTextAlignment(.leading)
+            }
+            .padding(Spacing.md)
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Daily alert
+
+    private var alertCard: some View {
+        HStack(spacing: Spacing.sm) {
+            Image(systemName: "hurricane")
+                .font(.system(size: 18))
+                .foregroundStyle(AppColor.secondary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Daily Ephemeris Alert")
+                    .font(.system(size: 15, weight: .medium, design: .serif))
+                    .foregroundStyle(AppColor.onSurface)
+                Text("Synchronize with local sunrise")
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+            }
+            Spacer()
+            Button {
+                viewModel.isAlertEnabled.toggle()
+            } label: {
+                HStack(spacing: 4) {
+                    if viewModel.isAlertEnabled { Image(systemName: "checkmark") }
+                    Text(viewModel.isAlertEnabled ? "Enabled" : "Enable")
+                }
+                    .font(AppFont.labelMedium)
+                    .foregroundStyle(viewModel.isAlertEnabled ? AppColor.onPrimary : AppColor.primary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        viewModel.isAlertEnabled ? AppColor.primaryContainer : AppColor.surfaceContainerLowest,
+                        in: .rect(cornerRadius: Radius.sm)
+                    )
+                    .shadow(color: .black.opacity(0.05), radius: 1, y: 1)
+            }
+            .buttonStyle(.plain)
+            .animation(.easeOut(duration: 0.15), value: viewModel.isAlertEnabled)
+        }
+        .card(.tinted)
+    }
+
+    // MARK: - Helpers
+
+    private func sectionTitle(_ title: String, icon: String, trailing: String, trailingColor: Color) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: Spacing.sm) {
+            Image(systemName: icon)
+                .font(.system(size: 16))
+                .foregroundStyle(AppColor.primary)
+            Text(title)
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.onSurface)
+            Spacer()
+            Text(trailing)
+                .font(AppFont.labelMedium)
+                .foregroundStyle(trailingColor)
+        }
+    }
+
+    private func sectionCaption(_ text: String) -> some View {
+        Text(text)
+            .font(AppFont.bodySmall)
+            .foregroundStyle(AppColor.onSurfaceVariant)
+    }
+}
+
+/// Rotating badge tints for the weekly transit rows.
+private enum TransitTone: CaseIterable {
+    case champagne, lilac, rose
+
+    var background: Color {
+        switch self {
+        case .champagne: AppColor.secondaryContainer
+        case .lilac: AppColor.primaryFixed
+        case .rose: AppColor.dustyRose.opacity(0.3)
+        }
+    }
+
+    var foreground: Color {
+        switch self {
+        case .champagne: AppColor.secondary
+        case .lilac: AppColor.primary
+        case .rose: AppColor.dustyRose
+        }
+    }
+}
+

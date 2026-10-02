@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface": "#fcf8fc", "tertiary-fixed": "#ffdad9", "tertiary-fixed-dim": "#ecbbb9", "secondary-fixed-dim": "#e1c292", "error": "#ba1a1a", "on-tertiary-fixed-variant": "#603d3d", "tertiary-container": "#664242", "outline": "#7b757c", "inverse-primary": "#d4c0de", "secondary": "#725b33", "primary": "#3e3047", "primary-container": "#55465f", "surface-container-high": "#ebe7eb", "on-primary": "#ffffff", "outline-variant": "#ccc4cc", "on-tertiary": "#ffffff", "on-surface-variant": "#4a454c", "primary-fixed": "#f0dbfa", "on-primary-fixed": "#23162d", "surface-variant": "#e5e1e5", "secondary-fixed": "#fedeac", "on-error-container": "#93000a", "surface-container-low": "#f7f2f6", "on-primary-fixed-variant": "#50415a", "surface-dim": "#ddd9dd", "surface-bright": "#fcf8fc", "on-secondary": "#ffffff", "on-secondary-fixed-variant": "#58431e", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "secondary-container": "#fbdba9", "surface-container-highest": "#e5e1e5", "on-secondary-fixed": "#271900", "on-error": "#ffffff", "on-primary-container": "#c9b5d3", "background": "#fcf8fc", "on-tertiary-fixed": "#2f1314", "on-background": "#1c1b1e", "inverse-surface": "#313033", "surface-tint": "#685872", "on-surface": "#1c1b1e", "tertiary": "#4c2c2c", "primary-fixed-dim": "#d4c0de", "inverse-on-surface": "#f4eff3", "surface-container": "#f1edf0", "on-secondary-container": "#775f37", "on-tertiary-container": "#e0b0af" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter-tablet": "1.5rem", "gutter": "1rem", "space-lg": "1.5rem", "space-xs": "0.25rem", "margin-tablet": "2rem", "space-sm": "0.5rem", "margin": "1.25rem", "space-xl": "2.25rem", "space-md": "1rem" }, fontFamily: { "display-lg-mobile": ["Newsreader"], "label-md": ["Inter"], "headline-lg": ["Newsreader"], "headline-md": ["Newsreader"], "body-sm": ["Inter"], "body-lg": ["Inter"], "display-lg": ["Newsreader"], "body-md": ["Inter"], "label-lg": ["Inter"], "label-sm": ["Inter"], "headline-sm": ["Newsreader"] }, fontSize: { "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.015em", "fontWeight": "400" }], "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "500" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }], "headline-md": ["22px", { "lineHeight": "30px", "letterSpacing": "0em", "fontWeight": "500" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "body-lg": ["17px", { "lineHeight": "25px", "letterSpacing": "-0.01em", "fontWeight": "400" }], "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "400" }], "body-md": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "label-lg": ["13px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }], "label-sm": ["9px", { "lineHeight": "12px", "letterSpacing": "0.08em", "fontWeight": "600" }], "headline-sm": ["19px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "500" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-surface text-on-surface antialiased min-h-full flex flex-col"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-14 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[20px]">auto_awesome</span><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Today</h1></div><div class="flex items-center gap-space-sm"><button aria-label="Celestial Transits" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">all_inclusive</span></button><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-[0_1px_4px_rgba(0,0,0,0.08)]" src="https://lh3.googleusercontent.com/aida/AEtjO1XA8GfDCGVLNeOYsKOQSJ5rgnIdNog7MROklujjnYpAwkhZb44jbXTncSjbgxSGHKPoavGR1wnyuI5Cfeh-UVkNK-tfCeg7nOBd5YbbsQ1r056JmHi2ypXe0hBiWUL3OBCp3JH8phSM4MGUjXApcSvIbZiMOjtcz-j9qg8soks8QMUZWoxskPjwgdQJbLu-AsJqFA4-4oxtcFDMyYEy5kfTOZ359YkKXG7qSMy4WA83rWpvnxATGuFi5wA"/></div></div></header><main class="flex-1 w-full bg-surface pt-14 pb-24 px-margin"><div class="flex flex-col w-full text-[#F5F1E9] select-none relative overflow-hidden" style="background-color: #171A2B;">
+<!-- Ambient Glow Behind Celestial Centerpiece -->
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full blur-[100px] pointer-events-none opacity-20" style="background: radial-gradient(circle, #C4A779 0%, #55465F 60%, transparent 80%);"></div>
+<!-- 1. Top Bar / Dismiss & Restore -->
+<div class="flex items-center justify-between w-full pt-3 pb-4 z-10">
+<button aria-label="Dismiss Paywall" class="w-9 h-9 rounded-full flex items-center justify-center transition-opacity hover:opacity-75 active:scale-95 text-[#F5F1E9]/70" style="background-color: rgba(255, 255, 255, 0.06);" type="button">
+<span class="material-symbols-outlined text-[19px]">close</span>
+</button>
+<!-- AstroAI Monogram Seal -->
+<div class="flex items-center justify-center">
+<img alt="AstroAI Seal" class="w-8 h-8 rounded-full object-cover shadow-sm ring-1 ring-[#C4A779]/30" src="https://lh3.googleusercontent.com/aida/AEtjO1Urd4XCyivbnC2CnICJZD4Hziou7_IkUyZ8kjZXN6XMFgdS7tFRrHaR09m7NTQ6eGxZCEusNaJrWkri_w9sCDxVBfUlYReX2u8ccCllEFtW-TvVi2UAdzU9dXrqXAnZZeWb_zTukPv91zMGtN68gidZK_jBtIzXA1jo77kcKp1MC0ML7Qz7YWdyNIvRoW-YRtNSccna8UXeMrFEseyuJQ41euB30_KHMD_5Ll34rNhZ6hxngce5ZFTBxfBj"/>
+</div>
+<!-- Restore Purchases Discreet Action -->
+<button class="font-label-md text-label-md text-[#F5F1E9]/50 hover:text-[#C4A779] transition-colors tracking-widest uppercase" type="button">
+      Restore
+    </button>
+</div>
+<!-- 2. Editorial Hero Header -->
+<div class="flex flex-col items-center text-center mt-2 px-2 z-10">
+<div class="flex items-center gap-1.5 mb-2">
+<span class="w-1.5 h-1.5 rounded-full" style="background-color: #C4A779;"></span>
+<span class="font-label-sm text-label-sm tracking-[0.22em] uppercase font-semibold text-[#C4A779]">
+        AstroAI Sanctuary
+      </span>
+<span class="w-1.5 h-1.5 rounded-full" style="background-color: #C4A779;"></span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-[#F5F1E9] tracking-tight max-w-[320px] font-normal leading-[1.25]">
+      Your chart has deeper truths to tell you.
+    </h2>
+<p class="font-body-sm text-body-sm text-[#F5F1E9]/70 mt-2 max-w-[310px] leading-relaxed">
+      Go beyond daily horoscopes. Unlock chart-aware conversational intelligence, precise transit timelines, and unbounded synastry.
+    </p>
+</div>
+<!-- 3. Visual Centerpiece: Precise Celestial Mechanics Diagram -->
+<div class="relative w-full my-5 flex items-center justify-center py-2 z-10">
+<div class="relative w-64 h-64 flex items-center justify-center">
+<!-- Fine Mathematical Orbit Rings -->
+<svg class="absolute inset-0 w-full h-full animate-[spin_160s_linear_infinite]" fill="none" viewbox="0 0 260 260">
+<!-- Outer Zodiac Band -->
+<circle cx="130" cy="130" r="126" stroke="#89847F" stroke-dasharray="2 6" stroke-opacity="0.25" stroke-width="0.75"></circle>
+<circle cx="130" cy="130" r="114" stroke="#89847F" stroke-opacity="0.35" stroke-width="0.5"></circle>
+<circle cx="130" cy="130" r="88" stroke="#89847F" stroke-opacity="0.2" stroke-width="0.5"></circle>
+<circle cx="130" cy="130" r="54" stroke="#C4A779" stroke-dasharray="1 4" stroke-opacity="0.35" stroke-width="0.75"></circle>
+<circle cx="130" cy="130" r="22" stroke="#89847F" stroke-opacity="0.3" stroke-width="0.5"></circle>
+<!-- Aspect Geometric Chords (Opposition & Trine) -->
+<!-- Scorpio Sun to Taurus Moon Axis (Opposition - Dusty Rose) -->
+<line stroke="#C99B9A" stroke-dasharray="3 3" stroke-opacity="0.75" stroke-width="0.8" x1="56" x2="204" y1="72" y2="188"></line>
+<!-- Soft Trine to Pisces Saturn (Sage/Champagne) -->
+<line stroke="#C4A779" stroke-opacity="0.6" stroke-width="0.75" x1="56" x2="162" y1="72" y2="44"></line>
+<line stroke="#C4A779" stroke-opacity="0.4" stroke-width="0.75" x1="204" x2="162" y1="188" y2="44"></line>
+<!-- Cardinal Cross Axes -->
+<line stroke="#89847F" stroke-opacity="0.18" stroke-width="0.5" x1="130" x2="130" y1="16" y2="244"></line>
+<line stroke="#89847F" stroke-opacity="0.18" stroke-width="0.5" x1="16" x2="244" y1="130" y2="130"></line>
+<!-- House Cusps (Subtle Diagonals) -->
+<line stroke="#89847F" stroke-opacity="0.12" stroke-width="0.5" x1="49" x2="211" y1="49" y2="211"></line>
+<line stroke="#89847F" stroke-opacity="0.12" stroke-width="0.5" x1="49" x2="211" y1="211" y2="49"></line>
+</svg>
+<!-- Center Anchor Disc: Elena's Natal Core -->
+<div class="relative w-16 h-16 rounded-full flex flex-col items-center justify-center shadow-lg backdrop-blur-md" style="background-color: #1F2338; border: 0.5px solid rgba(196, 167, 121, 0.45);">
+<span class="font-headline-sm text-headline-sm leading-none text-[#C4A779]">☉</span>
+<span class="font-label-sm text-label-sm tracking-wider uppercase text-[#F5F1E9]/70 mt-0.5">Scorpio</span>
+</div>
+<!-- Orbiting Tag A: Taurus Moon Node -->
+<div class="absolute bottom-5 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full backdrop-blur-md shadow-sm" style="background-color: rgba(31, 35, 56, 0.88); border: 0.5px solid rgba(201, 155, 154, 0.5);">
+<span class="font-body-sm text-[#C99B9A]">☽</span>
+<div class="flex flex-col text-left">
+<span class="font-label-sm text-label-sm leading-tight text-[#F5F1E9]">Taurus Moon</span>
+<span class="font-label-sm text-label-sm leading-none text-[#F5F1E9]/50">14° 22' • H6</span>
+</div>
+</div>
+<!-- Orbiting Tag B: Current Transit Saturn Return Indicator -->
+<div class="absolute top-4 left-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full backdrop-blur-md shadow-sm" style="background-color: rgba(31, 35, 56, 0.88); border: 0.5px solid rgba(196, 167, 121, 0.5);">
+<span class="font-body-sm text-[#C4A779]">♄</span>
+<div class="flex flex-col text-left">
+<span class="font-label-sm text-label-sm leading-tight text-[#F5F1E9]">Saturn Transit</span>
+<span class="font-label-sm text-label-sm leading-none text-[#C4A779]/80">Trine Exact</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 4. The 4 Distinct Pillars of Sanctuary -->
+<div class="flex flex-col gap-2.5 w-full z-10 px-1 mb-5">
+<!-- Pillar 1 -->
+<div class="flex items-start gap-3 p-3 rounded-lg backdrop-blur-sm transition-all" style="background-color: rgba(31, 35, 56, 0.65);">
+<div class="w-7 h-7 rounded-md flex items-center justify-center shrink-0 mt-0.5" style="background-color: rgba(85, 70, 95, 0.45); color: #C4A779;">
+<span class="material-symbols-outlined text-[17px]">psychology_alt</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-sm text-headline-sm text-[#F5F1E9] leading-tight">Unlimited AI Dialogue</h3>
+<p class="font-body-sm text-body-sm text-[#F5F1E9]/65 mt-0.5 leading-snug">Converse freely with an astrologer tuned directly to your exact natal degrees and house cusps.</p>
+</div>
+</div>
+<!-- Pillar 2 -->
+<div class="flex items-start gap-3 p-3 rounded-lg backdrop-blur-sm transition-all" style="background-color: rgba(31, 35, 56, 0.65);">
+<div class="w-7 h-7 rounded-md flex items-center justify-center shrink-0 mt-0.5" style="background-color: rgba(85, 70, 95, 0.45); color: #C4A779;">
+<span class="material-symbols-outlined text-[17px]">auto_awesome_motion</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-sm text-headline-sm text-[#F5F1E9] leading-tight">Complete Natal Blueprint</h3>
+<p class="font-body-sm text-body-sm text-[#F5F1E9]/65 mt-0.5 leading-snug">Unravel deep house rulerships, planetary essential dignities, and karmic lunar nodal paths.</p>
+</div>
+</div>
+<!-- Pillar 3 -->
+<div class="flex items-start gap-3 p-3 rounded-lg backdrop-blur-sm transition-all" style="background-color: rgba(31, 35, 56, 0.65);">
+<div class="w-7 h-7 rounded-md flex items-center justify-center shrink-0 mt-0.5" style="background-color: rgba(85, 70, 95, 0.45); color: #C99B9A;">
+<span class="material-symbols-outlined text-[17px]">join</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-sm text-headline-sm text-[#F5F1E9] leading-tight">Multilateral Synastry</h3>
+<p class="font-body-sm text-body-sm text-[#F5F1E9]/65 mt-0.5 leading-snug">Overlay boundless partner, family, and friend charts to inspect composite friction and harmony.</p>
+</div>
+</div>
+<!-- Pillar 4 -->
+<div class="flex items-start gap-3 p-3 rounded-lg backdrop-blur-sm transition-all" style="background-color: rgba(31, 35, 56, 0.65);">
+<div class="w-7 h-7 rounded-md flex items-center justify-center shrink-0 mt-0.5" style="background-color: rgba(85, 70, 95, 0.45); color: #C4A779;">
+<span class="material-symbols-outlined text-[17px]">timelapse</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-sm text-headline-sm text-[#F5F1E9] leading-tight">Ephemeris Transit Forecasts</h3>
+<p class="font-body-sm text-body-sm text-[#F5F1E9]/65 mt-0.5 leading-snug">Chronological map of major life cycles: calculate upcoming Saturn returns, solar eclipses, and nodal shifts.</p>
+</div>
+</div>
+</div>
+<!-- 5. Subscription Plan Selectors -->
+<div class="flex flex-col gap-3 w-full z-10 px-1 mb-4" id="plan-selector-container">
+<!-- Option A: Annual Sanctuary (Selected / Default) -->
+<div class="relative flex flex-col p-4 rounded-xl cursor-pointer transition-all duration-200" id="plan-annual" onclick="selectPlan('annual')" style="background-color: #1F2338; box-shadow: 0 0 0 1.5px #C4A779, 0 4px 20px rgba(196, 167, 121, 0.12);">
+<!-- Best Value Pill Floating on Top Edge -->
+<div class="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md" style="background-color: #C4A779; color: #171A2B;">
+<span class="font-label-sm text-label-sm uppercase font-semibold tracking-wider">7-Day Free Trial • Save 48%</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-5 h-5 rounded-full flex items-center justify-center" id="radio-annual" style="border: 1.5px solid #C4A779; background-color: #171A2B;">
+<div class="w-2.5 h-2.5 rounded-full" style="background-color: #C4A779;"></div>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-[#F5F1E9] leading-tight">Annual Sanctuary</span>
+<span class="font-body-sm text-body-sm text-[#F5F1E9]/60">$4.99 / month, billed annually</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-[#C4A779] font-medium leading-none block">$59.99</span>
+<span class="font-label-sm text-label-sm text-[#F5F1E9]/50 uppercase tracking-widest mt-0.5 block">/ year</span>
+</div>
+</div>
+</div>
+<!-- Option B: Monthly Membership -->
+<div class="relative flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200" id="plan-monthly" onclick="selectPlan('monthly')" style="background-color: rgba(31, 35, 56, 0.65); box-shadow: 0 0 0 0.5px rgba(137, 132, 127, 0.3);">
+<div class="flex items-center gap-3">
+<div class="w-5 h-5 rounded-full flex items-center justify-center" id="radio-monthly" style="border: 1.5px solid rgba(137, 132, 127, 0.4); background-color: transparent;">
+<div class="w-2.5 h-2.5 rounded-full hidden" style="background-color: #C4A779;"></div>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-[#F5F1E9] leading-tight">Monthly Membership</span>
+<span class="font-body-sm text-body-sm text-[#F5F1E9]/60">Standard monthly cadence</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-[#F5F1E9] font-medium leading-none block">$9.99</span>
+<span class="font-label-sm text-label-sm text-[#F5F1E9]/50 uppercase tracking-widest mt-0.5 block">/ month</span>
+</div>
+</div>
+</div>
+<!-- 6. High-Conversion Primary CTA & Transparent Safeguards -->
+<div class="flex flex-col items-center w-full z-10 px-1 mt-1">
+<button class="w-full h-[52px] rounded-lg font-label-lg text-label-lg tracking-wider uppercase font-semibold flex items-center justify-center gap-2 transition-all duration-150 active:scale-[0.98] shadow-lg" id="cta-button" style="background-color: #55465F; color: #F5F1E9; box-shadow: 0 4px 16px rgba(85, 70, 95, 0.45); border: 0.5px solid rgba(196, 167, 121, 0.35);" type="button">
+<span class="material-symbols-outlined text-[18px] text-[#C4A779]">all_inclusive</span>
+<span id="cta-text">Begin 7-Day Free Trial</span>
+</button>
+<p class="font-body-sm text-body-sm text-[#F5F1E9]/50 text-center mt-2.5 max-w-[310px] leading-snug" id="terms-subtext">
+      After 7 days, renews at $59.99/year. Cancel anytime in Apple ID settings with zero penalty.
+    </p>
+<!-- Trust Legal Links Footer -->
+<div class="flex items-center justify-center gap-3 mt-4 text-[#F5F1E9]/40 font-label-sm text-label-sm tracking-wider uppercase">
+<a class="hover:text-[#C4A779] transition-colors" href="#">Terms of Service</a>
+<span>•</span>
+<a class="hover:text-[#C4A779] transition-colors" href="#">Privacy Policy</a>
+<span>•</span>
+<a class="hover:text-[#C4A779] transition-colors" href="#">Restore</a>
+</div>
+</div>
+<!-- Micro-interaction Plan Toggle Logic -->
+<script>
+    function selectPlan(planType) {
+      const planAnnual = document.getElementById('plan-annual');
+      const planMonthly = document.getElementById('plan-monthly');
+      const radioAnnual = document.getElementById('radio-annual');
+      const radioMonthly = document.getElementById('radio-monthly');
+      const dotAnnual = radioAnnual.querySelector('div');
+      const dotMonthly = radioMonthly.querySelector('div');
+      const ctaText = document.getElementById('cta-text');
+      const termsSubtext = document.getElementById('terms-subtext');
+
+      if (planType === 'annual') {
+        // Annual Active State
+        planAnnual.style.backgroundColor = '#1F2338';
+        planAnnual.style.boxShadow = '0 0 0 1.5px #C4A779, 0 4px 20px rgba(196, 167, 121, 0.12)';
+        radioAnnual.style.borderColor = '#C4A779';
+        dotAnnual.classList.remove('hidden');
+
+        // Monthly Inactive State
+        planMonthly.style.backgroundColor = 'rgba(31, 35, 56, 0.65)';
+        planMonthly.style.boxShadow = '0 0 0 0.5px rgba(137, 132, 127, 0.3)';
+        radioMonthly.style.borderColor = 'rgba(137, 132, 127, 0.4)';
+        dotMonthly.classList.add('hidden');
+
+        ctaText.textContent = 'Begin 7-Day Free Trial';
+        termsSubtext.textContent = 'After 7 days, renews at $59.99/year. Cancel anytime in Apple ID settings with zero penalty.';
+      } else {
+        // Monthly Active State
+        planMonthly.style.backgroundColor = '#1F2338';
+        planMonthly.style.boxShadow = '0 0 0 1.5px #C4A779, 0 4px 20px rgba(196, 167, 121, 0.12)';
+        radioMonthly.style.borderColor = '#C4A779';
+        dotMonthly.classList.remove('hidden');
+
+        // Annual Inactive State
+        planAnnual.style.backgroundColor = 'rgba(31, 35, 56, 0.65)';
+        planAnnual.style.boxShadow = '0 0 0 0.5px rgba(137, 132, 127, 0.3)';
+        radioAnnual.style.borderColor = 'rgba(137, 132, 127, 0.4)';
+        dotAnnual.classList.add('hidden');
+
+        ctaText.textContent = 'Subscribe for $9.99 / Month';
+        termsSubtext.textContent = 'Billed monthly at $9.99 until canceled. Cancel anytime in Apple ID settings.';
+      }
+    }
+  </script>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-semibold"><div class="flex items-center justify-around h-16 px-space-xs"><a class="flex flex-col items-center justify-center w-14 h-11 text-on-surface-variant hover:text-on-surface transition-colors" data-path="today" href="#"><span class="material-symbols-outlined text-[22px]">flare</span><span class="font-label-sm text-label-sm mt-0.5 tracking-wider">Today</span></a><a class="flex flex-col items-center justify-center w-14 h-11 text-on-surface-variant hover:text-on-surface transition-colors" data-path="explore" href="#"><span class="material-symbols-outlined text-[22px]">language</span><span class="font-label-sm text-label-sm mt-0.5 tracking-wider">Explore</span></a><a class="flex flex-col items-center justify-center w-14 h-11 text-on-surface-variant hover:text-on-surface transition-colors" data-path="ai-astrologer" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px] text-primary">psychology_alt</span></div><span class="font-label-sm text-label-sm mt-0.5 tracking-wider">Oracle</span></a><a class="flex flex-col items-center justify-center w-14 h-11 text-on-surface-variant hover:text-on-surface transition-colors" data-path="connections" href="#"><span class="material-symbols-outlined text-[22px]">join</span><span class="font-label-sm text-label-sm mt-0.5 tracking-wider">Synastry</span></a><a class="flex flex-col items-center justify-center w-14 h-11 text-on-surface-variant hover:text-on-surface transition-colors" data-path="profile" href="#"><span class="material-symbols-outlined text-[22px]">account_circle</span><span class="font-label-sm text-label-sm mt-0.5 tracking-wider">Profile</span></a></div></nav></body></html>
