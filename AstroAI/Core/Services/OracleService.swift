@@ -7,10 +7,18 @@ import Foundation
 
 enum OracleError: LocalizedError {
     case limitReached
+    case modelUnavailable
+    case unsupportedLanguage
+    case busy
+    case generationFailed
 
     var errorDescription: String? {
         switch self {
         case .limitReached: "You've used all free inquiries for today."
+        case .modelUnavailable: "The Oracle is resting right now. Make sure Apple Intelligence is enabled and try again."
+        case .unsupportedLanguage: "The Oracle doesn't speak this language yet. Try asking in English."
+        case .busy: "The Oracle is still contemplating. Please try again in a moment."
+        case .generationFailed: "The connection to the stars was lost. Please try again."
         }
     }
 }
@@ -18,8 +26,29 @@ enum OracleError: LocalizedError {
 protocol OracleServicing: AnyObject {
     var quota: OracleQuota { get }
     var suggestions: [String] { get }
+    var requiresNetwork: Bool { get }
 
-    func ask(_ question: String, history: [ChatMessage], isPremium: Bool) async throws -> ChatMessage
+    /// Streams snapshots of the answer as it is generated. Every snapshot carries
+    /// the same message `id` and the full text produced so far.
+    func ask(_ question: String, history: [ChatMessage], isPremium: Bool) -> AsyncThrowingStream<ChatMessage, Error>
+    func resetSession()
+}
+
+extension AsyncThrowingStream where Failure == Error {
+    /// Runs `body` in a task that is cancelled when the consumer stops listening.
+    static func run(_ body: @escaping (Continuation) async throws -> Void) -> Self {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    try await body(continuation)
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
 }
 
 /// AI astrologer dialogue. The real implementation will call an AI proxy
@@ -37,13 +66,18 @@ final class OracleService: OracleServicing {
 
     var quota: OracleQuota { OracleQuota(used: usedToday, limit: dailyLimit) }
     var suggestions: [String] { MockData.oracleSuggestions }
+    var requiresNetwork: Bool { true }
 
-    func ask(_ question: String, history: [ChatMessage], isPremium: Bool) async throws -> ChatMessage {
-        guard monitor.isConnected else { throw NetworkError.offline }
-        guard isPremium || quota.remaining > 0 else { throw OracleError.limitReached }
+    func ask(_ question: String, history: [ChatMessage], isPremium: Bool) -> AsyncThrowingStream<ChatMessage, Error> {
+        .run { [self] continuation in
+            guard monitor.isConnected else { throw NetworkError.offline }
+            guard isPremium || quota.remaining > 0 else { throw OracleError.limitReached }
 
-        try await Task.sleep(for: .seconds(1))
-        usedToday += 1
-        return MockData.oracleAnswer(to: question)
+            try await Task.sleep(for: .seconds(1))
+            usedToday += 1
+            continuation.yield(MockData.oracleAnswer(to: question))
+        }
     }
+
+    func resetSession() {}
 }

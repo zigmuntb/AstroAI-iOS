@@ -127,7 +127,7 @@ struct OracleView: View {
                 }
                 .id(message.id)
             }
-            if viewModel.isTyping {
+            if viewModel.showsTypingIndicator {
                 typingIndicator.id(typingID)
             }
         }
@@ -201,32 +201,40 @@ struct OracleView: View {
                     .foregroundStyle(AppColor.onSurface)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Divider().overlay(AppColor.hairline.opacity(0.2))
-
-                HStack(spacing: Spacing.lg) {
-                    let isSaved = viewModel.savedMessageIDs.contains(message.id)
-                    Button {
-                        viewModel.save(message)
-                    } label: {
-                        Label(isSaved ? "Saved to Journal" : "Save to Journal", systemImage: isSaved ? "bookmark.fill" : "bookmark")
-                    }
-                    Button {
-                        UIPasteboard.general.string = [message.title, message.text].compactMap { $0 }.joined(separator: "\n\n")
-                        viewModel.markCopied(message)
-                    } label: {
-                        Label(viewModel.copiedMessageID == message.id ? "Copied" : "Copy", systemImage: "doc.on.doc")
-                    }
-                    Spacer()
-                    ShareLink(item: message.text) {
-                        Image(systemName: "square.and.arrow.up")
-                    }
+                if viewModel.streamingMessageID != message.id {
+                    messageActions(message)
                 }
-                .font(AppFont.labelMedium)
-                .tracking(0.4)
-                .foregroundStyle(AppColor.onSurfaceVariant)
-                .buttonStyle(.plain)
             }
             .card(.elevated, padding: Spacing.md + 4)
+        }
+    }
+
+    private func messageActions(_ message: ChatMessage) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            Divider().overlay(AppColor.hairline.opacity(0.2))
+
+            HStack(spacing: Spacing.lg) {
+                let isSaved = viewModel.savedMessageIDs.contains(message.id)
+                Button {
+                    viewModel.save(message)
+                } label: {
+                    Label(isSaved ? "Saved to Journal" : "Save to Journal", systemImage: isSaved ? "bookmark.fill" : "bookmark")
+                }
+                Button {
+                    UIPasteboard.general.string = [message.title, message.text].compactMap { $0 }.joined(separator: "\n\n")
+                    viewModel.markCopied(message)
+                } label: {
+                    Label(viewModel.copiedMessageID == message.id ? "Copied" : "Copy", systemImage: "doc.on.doc")
+                }
+                Spacer()
+                ShareLink(item: message.text) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+            }
+            .font(AppFont.labelMedium)
+            .tracking(0.4)
+            .foregroundStyle(AppColor.onSurfaceVariant)
+            .buttonStyle(.plain)
         }
     }
 

@@ -10,6 +10,8 @@ import Observation
 final class OracleViewModel {
     private(set) var messages: [ChatMessage]
     private(set) var isTyping = false
+    /// Oracle message that is still being generated.
+    private(set) var streamingMessageID: UUID?
     private(set) var isRetrying = false
     private(set) var quota: OracleQuota
     private(set) var savedMessageIDs: Set<UUID> = []
@@ -20,6 +22,7 @@ final class OracleViewModel {
     private var didFailOffline = false
     /// Question that hasn't been answered yet (used by Retry).
     private var pendingQuestion: String?
+    @ObservationIgnored private var requestTask: Task<Void, Never>?
 
     @ObservationIgnored private let oracle: OracleServicing
     @ObservationIgnored private let userService: UserServicing
@@ -39,7 +42,7 @@ final class OracleViewModel {
 
     // MARK: - Display
 
-    var isOffline: Bool { didFailOffline || !networkMonitor.isConnected }
+    var isOffline: Bool { oracle.requiresNetwork && (didFailOffline || !networkMonitor.isConnected) }
 
     var suggestions: [String] { oracle.suggestions }
 
@@ -53,6 +56,8 @@ final class OracleViewModel {
     }
 
     var userInitial: String { String(userName.prefix(1)).uppercased() }
+
+    var showsTypingIndicator: Bool { isTyping && streamingMessageID == nil }
 
     var canSend: Bool {
         !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isTyping
@@ -92,6 +97,11 @@ final class OracleViewModel {
     }
 
     func resetSession() {
+        requestTask?.cancel()
+        requestTask = nil
+        isTyping = false
+        streamingMessageID = nil
+        oracle.resetSession()
         messages = Self.initialTranscript
         pendingQuestion = nil
         draft = ""
@@ -132,21 +142,33 @@ final class OracleViewModel {
         pendingQuestion = question
         isTyping = true
         let history = messages
-        Task {
-            defer { isTyping = false }
+        requestTask = Task {
             do {
-                let answer = try await oracle.ask(question, history: history, isPremium: isPremium)
-                messages.append(answer)
+                for try await answer in oracle.ask(question, history: history, isPremium: isPremium) {
+                    guard !Task.isCancelled else { return }
+                    if let index = messages.firstIndex(where: { $0.id == answer.id }) {
+                        messages[index] = answer
+                    } else {
+                        streamingMessageID = answer.id
+                        messages.append(answer)
+                    }
+                }
+                guard !Task.isCancelled else { return }
                 pendingQuestion = nil
+            } catch is CancellationError {
+                return
             } catch OracleError.limitReached {
                 pendingQuestion = nil
                 router?.present(.paywall)
             } catch NetworkError.offline {
                 didFailOffline = true
             } catch {
+                guard !Task.isCancelled else { return }
                 messages.append(ChatMessage(role: .oracle, text: error.localizedDescription, title: "The reading was interrupted"))
                 pendingQuestion = nil
             }
+            isTyping = false
+            streamingMessageID = nil
             quota = oracle.quota
         }
     }

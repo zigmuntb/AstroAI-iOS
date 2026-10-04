@@ -37,7 +37,9 @@ final class AppDependencies {
         userService = UserService(storage: storage, imageStorage: imageStorage)
         astrologyService = AstrologyService(network: network)
         locationService = LocationService()
-        oracleService = OracleService(network: network, monitor: networkMonitor)
+        oracleService = OnDeviceOracleService.isSupported
+            ? OnDeviceOracleService()
+            : OracleService(network: network, monitor: networkMonitor)
         connectionsService = ConnectionsService(storage: storage)
         journalService = JournalService(storage: storage)
         subscriptionService = SubscriptionService(userService: userService)
