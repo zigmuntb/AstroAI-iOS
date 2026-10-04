@@ -144,6 +144,7 @@ final class MainCoordinator: MainRouting {
     }
 
     func signOut() {
+        TarotCardStore.clear()
         dependencies.userService.signOut()
         onSignOut?()
     }

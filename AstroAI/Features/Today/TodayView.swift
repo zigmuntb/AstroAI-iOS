@@ -3,10 +3,13 @@
 //  AstroAI
 //
 
+import ImagePlayground
 import SwiftUI
 
 struct TodayView: View {
     @State private var viewModel: TodayViewModel
+    @Environment(\.supportsImagePlayground) private var supportsImagePlayground
+    @FocusState private var isTarotFieldFocused: Bool
 
     init(viewModel: TodayViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -20,6 +23,7 @@ struct TodayView: View {
 
                 if let reading = viewModel.reading {
                     greeting(reading)
+                    tarot
                     luckyNumbers(reading)
                     balances(reading)
                     ephemeris(reading)
@@ -43,6 +47,18 @@ struct TodayView: View {
         .screenBackground()
         .toolbarVisibility(.hidden, for: .navigationBar)
         .task { await viewModel.load() }
+        .sheet(isPresented: $viewModel.isTarotComposerPresented, onDismiss: viewModel.tarotComposerDismissed) {
+            tarotComposer
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
+        .imagePlaygroundSheet(
+            isPresented: $viewModel.isTarotPlaygroundPresented,
+            concepts: [.text(viewModel.tarotConcept)],
+            onCompletion: { url in viewModel.saveTarotCard(from: url) }
+        )
+        .imagePlaygroundGenerationStyle(.illustration, in: [.illustration])
+        .tarotPlaygroundOptions()
     }
 
     // MARK: - Sections
@@ -74,6 +90,109 @@ struct TodayView: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(AppColor.surfaceContainer, in: .capsule)
+        }
+    }
+
+    private var tarot: some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            Eyebrow(text: "Tarot", icon: "sparkles")
+
+            if let data = viewModel.tarotImageData, let image = UIImage(data: data) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 280)
+                    .frame(maxWidth: .infinity)
+                    .clipShape(.rect(cornerRadius: Radius.md))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: Radius.md)
+                            .stroke(AppColor.champagne.opacity(0.8), lineWidth: 1)
+                    }
+                    .accessibilityLabel("Tarot card")
+
+                if !viewModel.tarotDescription.isEmpty {
+                    Text(viewModel.tarotDescription)
+                        .font(AppFont.quote)
+                        .foregroundStyle(AppColor.onSurface)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            } else {
+                Text("Draw a card from a description")
+                    .font(AppFont.headlineMedium)
+                    .foregroundStyle(AppColor.onSurface)
+                Text("Name a feeling, a question, or a scene. Image Playground illustrates it as a tarot card, and the picture stays here.")
+                    .font(AppFont.bodyMedium)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if let tarotError = viewModel.tarotError {
+                Text(tarotError)
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.error)
+            }
+
+            if supportsImagePlayground {
+                if viewModel.tarotImageData == nil {
+                    Button("Describe a card", action: viewModel.beginTarot)
+                        .buttonStyle(.astroPrimary)
+                } else {
+                    Button("Draw another", action: viewModel.beginTarot)
+                        .buttonStyle(.astroSecondary)
+                }
+            } else if viewModel.tarotImageData == nil {
+                Text("Image Playground isn't available on this iPhone.")
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.outline)
+            }
+        }
+        .card(.elevated, padding: Spacing.lg)
+    }
+
+    private var tarotComposer: some View {
+        let draft = Binding(
+            get: { viewModel.tarotDraft },
+            set: { viewModel.tarotDraft = String($0.prefix(TarotCardStore.descriptionLimit)) }
+        )
+        return NavigationStack {
+            VStack(alignment: .leading, spacing: Spacing.lg) {
+                Text("What should the card show?")
+                    .font(AppFont.headlineMedium)
+                    .foregroundStyle(AppColor.onSurface)
+                Text("A mood, a question, or a scene. The picture is an illustration, not a prediction.")
+                    .font(AppFont.bodyMedium)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                VStack(alignment: .trailing, spacing: Spacing.xs) {
+                    TextField("A moonlit path between two towers", text: draft, axis: .vertical)
+                        .font(AppFont.bodyMedium)
+                        .foregroundStyle(AppColor.onSurface)
+                        .lineLimit(3...6)
+                        .focused($isTarotFieldFocused)
+                        .padding(Spacing.md)
+                        .background(AppColor.surfaceContainer, in: .rect(cornerRadius: Radius.md))
+                    Text("\(draft.wrappedValue.count)/\(TarotCardStore.descriptionLimit)")
+                        .font(AppFont.labelMedium)
+                        .foregroundStyle(AppColor.outline)
+                        .monospacedDigit()
+                }
+
+                PrivacyFootnote(
+                    text: "Write the scene in English. Image Playground doesn't draw Russian yet.",
+                    icon: "sparkles"
+                )
+
+                Spacer(minLength: 0)
+
+                PrimaryButton(title: "Draw the card", icon: "sparkles", action: viewModel.drawTarotCard)
+                    .disabled(!viewModel.canDrawTarot)
+            }
+            .padding(Spacing.margin)
+            .screenBackground()
+            .navigationTitle("Tarot")
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear { isTarotFieldFocused = true }
         }
     }
 
@@ -555,5 +674,29 @@ private struct LifeDialMeter: View {
             .monospacedDigit()
             .contentTransition(.numericText())
             .layoutPriority(1)
+    }
+}
+
+extension View {
+    /// Portrait card on iOS 27, and no photos of the user mixed into the illustration.
+    @ViewBuilder
+    func tarotPlaygroundOptions() -> some View {
+        if #available(iOS 26.4, *) {
+            imagePlaygroundOptions(TarotPlaygroundOptions.make())
+        } else {
+            imagePlaygroundPersonalizationPolicy(.disabled)
+        }
+    }
+}
+
+@available(iOS 26.4, *)
+private enum TarotPlaygroundOptions {
+    static func make() -> ImagePlaygroundOptions {
+        var options = ImagePlaygroundOptions()
+        options.personalization = .disabled
+        if #available(iOS 27, *) {
+            options.sizeSpecification = .closest(to: CGSize(width: 768, height: 1152))
+        }
+        return options
     }
 }

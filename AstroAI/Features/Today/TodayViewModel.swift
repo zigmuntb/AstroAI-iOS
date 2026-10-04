@@ -5,6 +5,7 @@
 
 import Foundation
 import Observation
+import UIKit
 
 @Observable
 final class TodayViewModel {
@@ -13,6 +14,17 @@ final class TodayViewModel {
     private(set) var errorMessage: String?
     private(set) var selectedMood: String?
     private(set) var isSaved = false
+
+    var isTarotComposerPresented = false
+    var isTarotPlaygroundPresented = false
+    var tarotDraft = ""
+    private(set) var tarotImageData: Data?
+    private(set) var tarotDescription = ""
+    private(set) var tarotError: String?
+    /// Scene sent to Image Playground. Kept apart from the text field so editing the draft cannot change a card already being drawn.
+    private(set) var tarotConcept = ""
+    private var pendingDescription = ""
+    private var shouldOpenPlayground = false
 
     @ObservationIgnored private let astrology: AstrologyServicing
     @ObservationIgnored private let userService: UserServicing
@@ -24,6 +36,10 @@ final class TodayViewModel {
         self.userService = userService
         self.journal = journal
         self.router = router
+        if let card = TarotCardStore.load(), UIImage(data: card.data) != nil {
+            tarotImageData = card.data
+            tarotDescription = card.description
+        }
     }
 
     // MARK: - Display
@@ -102,5 +118,54 @@ final class TodayViewModel {
 
     func openProfile() {
         router?.select(.profile)
+    }
+
+    // MARK: - Tarot
+
+    var canDrawTarot: Bool {
+        !tarotDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    func beginTarot() {
+        tarotDraft = tarotDescription
+        tarotError = nil
+        isTarotComposerPresented = true
+    }
+
+    func drawTarotCard() {
+        let description = String(
+            tarotDraft.trimmingCharacters(in: .whitespacesAndNewlines).prefix(TarotCardStore.descriptionLimit)
+        )
+        guard !description.isEmpty else { return }
+        pendingDescription = description
+        tarotConcept = """
+            A single vertical illustrated tarot card with an ornate border and symbolic imagery, \
+            no letters and no numbers. Scene: \(description)
+            """
+        tarotDraft = description
+        shouldOpenPlayground = true
+        isTarotComposerPresented = false
+    }
+
+    /// Called when the description sheet finishes dismissing, so Image Playground is not presented over it.
+    func tarotComposerDismissed() {
+        guard shouldOpenPlayground else { return }
+        shouldOpenPlayground = false
+        isTarotPlaygroundPresented = true
+    }
+
+    func saveTarotCard(from url: URL) {
+        let accessed = url.startAccessingSecurityScopedResource()
+        defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+        do {
+            let data = try Data(contentsOf: url)
+            guard UIImage(data: data) != nil else { throw TarotCardStoreError.unreadable }
+            try TarotCardStore.save(data, description: pendingDescription)
+            tarotImageData = data
+            tarotDescription = pendingDescription
+            tarotError = nil
+        } catch {
+            tarotError = error.localizedDescription
+        }
     }
 }
