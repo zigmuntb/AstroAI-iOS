@@ -22,6 +22,8 @@ struct DailyReading: Codable, Hashable {
     let imageCaption: String
     let areas: [LifeArea]
     let tendencies: [Tendency]
+    /// Paired daily leans. `value` runs from 0 (entirely `left`) to 100 (entirely `right`).
+    let dials: [LifeDial]
     let moods: [String]
     let oracleQuestions: [String]
 }
@@ -39,6 +41,18 @@ struct Tendency: Codable, Hashable, Identifiable {
     let value: String
     /// 0...1
     let level: Double
+}
+
+/// One axis of the day: two opposite pulls that share a single 0...100 scale.
+struct LifeDial: Codable, Hashable, Identifiable {
+    let id: String
+    let left: String
+    let right: String
+    let leftIcon: String
+    let rightIcon: String
+    /// 0 is entirely `left`. 100 is entirely `right`. The two scores add up to 100.
+    let value: Int
+    let note: String
 }
 
 // MARK: - Explore

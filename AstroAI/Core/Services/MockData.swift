@@ -123,6 +123,12 @@ enum MockData {
                 Tendency(title: "Connection", value: "Open & Subtle", level: 0.58),
                 Tendency(title: "Reflection", value: "Heightened", level: 0.88)
             ],
+            dials: [
+                LifeDial(id: "bonds", left: "Relationships", right: "Work", leftIcon: "heart", rightIcon: "briefcase", value: 64, note: "Give the day to the work itself. A Capricorn Moon favors effort you can finish."),
+                LifeDial(id: "circle", left: "Friends", right: "Family", leftIcon: "person.2", rightIcon: "house", value: 71, note: "Family has the clearer claim. The Moon is home, in the house of roots."),
+                LifeDial(id: "tempo", left: "New", right: "Routine", leftIcon: "sparkles", rightIcon: "repeat", value: 38, note: "Try one thing that isn't already in the plan. A mutable Moon loosens the script."),
+                LifeDial(id: "energy", left: "Rest", right: "Action", leftIcon: "moon.stars", rightIcon: "bolt", value: 44, note: "Move slowly. Rest is doing something. The Moon is waning.")
+            ],
             moods: ["Quietly Inspired", "Seeking Grounding", "Content", "Restless"],
             oracleQuestions: [
                 "How does today's Gemini Moon affect my natal placements?",

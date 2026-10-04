@@ -29,6 +29,7 @@ enum DailyReadingBuilder {
             imageCaption: "\(sky.moonPhase.name) • \(moonSign.name) Moon",
             areas: areas(profile: profile, chart: chart, sky: sky, transit: transit),
             tendencies: tendencies(chart: chart, moonSign: moonSign, transit: transit),
+            dials: LifeDialBuilder.dials(profile: profile, chart: chart, sky: sky),
             moods: moods(moonSign: moonSign, transit: transit),
             oracleQuestions: questions(profile: profile, chart: chart, moonSign: moonSign, transit: transit)
         )
