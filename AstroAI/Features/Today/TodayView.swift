@@ -20,6 +20,7 @@ struct TodayView: View {
 
                 if let reading = viewModel.reading {
                     greeting(reading)
+                    luckyNumbers(reading)
                     balances(reading)
                     ephemeris(reading)
                     synthesis(reading)
@@ -74,6 +75,45 @@ struct TodayView: View {
             .padding(.vertical, 6)
             .background(AppColor.surfaceContainer, in: .capsule)
         }
+    }
+
+    private func luckyNumbers(_ reading: DailyReading) -> some View {
+        let lucky = reading.luckyNumbers
+        return VStack(alignment: .leading, spacing: Spacing.md) {
+            HStack(alignment: .firstTextBaseline) {
+                Eyebrow(text: "Lucky Numbers")
+                Spacer(minLength: Spacing.sm)
+                Text("Personal day \(lucky.personalDay)")
+                    .font(AppFont.labelMedium)
+                    .tracking(0.4)
+                    .foregroundStyle(AppColor.secondary)
+            }
+
+            HStack(spacing: Spacing.sm) {
+                ForEach(Array(lucky.values.enumerated()), id: \.offset) { index, number in
+                    Text("\(number)")
+                        .font(AppFont.headlineSmall)
+                        .monospacedDigit()
+                        .foregroundStyle(index == 0 ? AppColor.onPrimary : AppColor.onSurface)
+                        .frame(maxWidth: .infinity)
+                        .aspectRatio(1, contentMode: .fit)
+                        .background(index == 0 ? AppColor.primaryContainer : AppColor.surfaceContainerLowest, in: .circle)
+                        .overlay {
+                            if index > 0 {
+                                Circle().stroke(AppColor.hairline.opacity(0.28), lineWidth: 0.5)
+                            }
+                        }
+                        .accessibilityLabel(index == 0 ? "Personal day \(number)" : "\(number)")
+                }
+            }
+
+            Text(lucky.note)
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .card(.tinted, padding: Spacing.md + 4)
+        .accessibilityElement(children: .contain)
     }
 
     private func balances(_ reading: DailyReading) -> some View {

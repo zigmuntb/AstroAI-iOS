@@ -24,6 +24,7 @@ struct DailyReading: Codable, Hashable {
     let tendencies: [Tendency]
     /// Paired daily leans. `value` runs from 0 (entirely `left`) to 100 (entirely `right`).
     let dials: [LifeDial]
+    let luckyNumbers: LuckyNumbers
     let moods: [String]
     let oracleQuestions: [String]
 }
@@ -52,6 +53,13 @@ struct LifeDial: Codable, Hashable, Identifiable {
     let rightIcon: String
     /// 0 is entirely `left`. 100 is entirely `right`. The two scores add up to 100.
     let value: Int
+    let note: String
+}
+
+/// Five numbers for the civil day. The first is the personal day and is shown apart from the rest.
+struct LuckyNumbers: Codable, Hashable {
+    let values: [Int]
+    let personalDay: Int
     let note: String
 }
 

@@ -129,6 +129,11 @@ enum MockData {
                 LifeDial(id: "tempo", left: "New", right: "Routine", leftIcon: "sparkles", rightIcon: "repeat", value: 38, note: "Try one thing that isn't already in the plan. A mutable Moon loosens the script."),
                 LifeDial(id: "energy", left: "Rest", right: "Action", leftIcon: "moon.stars", rightIcon: "bolt", value: 44, note: "Move slowly. Rest is doing something. The Moon is waning.")
             ],
+            luckyNumbers: LuckyNumbers(
+                values: [7, 16, 23, 34, 41],
+                personalDay: 7,
+                note: "Read from your birth date and today's Gemini Moon."
+            ),
             moods: ["Quietly Inspired", "Seeking Grounding", "Content", "Restless"],
             oracleQuestions: [
                 "How does today's Gemini Moon affect my natal placements?",
