@@ -102,7 +102,7 @@ final class ChartPreparationViewModel {
 
         steps = [
             Step(id: 0, title: "Mapping topocentric coordinates", detail: placeDetail),
-            Step(id: 1, title: "Calculating Placidus house cusps", detail: timeDetail),
+            Step(id: 1, title: "Calculating house cusps", detail: timeDetail),
             Step(id: 2, title: "Personalizing core synthesis", detail: "Weaving archetypal natal chords & transits...")
         ]
 

@@ -19,6 +19,9 @@ struct ProfileView: View {
 
                 VStack(alignment: .leading, spacing: Spacing.xl) {
                     identity
+                    ForEach(viewModel.nudges) { nudge in
+                        nudgeCard(nudge)
+                    }
                     if !viewModel.isPremium {
                         sanctuaryCard
                     }
@@ -112,6 +115,35 @@ struct ProfileView: View {
             }
         }
         .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Nudges
+
+    private func nudgeCard(_ nudge: ProfileViewModel.Nudge) -> some View {
+        HStack(alignment: .top, spacing: Spacing.md) {
+            Image(systemName: nudge.icon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(AppColor.secondary)
+                .frame(width: 36, height: 36)
+                .background(AppColor.secondaryContainer.opacity(0.5), in: .circle)
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                Text(nudge.title)
+                    .font(AppFont.headlineSmall)
+                    .foregroundStyle(AppColor.onSurface)
+                Text(nudge.text)
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let actionTitle = nudge.actionTitle {
+                    Button(actionTitle, action: viewModel.editProfile)
+                        .font(AppFont.labelLarge)
+                        .foregroundStyle(AppColor.primaryContainer)
+                        .padding(.top, Spacing.xs)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .card(.tinted)
     }
 
     // MARK: - Sanctuary

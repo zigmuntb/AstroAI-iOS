@@ -12,8 +12,17 @@ struct BirthPlace: Codable, Hashable, Identifiable {
     let latitude: Double
     let longitude: Double
     let timeZone: String
+    /// IANA identifier, e.g. "Europe/Kyiv". Needed to convert the local birth time to UTC
+    /// with historical daylight-saving rules.
+    var timeZoneIdentifier: String? = nil
 
     var title: String { "\(city), \(region)" }
+
+    /// Profiles saved before `timeZoneIdentifier` existed only reference the built-in city list.
+    var resolvedTimeZone: TimeZone? {
+        let identifier = timeZoneIdentifier ?? MockData.places.first { $0.id == id }?.timeZoneIdentifier
+        return identifier.flatMap(TimeZone.init(identifier:))
+    }
 
     var coordinates: String {
         let lat = String(format: "%.4f° %@", abs(latitude), latitude >= 0 ? "N" : "S")
@@ -27,6 +36,23 @@ struct BirthData: Codable, Hashable {
     /// `nil` when the user doesn't know the exact birth time.
     var time: Date?
     var place: BirthPlace?
+    /// `true` when `time` is a stand-in (morning / noon / evening) rather than the real birth time.
+    var isTimeApproximate: Bool? = nil
+
+    var isTimeKnown: Bool { time != nil && isTimeApproximate != true }
+
+    /// Birth moment in absolute time. The date and time pickers store wall-clock values in the
+    /// device calendar; they are reinterpreted in the birthplace's time zone.
+    var moment: Date {
+        let device = Calendar.current
+        let day = device.dateComponents([.year, .month, .day], from: date)
+        let clock = time.map { device.dateComponents([.hour, .minute], from: $0) } ?? DateComponents(hour: 12, minute: 0)
+
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = place?.resolvedTimeZone ?? .current
+        let components = DateComponents(year: day.year, month: day.month, day: day.day, hour: clock.hour, minute: clock.minute)
+        return calendar.date(from: components) ?? date
+    }
 }
 
 enum Interest: String, CaseIterable, Codable, Identifiable {
@@ -45,6 +71,7 @@ struct UserProfile: Codable, Hashable {
     var interests: Set<Interest>
     var intentions: Set<Intention>
     var isPremium: Bool = false
+    var personal: PersonalContext? = nil
 }
 
 extension UserProfile {

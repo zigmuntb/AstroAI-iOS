@@ -34,7 +34,7 @@ struct NameView: View {
         .scrollIndicators(.hidden)
         .scrollDismissesKeyboard(.interactively)
         .safeAreaInset(edge: .top, spacing: 0) {
-            OnboardingHeader(step: 6, onBack: viewModel.back)
+            OnboardingHeader(step: 7, onBack: viewModel.back)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack(spacing: Spacing.md) {
@@ -54,7 +54,7 @@ struct NameView: View {
     private var stepRow: some View {
         HStack {
             HStack(spacing: Spacing.sm) {
-                Text("STEP 6 OF \(OnboardingCoordinator.steps.count)")
+                Text("STEP 7 OF \(OnboardingCoordinator.steps.count)")
                     .font(AppFont.labelLarge.weight(.regular))
                     .tracking(1)
                     .foregroundStyle(AppColor.onSurfaceVariant)

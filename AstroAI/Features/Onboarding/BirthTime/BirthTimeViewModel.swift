@@ -47,6 +47,10 @@ final class BirthTimeViewModel {
         self.draft = draft
         self.router = router
         self.exactTime = draft.birthTime ?? Calendar.current.date(from: DateComponents(hour: 12, minute: 0)) ?? .now
+        self.isTimeUnknown = draft.isBirthTimeApproximate
+        if draft.isBirthTimeApproximate, let time = draft.birthTime {
+            self.approximation = Approximation(rawValue: Calendar.current.component(.hour, from: time)) ?? .morning
+        }
     }
 
     /// Time shown in the "Selected Meridian Time" badge.
@@ -74,6 +78,7 @@ final class BirthTimeViewModel {
     // The draft always holds the effective time: exact, or the chosen approximation.
     private func syncDraft() {
         draft.birthTime = isTimeUnknown ? date(for: approximation) : exactTime
+        draft.isBirthTimeApproximate = isTimeUnknown
     }
 
     private func date(for approximation: Approximation) -> Date {

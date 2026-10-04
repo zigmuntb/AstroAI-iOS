@@ -15,6 +15,7 @@ protocol UserServicing: AnyObject {
     func save(_ profile: UserProfile)
     func updateName(_ name: String) throws
     func updateAvatar(_ imageData: Data?) throws
+    func updatePersonal(_ personal: PersonalContext) throws
     func setPremium(_ isPremium: Bool)
     func signOut()
 }
@@ -73,6 +74,12 @@ final class UserService: UserServicing {
             return
         }
         avatarData = try imageStorage.save(imageData, as: avatarFileName)
+    }
+
+    func updatePersonal(_ personal: PersonalContext) throws {
+        guard var profile else { throw UserServiceError.noProfile }
+        profile.personal = personal.isEmpty ? nil : personal
+        save(profile)
     }
 
     func setPremium(_ isPremium: Bool) {

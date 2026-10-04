@@ -15,9 +15,13 @@ protocol ConnectionsServicing {
 /// Saved people and synastry reports. Will move to a Supabase `connections` table.
 final class ConnectionsService: ConnectionsServicing {
     private let storage: StorageManaging
+    private let astrology: AstrologyServicing
+    private let userService: UserServicing
 
-    init(storage: StorageManaging) {
+    init(storage: StorageManaging, astrology: AstrologyServicing, userService: UserServicing) {
         self.storage = storage
+        self.astrology = astrology
+        self.userService = userService
     }
 
     func connections() -> [Connection] {
@@ -33,7 +37,7 @@ final class ConnectionsService: ConnectionsServicing {
     }
 
     func synastry(with connection: Connection) async throws -> SynastryReport {
-        try await Task.sleep(for: .milliseconds(400))
-        return MockData.synastry
+        guard let profile = userService.profile else { throw UserServiceError.noProfile }
+        return try await astrology.synastry(of: profile, with: connection)
     }
 }

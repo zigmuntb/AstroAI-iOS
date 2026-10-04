@@ -54,6 +54,7 @@ struct OracleView: View {
         }
         .screenBackground()
         .toolbarVisibility(.hidden, for: .navigationBar)
+        .task { await viewModel.loadSky() }
     }
 
     // MARK: - Context
@@ -69,7 +70,7 @@ struct OracleView: View {
                     Text("AstroAI Sanctuary")
                         .font(AppFont.headlineMedium)
                         .foregroundStyle(AppColor.onSurface)
-                    Text("Synced with Scorpio Sun ☉, Taurus Moon ☽")
+                    Text(viewModel.syncLine)
                         .font(AppFont.bodyMedium)
                         .foregroundStyle(AppColor.onSurfaceVariant)
                 }
@@ -85,11 +86,11 @@ struct OracleView: View {
             HStack(spacing: Spacing.sm) {
                 Image(systemName: "arrow.left.arrow.right")
                     .foregroundStyle(AppColor.onSurfaceVariant)
-                Text("Active Transit: ☿ Mercury in Libra (14° 18')")
+                Text(viewModel.transitLine)
                     .font(AppFont.bodySmall)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                 Spacer(minLength: 0)
-                Text("Exacting Orb")
+                Text(viewModel.transitBadge)
                     .font(AppFont.labelSmall)
                     .tracking(0.6)
                     .foregroundStyle(AppColor.secondary)

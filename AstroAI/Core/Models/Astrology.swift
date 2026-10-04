@@ -130,6 +130,45 @@ struct PlanetPlacement: Identifiable, Codable, Hashable {
     var aspectNote: String = ""
     /// Absolute ecliptic longitude 0..<360, used for drawing the wheel.
     var longitude: Double = 0
+    var houseNumber: Int?
+    var isRetrograde = false
+}
+
+enum HouseSystem: String, CaseIterable, Codable {
+    case placidus = "Placidus"
+    case wholeSign = "Whole Sign"
+    case equal = "Equal House"
+
+    var title: String { self == .equal ? "Equal Houses" : "\(rawValue) Houses" }
+}
+
+/// Calculation settings from Preferences.
+struct ChartOptions: Hashable {
+    var houseSystem: HouseSystem = .placidus
+    var isSidereal = false
+    var usesTrueNode = true
+
+    init(houseSystem: HouseSystem = .placidus, isSidereal: Bool = false, usesTrueNode: Bool = true) {
+        self.houseSystem = houseSystem
+        self.isSidereal = isSidereal
+        self.usesTrueNode = usesTrueNode
+    }
+
+    init(_ preferences: Preferences) {
+        self.init(
+            houseSystem: HouseSystem(rawValue: preferences.houseSystem) ?? .placidus,
+            isSidereal: preferences.zodiac == "Sidereal",
+            usesTrueNode: preferences.lunarNode != "Mean"
+        )
+    }
+}
+
+struct ChartAspect: Codable, Hashable {
+    let first: Planet
+    let second: Planet
+    let kind: AspectKind
+    /// Distance from exact, in degrees.
+    let orb: Double
 }
 
 struct NatalChart: Codable, Hashable {
@@ -139,6 +178,16 @@ struct NatalChart: Codable, Hashable {
     let elements: [ChartShare]
     let modalities: [ChartShare]
     let accuracy: Int
+    var aspects: [ChartAspect] = []
+    var houseSystem = "Whole Sign Houses"
+    /// Twelve cusp longitudes, cusp 1 first. Empty for solar (location-free) charts.
+    var cusps: [Double] = []
+    /// `false` when the birth time is approximate: rising sign and houses may be off.
+    var isTimeKnown = true
+    /// `false` when no birthplace was given: there is no ascendant and houses are solar.
+    var hasLocation = true
+    var moonDeclination: Double?
+    var obliquity: Double = 23.44
 
     func placement(_ planet: Planet) -> PlanetPlacement? {
         placements.first { $0.planet == planet }

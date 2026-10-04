@@ -21,16 +21,19 @@ struct JournalPrompt: Hashable {
 /// Personal journal stored on device. Will sync to Supabase later.
 final class JournalService: JournalServicing {
     private let storage: StorageManaging
+    private let astrology: AstrologyServicing
+    private let userService: UserServicing
 
-    init(storage: StorageManaging) {
+    init(storage: StorageManaging, astrology: AstrologyServicing, userService: UserServicing) {
         self.storage = storage
+        self.astrology = astrology
+        self.userService = userService
     }
 
-    var prompt: JournalPrompt { MockData.journalPrompt }
+    var prompt: JournalPrompt { astrology.journalPrompt(for: userService.profile) }
 
     func entries() -> [JournalEntry] {
-        let saved = storage.load([JournalEntry].self, for: .journal) ?? []
-        return (saved + MockData.journalEntries).sorted { $0.date > $1.date }
+        (storage.load([JournalEntry].self, for: .journal) ?? []).sorted { $0.date > $1.date }
     }
 
     func add(_ entry: JournalEntry) {

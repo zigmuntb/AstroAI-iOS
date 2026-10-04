@@ -37,19 +37,21 @@ final class SynastryViewModel {
     let userName: String
     let partnerName: String
     let relationLabel: String
-    let user: Person
-    let partner: Person
+    private(set) var user: Person
+    private(set) var partner: Person
 
     @ObservationIgnored private let connection: Connection
     @ObservationIgnored private let connections: ConnectionsServicing
+    @ObservationIgnored private let astrology: AstrologyServicing
     @ObservationIgnored private let userService: UserServicing
     @ObservationIgnored private weak var router: MainRouting?
-    @ObservationIgnored private let userSign: ZodiacSign
-    @ObservationIgnored private let partnerSign: ZodiacSign
+    @ObservationIgnored private var userSign: ZodiacSign
+    @ObservationIgnored private var partnerSign: ZodiacSign
 
-    init(connection: Connection, connections: ConnectionsServicing, userService: UserServicing, router: MainRouting) {
+    init(connection: Connection, connections: ConnectionsServicing, astrology: AstrologyServicing, userService: UserServicing, router: MainRouting) {
         self.connection = connection
         self.connections = connections
+        self.astrology = astrology
         self.userService = userService
         self.router = router
 
@@ -57,19 +59,14 @@ final class SynastryViewModel {
         userName = name.isEmpty ? "You" : name
         partnerName = connection.name
         relationLabel = connection.kinship.relationLabel
-        userSign = userService.profile.map { ZodiacSign.sunSign(on: $0.birth.date) } ?? .scorpio
-        partnerSign = connection.sunSign
+        userSign = userService.profile.map { astrology.sunSign(for: $0.birth.date) } ?? .scorpio
+        partnerSign = astrology.sunSign(for: connection.birth.date)
 
-        // Moon / Venus / Mars degrees are static until the synastry backend provides them.
         user = Person(name: userName, role: "Initiator", portrait: "SynastryElena", placements: [
-            Placement(glyph: "☉", label: "SUN", value: "\(userSign.name) 18°"),
-            Placement(glyph: "☽", label: "MOON", value: "Taurus 04°"),
-            Placement(glyph: "♀", label: "VENUS", value: "Virgo 11°")
+            Placement(glyph: "☉", label: "SUN", value: userSign.name)
         ])
         partner = Person(name: connection.name, role: "Anchor", portrait: "SynastryJulian", placements: [
-            Placement(glyph: "☉", label: "SUN", value: "\(partnerSign.name) 22°"),
-            Placement(glyph: "☽", label: "MOON", value: "Capricorn 29°"),
-            Placement(glyph: "♂", label: "MARS", value: "Taurus 16°")
+            Placement(glyph: "☉", label: "SUN", value: partnerSign.name)
         ])
     }
 
@@ -84,9 +81,8 @@ final class SynastryViewModel {
     }
 
     var questions: [Question] {
-        let prompts = ["Prompted by Capricorn Moon 4th House cusp", "Prompted by Scorpio Sun in natal opposition to Taurus"]
-        return (report?.questions ?? []).enumerated().map { index, text in
-            Question(number: index + 1, text: text, prompt: prompts[safe: index] ?? "Prompted by the current lunar cycle")
+        (report?.questions ?? []).enumerated().map { index, text in
+            Question(number: index + 1, text: text, prompt: "Prompted by the synastry of \(userName) and \(partnerName)")
         }
     }
 
@@ -100,6 +96,14 @@ final class SynastryViewModel {
         isLoading = true
         errorMessage = nil
         do {
+            if let birth = userService.profile?.birth {
+                let userChart = try await astrology.natalChart(for: birth)
+                let otherChart = try await astrology.natalChart(for: connection.birth)
+                userSign = userChart.placement(.sun)?.sign ?? userSign
+                partnerSign = otherChart.placement(.sun)?.sign ?? partnerSign
+                user = Person(name: userName, role: "Initiator", portrait: user.portrait, placements: Self.placements(from: userChart))
+                partner = Person(name: partnerName, role: "Anchor", portrait: partner.portrait, placements: Self.placements(from: otherChart))
+            }
             report = try await connections.synastry(with: connection)
         } catch {
             errorMessage = "The synastry matrix couldn't be calculated. Please try again."
@@ -113,5 +117,11 @@ final class SynastryViewModel {
 
     func addConnection() {
         router?.present(.addConnection)
+    }
+
+    private static func placements(from chart: NatalChart) -> [Placement] {
+        SynastryCalculator.placements(from: chart).map {
+            Placement(glyph: $0.planet.glyph, label: $0.label, value: $0.value)
+        }
     }
 }

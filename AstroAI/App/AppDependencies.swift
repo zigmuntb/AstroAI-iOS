@@ -35,14 +35,20 @@ final class AppDependencies {
         networkMonitor = NetworkMonitor()
 
         userService = UserService(storage: storage, imageStorage: imageStorage)
-        astrologyService = AstrologyService(network: network)
-        locationService = LocationService()
-        oracleService = OnDeviceOracleService.isSupported
-            ? OnDeviceOracleService()
-            : OracleService(network: network, monitor: networkMonitor)
-        connectionsService = ConnectionsService(storage: storage)
-        journalService = JournalService(storage: storage)
-        subscriptionService = SubscriptionService(userService: userService)
         preferencesService = PreferencesService(storage: storage)
+        astrologyService = AstrologyService(network: network, preferences: preferencesService)
+        locationService = LocationService()
+        connectionsService = ConnectionsService(storage: storage, astrology: astrologyService, userService: userService)
+        journalService = JournalService(storage: storage, astrology: astrologyService, userService: userService)
+        oracleService = OnDeviceOracleService.isSupported
+            ? OnDeviceOracleService(
+                userService: userService,
+                astrology: astrologyService,
+                connections: connectionsService,
+                journal: journalService,
+                memory: OracleMemoryStore(storage: storage)
+            )
+            : OracleService(network: network, monitor: networkMonitor)
+        subscriptionService = SubscriptionService(userService: userService)
     }
 }

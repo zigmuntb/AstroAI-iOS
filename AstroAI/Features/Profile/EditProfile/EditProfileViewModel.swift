@@ -16,6 +16,8 @@ final class EditProfileViewModel {
         }
     }
 
+    var personal: PersonalContext
+
     /// Photo shown in the editor. Saved only when the user taps Save.
     private(set) var photoData: Data?
     private(set) var isLoadingPhoto = false
@@ -23,6 +25,7 @@ final class EditProfileViewModel {
     var errorMessage: String?
 
     @ObservationIgnored private let originalName: String
+    @ObservationIgnored private let originalPersonal: PersonalContext
     @ObservationIgnored private var photoChanged = false
     @ObservationIgnored private let userService: UserServicing
     @ObservationIgnored private weak var router: MainRouting?
@@ -32,6 +35,8 @@ final class EditProfileViewModel {
         self.router = router
         originalName = userService.profile?.name ?? ""
         name = originalName
+        originalPersonal = userService.profile?.personal ?? PersonalContext()
+        personal = originalPersonal
         photoData = userService.avatarData
     }
 
@@ -49,7 +54,7 @@ final class EditProfileViewModel {
     var canSave: Bool {
         guard isNameValid, !isSaving, !isLoadingPhoto else { return false }
         let nameChanged = UserProfile.validatedName(name) != originalName
-        return nameChanged || photoChanged
+        return nameChanged || photoChanged || personal != originalPersonal
     }
 
     // MARK: - Actions
@@ -81,6 +86,9 @@ final class EditProfileViewModel {
             try userService.updateName(name)
             if photoChanged {
                 try userService.updateAvatar(photoData)
+            }
+            if personal != originalPersonal {
+                try userService.updatePersonal(personal)
             }
             router?.dismissSheet()
         } catch {

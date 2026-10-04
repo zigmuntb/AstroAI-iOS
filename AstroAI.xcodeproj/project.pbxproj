@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		85A1E0012F00000000000001 /* AstronomyEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 85A1E0032F00000000000001 /* AstronomyEngine */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		852E3727306FE3F000A73D80 /* AstroAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AstroAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85A1E0012F00000000000001 /* AstronomyEngine in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = AstroAI;
 			packageProductDependencies = (
+				85A1E0032F00000000000001 /* AstronomyEngine */,
 			);
 			productName = AstroAI;
 			productReference = 852E3727306FE3F000A73D80 /* AstroAI.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 852E371E306FE3F000A73D80;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				85A1E0022F00000000000001 /* XCLocalSwiftPackageReference "Packages/AstronomyEngine" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 852E3728306FE3F000A73D80 /* Products */;
 			projectDirPath = "";
@@ -332,6 +341,21 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		85A1E0022F00000000000001 /* XCLocalSwiftPackageReference "Packages/AstronomyEngine" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/AstronomyEngine;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		85A1E0032F00000000000001 /* AstronomyEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85A1E0022F00000000000001 /* XCLocalSwiftPackageReference "Packages/AstronomyEngine" */;
+			productName = AstronomyEngine;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 852E371F306FE3F000A73D80 /* Project object */;
 }

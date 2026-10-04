@@ -20,7 +20,8 @@ struct EditProfileView: View {
             VStack(alignment: .leading, spacing: Spacing.lg) {
                 photoSection
                 nameSection
-                PrivacyFootnote(text: "Your name and photo are stored only on this device")
+                personalSection
+                PrivacyFootnote(text: "Your profile is stored only on this device")
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.top, Spacing.md)
@@ -175,6 +176,25 @@ struct EditProfileView: View {
                     .font(AppFont.bodySmall)
                     .foregroundStyle(AppColor.error)
             }
+        }
+        .padding(Spacing.md)
+        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
+    }
+
+    // MARK: - Personal Context
+
+    private var personalSection: some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            VStack(alignment: .leading, spacing: 4) {
+                Label("ABOUT YOU NOW", systemImage: "sparkles")
+                    .font(AppFont.labelLarge)
+                    .tracking(0.6)
+                    .foregroundStyle(AppColor.onSurface)
+                Text("Optional. Helps the Oracle tailor its answers to your situation.")
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+            }
+            PersonalContextForm(context: $viewModel.personal)
         }
         .padding(Spacing.md)
         .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))

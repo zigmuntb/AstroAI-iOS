@@ -10,6 +10,7 @@ enum StorageKey: String {
     case preferences
     case connections
     case journal
+    case oracleMemory
 }
 
 protocol StorageManaging {
@@ -44,6 +45,6 @@ final class StorageManager: StorageManaging {
     }
 
     func removeAll() {
-        [StorageKey.userProfile, .preferences, .connections, .journal].forEach(remove)
+        [StorageKey.userProfile, .preferences, .connections, .journal, .oracleMemory].forEach(remove)
     }
 }

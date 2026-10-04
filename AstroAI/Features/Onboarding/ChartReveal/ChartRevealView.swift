@@ -36,7 +36,7 @@ struct ChartRevealView: View {
         .screenBackground()
         .toolbarVisibility(.hidden, for: .navigationBar)
         .safeAreaInset(edge: .top, spacing: 0) {
-            OnboardingHeader(step: 7, onBack: viewModel.back)
+            OnboardingHeader(step: 8, onBack: viewModel.back)
         }
     }
 

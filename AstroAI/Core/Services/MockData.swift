@@ -12,18 +12,18 @@ enum MockData {
     // MARK: - Places
 
     static let places: [BirthPlace] = [
-        BirthPlace(city: "Vienna", region: "Austria", latitude: 48.2082, longitude: 16.3738, timeZone: "Central European Time (UTC+1)"),
-        BirthPlace(city: "Vienna", region: "Virginia, USA", latitude: 38.9012, longitude: -77.2655, timeZone: "Eastern Standard Time (UTC-5)"),
-        BirthPlace(city: "Vienne", region: "Isère, France", latitude: 45.5250, longitude: 4.8744, timeZone: "Central European Time (UTC+1)"),
-        BirthPlace(city: "Moscow", region: "Russia", latitude: 55.7558, longitude: 37.6173, timeZone: "Moscow Standard Time (UTC+3)"),
-        BirthPlace(city: "Kyiv", region: "Ukraine", latitude: 50.4501, longitude: 30.5234, timeZone: "Eastern European Time (UTC+2)"),
-        BirthPlace(city: "London", region: "United Kingdom", latitude: 51.5072, longitude: -0.1276, timeZone: "Greenwich Mean Time (UTC+0)"),
-        BirthPlace(city: "New York", region: "New York, USA", latitude: 40.7128, longitude: -74.0060, timeZone: "Eastern Standard Time (UTC-5)"),
-        BirthPlace(city: "Paris", region: "France", latitude: 48.8566, longitude: 2.3522, timeZone: "Central European Time (UTC+1)"),
-        BirthPlace(city: "Berlin", region: "Germany", latitude: 52.5200, longitude: 13.4050, timeZone: "Central European Time (UTC+1)"),
-        BirthPlace(city: "Tokyo", region: "Japan", latitude: 35.6762, longitude: 139.6503, timeZone: "Japan Standard Time (UTC+9)"),
-        BirthPlace(city: "Zürich", region: "Switzerland", latitude: 47.3769, longitude: 8.5417, timeZone: "Central European Time (UTC+1)"),
-        BirthPlace(city: "San Francisco", region: "California, USA", latitude: 37.7749, longitude: -122.4194, timeZone: "Pacific Standard Time (UTC-8)")
+        BirthPlace(city: "Vienna", region: "Austria", latitude: 48.2082, longitude: 16.3738, timeZone: "Central European Time (UTC+1)", timeZoneIdentifier: "Europe/Vienna"),
+        BirthPlace(city: "Vienna", region: "Virginia, USA", latitude: 38.9012, longitude: -77.2655, timeZone: "Eastern Standard Time (UTC-5)", timeZoneIdentifier: "America/New_York"),
+        BirthPlace(city: "Vienne", region: "Isère, France", latitude: 45.5250, longitude: 4.8744, timeZone: "Central European Time (UTC+1)", timeZoneIdentifier: "Europe/Paris"),
+        BirthPlace(city: "Moscow", region: "Russia", latitude: 55.7558, longitude: 37.6173, timeZone: "Moscow Standard Time (UTC+3)", timeZoneIdentifier: "Europe/Moscow"),
+        BirthPlace(city: "Kyiv", region: "Ukraine", latitude: 50.4501, longitude: 30.5234, timeZone: "Eastern European Time (UTC+2)", timeZoneIdentifier: "Europe/Kyiv"),
+        BirthPlace(city: "London", region: "United Kingdom", latitude: 51.5072, longitude: -0.1276, timeZone: "Greenwich Mean Time (UTC+0)", timeZoneIdentifier: "Europe/London"),
+        BirthPlace(city: "New York", region: "New York, USA", latitude: 40.7128, longitude: -74.0060, timeZone: "Eastern Standard Time (UTC-5)", timeZoneIdentifier: "America/New_York"),
+        BirthPlace(city: "Paris", region: "France", latitude: 48.8566, longitude: 2.3522, timeZone: "Central European Time (UTC+1)", timeZoneIdentifier: "Europe/Paris"),
+        BirthPlace(city: "Berlin", region: "Germany", latitude: 52.5200, longitude: 13.4050, timeZone: "Central European Time (UTC+1)", timeZoneIdentifier: "Europe/Berlin"),
+        BirthPlace(city: "Tokyo", region: "Japan", latitude: 35.6762, longitude: 139.6503, timeZone: "Japan Standard Time (UTC+9)", timeZoneIdentifier: "Asia/Tokyo"),
+        BirthPlace(city: "Zürich", region: "Switzerland", latitude: 47.3769, longitude: 8.5417, timeZone: "Central European Time (UTC+1)", timeZoneIdentifier: "Europe/Zurich"),
+        BirthPlace(city: "San Francisco", region: "California, USA", latitude: 37.7749, longitude: -122.4194, timeZone: "Pacific Standard Time (UTC-8)", timeZoneIdentifier: "America/Los_Angeles")
     ]
 
     // MARK: - Natal chart
@@ -159,17 +159,10 @@ enum MockData {
     // MARK: - Oracle
 
     static let oracleSuggestions = [
-        "How can I honor both of these needs this week?",
-        "What does this configuration mean for my creative work?",
-        "When does this transit exact its peak orb?"
+        "What should I focus on this week?",
+        "What does my chart say about my creative work?",
+        "How can I find more balance right now?"
     ]
-
-    static let oracleGreeting = ChatMessage(
-        role: .oracle,
-        text: "Your Scorpio Sun lives quietly inside your fourth house of private anchors—craving deep interiority, psychic sanctuary, and absolute emotional honesty. Yet your Taurus Moon anchors your tenth house, pulling you firmly toward tangible, grounded presence and shared worldly security.\n\nRight now, transiting Uranus aligns closely with your natal Moon. This friction is not a contradiction to be fixed, but an invitation: you are actively outgrowing old emotional sanctuaries that prioritized comfort over genuine transformation.",
-        title: "The Taurus-Scorpio Axis in Motion",
-        transitNote: "Transit ♅ Uranus ☌ Natal ☽ Moon • 1° orb"
-    )
 
     static func oracleAnswer(to question: String) -> ChatMessage {
         ChatMessage(

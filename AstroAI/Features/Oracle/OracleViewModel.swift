@@ -24,27 +24,70 @@ final class OracleViewModel {
     private var pendingQuestion: String?
     @ObservationIgnored private var requestTask: Task<Void, Never>?
 
+    private(set) var chart: NatalChart?
+    private(set) var sky: SkySnapshot?
+
     @ObservationIgnored private let oracle: OracleServicing
     @ObservationIgnored private let userService: UserServicing
+    @ObservationIgnored private let astrology: AstrologyServicing
     @ObservationIgnored private let journal: JournalServicing
     @ObservationIgnored private let networkMonitor: NetworkMonitor
     @ObservationIgnored private weak var router: MainRouting?
 
-    init(oracle: OracleServicing, userService: UserServicing, journal: JournalServicing, networkMonitor: NetworkMonitor, router: MainRouting) {
+    init(oracle: OracleServicing, userService: UserServicing, astrology: AstrologyServicing, journal: JournalServicing, networkMonitor: NetworkMonitor, router: MainRouting) {
         self.oracle = oracle
         self.userService = userService
+        self.astrology = astrology
         self.journal = journal
         self.networkMonitor = networkMonitor
         self.router = router
         self.quota = oracle.quota
-        self.messages = Self.initialTranscript
+        self.messages = [Self.greeting(name: userService.profile?.name, chart: nil, sky: nil)]
     }
 
     // MARK: - Display
 
     var isOffline: Bool { oracle.requiresNetwork && (didFailOffline || !networkMonitor.isConnected) }
 
-    var suggestions: [String] { oracle.suggestions }
+    var syncLine: String {
+        guard let sun = chart?.placement(.sun), let moon = chart?.placement(.moon) else {
+            return "Synced with today's sky"
+        }
+        return "Synced with \(sun.sign.name) Sun ☉, \(moon.sign.name) Moon ☽"
+    }
+
+    var transitLine: String {
+        if let transit = sky?.keyTransit {
+            return "Active Transit: \(transit.glyphLine) \(transit.title) (\(NatalChartCalculator.formatDegrees(transit.orb)))"
+        }
+        guard let moon = sky?.position(of: .moon) else { return "Reading the sky…" }
+        return "Current Sky: ☽ Moon in \(moon.sign.name) (\(NatalChartCalculator.formatDegrees(moon.degreeInSign)))"
+    }
+
+    var transitBadge: String {
+        sky?.keyTransit?.orbBadge ?? sky?.moonPhase.name ?? ""
+    }
+
+    var suggestions: [String] {
+        var result: [String] = []
+        if let transit = sky?.keyTransit {
+            result.append("How does \(transit.transiting.name) \(transit.verb.replacingOccurrences(of: "gently ", with: "")) my natal \(transit.natal.name) affect me?")
+        }
+        let interests = userService.profile?.interests ?? []
+        let byInterest: [(Interest, String)] = [
+            (.love, "What does my chart say about love right now?"),
+            (.career, "Is this a good time for a career move?"),
+            (.emotions, "Why do my emotions feel so intense lately?"),
+            (.selfDiscovery, "What are my greatest natural strengths?"),
+            (.growth, "What is my next step for personal growth?"),
+            (.friendship, "Which kind of people bring out my best?"),
+            (.dailyGuidance, "What should I focus on today?")
+        ]
+        result += byInterest.filter { interests.contains($0.0) }.map(\.1)
+        result += oracle.suggestions
+        var seen = Set<String>()
+        return Array(result.filter { seen.insert($0).inserted }.prefix(3))
+    }
 
     var quotaText: String { "\(quota.used) of \(quota.limit) daily free inquiries used" }
 
@@ -68,6 +111,20 @@ final class OracleViewModel {
     }
 
     // MARK: - Actions
+
+    /// Recomputes the natal chart and today's sky; replaces the greeting while the chat is untouched.
+    func loadSky() async {
+        let isUntouched = messages.count == 1 && messages.first?.role == .oracle && !isTyping
+        if let birth = userService.profile?.birth {
+            chart = try? await astrology.natalChart(for: birth)
+        } else {
+            chart = nil
+        }
+        sky = astrology.sky(at: .now, natal: chart)
+        if isUntouched {
+            messages = [greeting]
+        }
+    }
 
     func ask(_ question: String) {
         let text = question.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -102,7 +159,7 @@ final class OracleViewModel {
         isTyping = false
         streamingMessageID = nil
         oracle.resetSession()
-        messages = Self.initialTranscript
+        messages = [greeting]
         pendingQuestion = nil
         draft = ""
     }
@@ -173,14 +230,34 @@ final class OracleViewModel {
         }
     }
 
-    private static var initialTranscript: [ChatMessage] {
-        [
-            ChatMessage(
-                role: .user,
-                text: "Why do I feel so pulled between needing complete solitude and wanting intense closeness lately?",
-                date: Date.now.addingTimeInterval(-60)
-            ),
-            MockData.oracleGreeting
-        ]
+    private var greeting: ChatMessage {
+        Self.greeting(name: userService.profile?.name, chart: chart, sky: sky)
+    }
+
+    private static func greeting(name: String?, chart: NatalChart?, sky: SkySnapshot?) -> ChatMessage {
+        let welcome = name.map { "Welcome, \($0)." } ?? "Welcome."
+        guard let chart, let sun = chart.placement(.sun), let moon = chart.placement(.moon) else {
+            return ChatMessage(
+                role: .oracle,
+                text: "\(welcome) Ask me anything about love, work, or the path you're on, and I'll read it through your chart and today's sky.",
+                title: "The Oracle is listening"
+            )
+        }
+
+        var text = "\(welcome) Your \(sun.sign.name) Sun gives you a \(sun.sign.qualities) core, while your \(moon.sign.name) Moon needs \(moon.sign.archetype.lowercased()) to feel safe."
+        if let rising = chart.placement(.ascendant) {
+            text += " With \(rising.sign.name) rising, others first meet your \(rising.sign.qualities) side."
+        }
+        if let transit = sky?.keyTransit {
+            text += "\n\nRight now: \(transit.sentence)"
+        }
+        text += "\n\nWhat would you like to explore?"
+
+        return ChatMessage(
+            role: .oracle,
+            text: text,
+            title: "\(sun.sign.name) Sun, \(moon.sign.name) Moon",
+            transitNote: sky?.keyTransit?.note
+        )
     }
 }

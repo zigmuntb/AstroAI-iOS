@@ -11,6 +11,7 @@ enum OnboardingRoute: Hashable {
     case birthplace
     case interests
     case intentions
+    case aboutYou
     case name
     case preparation
     case reveal
@@ -27,18 +28,26 @@ protocol OnboardingRouting: AnyObject {
 final class OnboardingDraft {
     var birthDate = Calendar.current.date(from: DateComponents(year: 1994, month: 11, day: 24)) ?? .now
     var birthTime: Date? = Calendar.current.date(from: DateComponents(hour: 3, minute: 14))
+    var isBirthTimeApproximate = false
     var birthPlace: BirthPlace?
     var name = ""
     var interests: Set<Interest> = []
     var intentions: Set<Intention> = []
+    var personal = PersonalContext()
     var chart: NatalChart?
 
     var birthData: BirthData {
-        BirthData(date: birthDate, time: birthTime, place: birthPlace)
+        BirthData(date: birthDate, time: birthTime, place: birthPlace, isTimeApproximate: isBirthTimeApproximate)
     }
 
     func makeProfile() -> UserProfile {
-        UserProfile(name: name.trimmingCharacters(in: .whitespacesAndNewlines), birth: birthData, interests: interests, intentions: intentions)
+        UserProfile(
+            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+            birth: birthData,
+            interests: interests,
+            intentions: intentions,
+            personal: personal.isEmpty ? nil : personal
+        )
     }
 }
 
@@ -51,7 +60,7 @@ final class OnboardingCoordinator: OnboardingRouting {
     @ObservationIgnored private let dependencies: AppDependencies
 
     /// Steps that show the "Step N of M" progress header.
-    static let steps: [OnboardingRoute] = [.dateOfBirth, .birthTime, .birthplace, .interests, .intentions, .name, .reveal]
+    static let steps: [OnboardingRoute] = [.dateOfBirth, .birthTime, .birthplace, .interests, .intentions, .aboutYou, .name, .reveal]
 
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
@@ -60,7 +69,7 @@ final class OnboardingCoordinator: OnboardingRouting {
     // MARK: - OnboardingRouting
 
     func next(from route: OnboardingRoute?) {
-        let order: [OnboardingRoute] = [.dateOfBirth, .birthTime, .birthplace, .interests, .intentions, .name, .preparation, .reveal]
+        let order: [OnboardingRoute] = [.dateOfBirth, .birthTime, .birthplace, .interests, .intentions, .aboutYou, .name, .preparation, .reveal]
         guard let route else {
             path.append(.dateOfBirth)
             return
@@ -103,6 +112,8 @@ final class OnboardingCoordinator: OnboardingRouting {
             InterestsView(viewModel: InterestsViewModel(draft: draft, router: self))
         case .intentions:
             IntentionsView(viewModel: IntentionsViewModel(draft: draft, router: self))
+        case .aboutYou:
+            AboutYouView(viewModel: AboutYouViewModel(draft: draft, router: self))
         case .name:
             NameView(viewModel: NameViewModel(draft: draft, router: self))
         case .preparation:

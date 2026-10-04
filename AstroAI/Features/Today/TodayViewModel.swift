@@ -71,6 +71,10 @@ final class TodayViewModel {
     }
 
     func retry() async {
+        await reload()
+    }
+
+    func reload() async {
         reading = nil
         await load()
     }

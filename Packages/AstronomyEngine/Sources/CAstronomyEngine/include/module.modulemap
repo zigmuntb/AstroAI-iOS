@@ -1,0 +1,4 @@
+module CAstronomyEngine {
+    umbrella header "astronomy.h"
+    export *
+}

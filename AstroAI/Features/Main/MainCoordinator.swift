@@ -75,8 +75,8 @@ final class MainCoordinator: MainRouting {
         astrology: dependencies.astrologyService, router: self
     )
     @ObservationIgnored private lazy var oracleViewModel = OracleViewModel(
-        oracle: dependencies.oracleService, userService: dependencies.userService, journal: dependencies.journalService,
-        networkMonitor: dependencies.networkMonitor, router: self
+        oracle: dependencies.oracleService, userService: dependencies.userService, astrology: dependencies.astrologyService,
+        journal: dependencies.journalService, networkMonitor: dependencies.networkMonitor, router: self
     )
     @ObservationIgnored private lazy var connectionsViewModel = ConnectionsViewModel(
         connections: dependencies.connectionsService, router: self
@@ -127,6 +127,10 @@ final class MainCoordinator: MainRouting {
     /// Refreshes screens whose data may change inside a sheet (e.g. premium status after the paywall).
     func sheetDismissed() {
         profileViewModel.refresh()
+        Task {
+            await todayViewModel.reload()
+            await oracleViewModel.loadSky()
+        }
     }
 
     func select(_ tab: AppTab) {
@@ -169,7 +173,7 @@ final class MainCoordinator: MainRouting {
         case .synastry(let connection):
             SynastryView(viewModel: SynastryViewModel(
                 connection: connection, connections: dependencies.connectionsService,
-                userService: dependencies.userService, router: self
+                astrology: dependencies.astrologyService, userService: dependencies.userService, router: self
             ))
         case .journal:
             JournalView(viewModel: JournalViewModel(journal: dependencies.journalService, router: self))

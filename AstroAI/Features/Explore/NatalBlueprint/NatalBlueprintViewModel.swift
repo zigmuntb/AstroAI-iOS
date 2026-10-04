@@ -38,18 +38,59 @@ final class NatalBlueprintViewModel {
     var isInspectorPresented = false
     private(set) var expanded: Set<Planet> = []
 
-    let eyebrow = "Natal Synthesis • Ephemeris 4.2"
-    let houseSystem = "Placidus Houses"
-    let outOfBounds = Declination(
-        label: "Out-of-Bounds Status",
-        value: "Moon 24° 12' N (OOB)",
-        caption: "Your Moon operates beyond the standard ecliptic limit of the Sun (±23°27'). In traditional and modern syncretic astrology, Out-of-Bounds placements signify an innate independence in subjective experience—you intuitively craft your own rules regarding emotional sovereignty."
-    )
-    let rulers = [
-        Declination(label: "Ascendant Ruler", value: "Sun in IV", caption: "Life directed inward"),
-        Declination(label: "Almuten Figuris", value: "Venus at 29°", caption: "Harmonic arbiter")
-    ]
-    let inspectorNote = "Declinations calculate Moon at +24°12'11\", exceeding ecliptic bounds. House system: Placidus standard with true geocentric oblate spheroidal curvature."
+    let eyebrow = "Natal Synthesis • On-device Ephemeris"
+    var houseSystem: String { chart?.houseSystem ?? "Whole Sign Houses" }
+
+    var outOfBounds: Declination {
+        guard let chart, let declination = chart.moonDeclination else {
+            return Declination(label: "Lunar Declination", value: "—", caption: "")
+        }
+        let value = "Moon \(NatalChartCalculator.formatDegrees(abs(declination))) \(declination >= 0 ? "N" : "S")"
+        guard abs(declination) > chart.obliquity else {
+            return Declination(
+                label: "Lunar Declination",
+                value: value,
+                caption: "Your Moon moves within the Sun's declination limits (±\(NatalChartCalculator.formatDegrees(chart.obliquity))). Your emotional instincts follow familiar, shared rhythms and are easily understood by those close to you."
+            )
+        }
+        return Declination(
+            label: "Out-of-Bounds Status",
+            value: value + " (OOB)",
+            caption: "Your Moon operates beyond the Sun's declination limit (±\(NatalChartCalculator.formatDegrees(chart.obliquity))). Out-of-Bounds placements signify an innate independence in subjective experience: you intuitively craft your own rules regarding emotional sovereignty."
+        )
+    }
+
+    var rulers: [Declination] {
+        guard let chart else { return [] }
+        var result: [Declination] = []
+        if let rising = chart.placement(.ascendant) ?? chart.placement(.sun),
+           let ruler = chart.placement(rising.sign.ruler), let house = ruler.houseNumber {
+            result.append(Declination(
+                label: chart.hasLocation ? "Ascendant Ruler" : "Sun Sign Ruler",
+                value: "\(ruler.planet.name) in \(AstrologyLexicon.roman(house))",
+                caption: "Life directed toward \(AstrologyLexicon.houseTheme(house).components(separatedBy: ",").first ?? "")"
+            ))
+        }
+        if let aspect = chart.aspects.first {
+            result.append(Declination(
+                label: "Closest Aspect",
+                value: "\(aspect.first.glyph) \(aspect.kind.glyph) \(aspect.second.glyph) \(NatalChartCalculator.formatDegrees(aspect.orb))",
+                caption: "\(aspect.first.name) \(aspect.kind.name.lowercased()) \(aspect.second.name)"
+            ))
+        }
+        return result
+    }
+
+    var inspectorNote: String {
+        var note = "Positions are computed on-device with Astronomy Engine (accurate to about 1′). House system: \(houseSystem)."
+        if let chart, !chart.hasLocation {
+            note += " No birthplace was given, so houses are counted from your Sun sign and there is no Ascendant."
+        } else if let chart, !chart.isTimeKnown {
+            note += " Your birth time is approximate, so the Ascendant and houses may shift."
+        }
+        return note
+    }
+
     let disclaimer = "AstroAI treats your natal chart not as an unalterable fate or deterministic script, but as a symbolic mirror and reflective language. It highlights psychological predispositions, archetypal tensions, and seasonal cycles. Your consciousness, deliberate choices, and lived agency remain sovereign in determining who you become."
 
     @ObservationIgnored private let astrology: AstrologyServicing
@@ -163,7 +204,7 @@ final class NatalBlueprintViewModel {
     private func inspectorName(_ planet: Planet) -> String {
         switch planet {
         case .ascendant: "Ascendant"
-        case .northNode: "True Node"
+        case .northNode: "North Node"
         default: planet.name
         }
     }
