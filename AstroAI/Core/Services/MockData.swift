@@ -143,30 +143,6 @@ enum MockData {
         )
     }
 
-    // MARK: - Explore
-
-    static let library = ExploreLibrary(
-        featured: Article(
-            glyph: "♄",
-            eyebrow: "Master Archive",
-            meta: "6 min read",
-            title: "The Saturn Return in Pisces: Dissolving the Obsolete Architecture",
-            summary: "When the planet of sovereign boundary enters the boundless ocean of the twelfth archetype, structural duty gives way to psychic transmutation and radical psychic inventory."
-        ),
-        weekRange: "Oct 23 — Oct 29",
-        transits: [
-            Transit(glyph: "☉", kind: "Ingress Event", date: "Oct 23 · 07:20", title: "Sun ingress into Scorpio", detail: "00° 00' ♏ · Season of fixed emotional depth"),
-            Transit(glyph: "△", kind: "Trine (120°)", date: "Oct 24 · 14:18", title: "Mars Trine Saturn", detail: "07° 32' ♋ / ♓ · Sustained willpower & precision"),
-            Transit(glyph: "○", kind: "Culmination", date: "In 4 days", title: "Full Moon in Taurus", detail: "18° 39' ♉ · Lunar eclipse portal approaching")
-        ],
-        tomes: [
-            Article(glyph: "XII", eyebrow: "Tome I · Spatial Geometry", meta: "12 Chapters", title: "The 12 Houses of Becoming", summary: "The architectural division of diurnal space. From the Ascendant’s threshold (House I) to the collective dissolution of the Twelfth."),
-            Article(glyph: "☿", eyebrow: "Tome II · Planetary Strength", meta: "8 Chapters", title: "Planetary Essential Dignities", summary: "Ptolemaic governance principles: Domicile rulers, Exaltation summits, Detriment tensions, and the restorative lessons of Fall."),
-            Article(glyph: "☊", eyebrow: "Tome III · Destiny Coordinates", meta: "18.6 yr cycle", title: "The Lunar Nodes & Karmic Axes", summary: "The North Node in Taurus / South Node in Scorpio cycle: somatic anchors versus psychological purging on the evolutionary line."),
-            Article(glyph: "⚹", eyebrow: "Tome IV · Mathematical Chords", meta: "5 Primary Aspects", title: "Aspect Geometry", summary: "Harmonic friction and ease: Conjunctions (0°), Sextiles (60°), Squares (90°), Trines (120°), and dynamic Oppositions (180°).")
-        ]
-    )
-
     // MARK: - Oracle
 
     static let oracleSuggestions = [

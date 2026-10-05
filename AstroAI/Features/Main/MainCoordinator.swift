@@ -31,7 +31,6 @@ enum AppTab: Hashable, CaseIterable {
 
 enum AppRoute: Hashable {
     case natalBlueprint
-    case article(Article)
     case synastry(Connection)
     case journal
     case settings
@@ -72,7 +71,7 @@ final class MainCoordinator: MainRouting {
         journal: dependencies.journalService, router: self
     )
     @ObservationIgnored private lazy var exploreViewModel = ExploreViewModel(
-        astrology: dependencies.astrologyService, router: self
+        astrology: dependencies.astrologyService, userService: dependencies.userService, router: self
     )
     @ObservationIgnored private lazy var oracleViewModel = OracleViewModel(
         oracle: dependencies.oracleService, userService: dependencies.userService, astrology: dependencies.astrologyService,
@@ -137,6 +136,12 @@ final class MainCoordinator: MainRouting {
         selectedTab = tab
     }
 
+    /// Recomputes the week's sky and the natal wheel. Called when Explore becomes visible,
+    /// so a birth-data or zodiac change shows up without restarting the app.
+    func reloadExplore() async {
+        await exploreViewModel.load()
+    }
+
     func askOracle(_ question: String) {
         selectedTab = .oracle
         paths[.oracle] = []
@@ -169,8 +174,6 @@ final class MainCoordinator: MainRouting {
             NatalBlueprintView(viewModel: NatalBlueprintViewModel(
                 astrology: dependencies.astrologyService, userService: dependencies.userService, router: self
             ))
-        case .article(let article):
-            ArticleView(article: article)
         case .synastry(let connection):
             SynastryView(viewModel: SynastryViewModel(
                 connection: connection, connections: dependencies.connectionsService,
@@ -223,6 +226,10 @@ struct MainCoordinatorView: View {
             }
         }
         .environment(\.userAvatar, coordinator.avatar)
+        .onChange(of: coordinator.selectedTab) { _, tab in
+            guard tab == .explore else { return }
+            Task { await coordinator.reloadExplore() }
+        }
         .sheet(item: $coordinator.sheet, onDismiss: coordinator.sheetDismissed) { sheet in
             coordinator.build(sheet)
         }

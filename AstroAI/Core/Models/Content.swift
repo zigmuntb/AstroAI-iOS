@@ -66,7 +66,7 @@ struct LuckyNumbers: Codable, Hashable {
 // MARK: - Explore
 
 struct Transit: Codable, Hashable, Identifiable {
-    var id: String { title }
+    var id: String { "\(title)-\(date)" }
     let glyph: String
     let kind: String
     let date: String
@@ -74,20 +74,10 @@ struct Transit: Codable, Hashable, Identifiable {
     let detail: String
 }
 
-struct Article: Codable, Hashable, Identifiable {
-    var id: String { title }
-    let glyph: String
-    let eyebrow: String
-    let meta: String
-    let title: String
-    let summary: String
-}
-
+/// The coming week's sky. Lunar ingresses and lunations only — there is no article library.
 struct ExploreLibrary: Codable, Hashable {
-    let featured: Article
     let weekRange: String
     let transits: [Transit]
-    let tomes: [Article]
 }
 
 // MARK: - Oracle

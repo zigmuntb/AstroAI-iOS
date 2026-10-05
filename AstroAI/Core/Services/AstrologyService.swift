@@ -72,54 +72,149 @@ final class AstrologyService: AstrologyServicing {
     }
 
     func library() async throws -> ExploreLibrary {
-        let mock = MockData.library
-        return ExploreLibrary(
-            featured: mock.featured,
-            weekRange: Self.weekRange(),
-            transits: weekSkyEvents(),
-            tomes: mock.tomes
+        let now = Date.now
+        return ExploreLibrary(weekRange: Self.weekRange(around: now), transits: weekSkyEvents(from: now))
+    }
+
+    /// Seven civil days starting today, e.g. "Oct 5 — Oct 11".
+    private static func weekRange(around now: Date) -> String {
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: now)
+        let end = calendar.date(byAdding: .day, value: 6, to: start) ?? start
+        let style = Date.FormatStyle().month(.abbreviated).day().locale(Locale(identifier: "en_US_POSIX"))
+        return "\(start.formatted(style)) — \(end.formatted(style))"
+    }
+
+    /// Moon sign changes and the four lunar phases across the seven days shown in the header.
+    /// Times are the actual crossings, not a noon sample of the day the event falls on.
+    private func weekSkyEvents(from now: Date) -> [Transit] {
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: now)
+        let end = calendar.date(byAdding: .day, value: 7, to: start) ?? start.addingTimeInterval(7 * 86_400)
+        let step: TimeInterval = 6 * 3_600
+
+        var events: [(date: Date, transit: Transit)] = []
+        var cursor = start
+        var previous = skySample(at: cursor)
+
+        while cursor < end {
+            let nextDate = min(cursor.addingTimeInterval(step), end)
+            let next = skySample(at: nextDate)
+
+            if next.moonSign != previous.moonSign {
+                let when = refine(from: cursor, to: nextDate) { $0.moonSign == next.moonSign }
+                if when >= start, when < end {
+                    let sign = skySample(at: when).moonSign
+                    events.append((when, Transit(
+                        glyph: sign.glyph,
+                        kind: "Lunar Ingress",
+                        date: Self.eventStamp(when),
+                        title: "Moon enters \(sign.name)",
+                        detail: "The mood shifts toward \(sign.qualities) themes."
+                    )))
+                }
+            }
+
+            let traveled = Self.forward(from: previous.elongation, to: next.elongation)
+            if traveled < 180 {
+                for phase in LunarPhaseEvent.allCases {
+                    let until = Self.forward(from: previous.elongation, to: phase.elongation)
+                    guard until > 1e-6, until <= traveled + 1e-6 else { continue }
+                    let when = refine(from: cursor, to: nextDate) {
+                        Self.forward(from: $0.elongation, to: phase.elongation) >= 180
+                    }
+                    guard when >= start, when < end else { continue }
+                    let sky = skySample(at: when)
+                    events.append((when, Transit(
+                        glyph: "☽",
+                        kind: phase.title,
+                        date: Self.eventStamp(when),
+                        title: "\(phase.title) in \(sky.moonSign.name)",
+                        detail: "\(NatalChartCalculator.formatDegrees(sky.degreeInSign)) \(sky.moonSign.glyph) · \(phase.detail)"
+                    )))
+                }
+            }
+
+            cursor = nextDate
+            previous = next
+        }
+
+        return events.sorted { $0.date < $1.date }.map(\.transit)
+    }
+
+    private struct SkySample {
+        let moonSign: ZodiacSign
+        let degreeInSign: Double
+        let elongation: Double
+    }
+
+    private func skySample(at date: Date) -> SkySample {
+        let positions = NatalChartCalculator.positions(at: date, options: chartOptions)
+        let sun = positions.first { $0.planet == .sun }?.longitude ?? 0
+        let moon = positions.first { $0.planet == .moon }?.longitude ?? 0
+        return SkySample(
+            moonSign: ZodiacSign.containing(moon),
+            degreeInSign: moon.truncatingRemainder(dividingBy: 30),
+            elongation: Self.forward(from: sun, to: moon)
         )
     }
 
-    private static func weekRange() -> String {
-        let start = Date.now
-        let end = Calendar.current.date(byAdding: .day, value: 6, to: start) ?? start
-        let format = Date.FormatStyle(date: .abbreviated, time: .omitted).locale(Locale(identifier: "en_US_POSIX"))
-        return "\(start.formatted(format)) — \(end.formatted(format))"
-    }
-
-    /// Moon ingresses and lunations over the next week, for the Explore calendar.
-    private func weekSkyEvents() -> [Transit] {
-        let calendar = Calendar.current
-        var events: [Transit] = []
-        var previousMoon: ZodiacSign?
-        var previousPhase: String?
-        for day in 0..<8 {
-            guard let date = calendar.date(byAdding: .day, value: day, to: calendar.startOfDay(for: .now)) else { continue }
-            let noon = date.addingTimeInterval(12 * 3600)
-            let sky = TransitCalculator.sky(at: noon, natal: nil, options: chartOptions)
-            let moon = sky.position(of: .moon)?.sign
-            if let moon, moon != previousMoon {
-                events.append(Transit(
-                    glyph: moon.glyph,
-                    kind: "Lunar Ingress",
-                    date: noon.formatted(.dateTime.month(.abbreviated).day().hour().minute().locale(Locale(identifier: "en_US_POSIX"))),
-                    title: "Moon enters \(moon.name)",
-                    detail: "The day's mood shifts toward \(moon.qualities) themes."
-                ))
-                previousMoon = moon
-            }
-            if sky.moonPhase.name != previousPhase, ["New Moon", "Full Moon", "First Quarter", "Last Quarter"].contains(sky.moonPhase.name) {
-                events.append(Transit(
-                    glyph: "☽",
-                    kind: sky.moonPhase.name,
-                    date: noon.formatted(.dateTime.month(.abbreviated).day().locale(Locale(identifier: "en_US_POSIX"))),
-                    title: "\(sky.moonPhase.name) in \(moon?.name ?? "the sky")",
-                    detail: "\(sky.moonPhase.illumination)% illuminated"
-                ))
-                previousPhase = sky.moonPhase.name
+    /// Bisect until `hasPassed` becomes true. Sixteen steps on a six-hour span land within a second.
+    private func refine(from start: Date, to end: Date, hasPassed: (SkySample) -> Bool) -> Date {
+        var lo = start.timeIntervalSinceReferenceDate
+        var hi = end.timeIntervalSinceReferenceDate
+        for _ in 0..<16 {
+            let mid = (lo + hi) / 2
+            if hasPassed(skySample(at: Date(timeIntervalSinceReferenceDate: mid))) {
+                hi = mid
+            } else {
+                lo = mid
             }
         }
-        return Array(events.prefix(4))
+        return Date(timeIntervalSinceReferenceDate: hi)
+    }
+
+    /// Degrees traveled forward along the ecliptic, in `0..<360`.
+    private static func forward(from start: Double, to end: Double) -> Double {
+        let value = (end - start).truncatingRemainder(dividingBy: 360)
+        return value < 0 ? value + 360 : value
+    }
+
+    private static func eventStamp(_ date: Date) -> String {
+        let locale = Locale(identifier: "en_US_POSIX")
+        let day = date.formatted(Date.FormatStyle().month(.abbreviated).day().locale(locale))
+        let time = date.formatted(Date.FormatStyle().hour().minute().locale(locale))
+        return "\(day) · \(time)"
+    }
+}
+
+/// Exact lunar phase, measured by the Moon's elongation from the Sun.
+private enum LunarPhaseEvent: CaseIterable {
+    case newMoon, firstQuarter, fullMoon, lastQuarter
+
+    var elongation: Double {
+        switch self {
+        case .newMoon: 0
+        case .firstQuarter: 90
+        case .fullMoon: 180
+        case .lastQuarter: 270
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .newMoon: "New Moon"
+        case .firstQuarter: "First Quarter"
+        case .fullMoon: "Full Moon"
+        case .lastQuarter: "Last Quarter"
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .newMoon: "Sun and Moon meet."
+        case .firstQuarter, .lastQuarter: "The Moon squares the Sun."
+        case .fullMoon: "The Moon opposes the Sun."
+        }
     }
 }
