@@ -25,10 +25,6 @@ final class ExploreViewModel {
 
     var searchText = ""
     var selectedTopic: Topic = .all
-    var isAlertEnabled = false
-
-    let featuredRelevance = "Relevant to your 8th House placement"
-    let featuredFooter = "Curated Synthesis · Chapter IV"
 
     @ObservationIgnored private let astrology: AstrologyServicing
     @ObservationIgnored private weak var router: MainRouting?

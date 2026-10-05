@@ -15,15 +15,6 @@ struct ChartPreparationView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: Spacing.lg) {
-                Label("SWISS EPHEMERIS DE431 CALCULATION", systemImage: "gearshape.2")
-                    .font(AppFont.labelMedium.weight(.semibold))
-                    .tracking(1)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-                    .padding(.horizontal, Spacing.md)
-                    .padding(.vertical, 10)
-                    .background(AppColor.surfaceContainerHigh, in: .capsule)
-                    .shadow(color: .black.opacity(0.05), radius: 6, y: 2)
-
                 OrbitGraphic(nodes: viewModel.nodes, progress: viewModel.progress)
                     .frame(maxWidth: 320)
 
@@ -51,9 +42,6 @@ struct ChartPreparationView: View {
                         .buttonStyle(.astroSecondary)
                     }
                 }
-
-                PrivacyFootnote(text: "ALL MATHEMATICAL COMPUTATIONS EXECUTE SECURELY ON-DEVICE.")
-                    .tracking(0.8)
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.vertical, Spacing.md)

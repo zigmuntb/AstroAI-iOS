@@ -100,7 +100,6 @@ struct IntentionsView: View {
         VStack(spacing: Spacing.sm) {
             PrimaryButton(title: "Continue", action: viewModel.next)
                 .disabled(!viewModel.canContinue)
-            PrivacyFootnote(text: "Encrypted & private to your device")
         }
         .padding(.horizontal, Spacing.margin)
         .padding(.vertical, Spacing.sm)

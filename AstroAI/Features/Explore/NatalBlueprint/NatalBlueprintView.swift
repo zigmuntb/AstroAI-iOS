@@ -116,11 +116,6 @@ struct NatalBlueprintView: View {
     private func wheelCard(_ chart: NatalChart) -> some View {
         VStack(spacing: Spacing.md) {
             HStack {
-                Label("Topocentric Horizon", systemImage: "globe")
-                    .font(AppFont.labelSmall)
-                    .tracking(1)
-                    .textCase(.uppercase)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
                 Spacer()
                 Button(action: viewModel.inspectDegrees) {
                     Label("Inspect Degrees", systemImage: "arrow.up.left.and.arrow.down.right")
@@ -171,7 +166,7 @@ struct NatalBlueprintView: View {
 
     private func bigThree(_ chart: NatalChart) -> some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
-            sectionHeader("The Big Three Trinity", trailing: "Core Architecture")
+            sectionHeader("The Big Three", trailing: "")
 
             ForEach(chart.bigThree) { placement in
                 let isMoon = placement.planet == .moon
@@ -208,19 +203,14 @@ struct NatalBlueprintView: View {
 
     private func distribution(_ chart: NatalChart) -> some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            VStack(alignment: .leading, spacing: Spacing.xs) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text("Elemental Constitution")
-                        .font(AppFont.headlineMedium)
-                        .foregroundStyle(AppColor.onSurface)
-                    Spacer()
-                    Text(viewModel.dominantElement)
-                        .font(AppFont.labelSmall)
-                        .foregroundStyle(AppColor.secondary)
-                }
-                Text("Distribution of planetary mass across primal archetypes.")
-                    .font(AppFont.bodySmall)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
+            HStack(alignment: .firstTextBaseline) {
+                Text("Elements")
+                    .font(AppFont.headlineMedium)
+                    .foregroundStyle(AppColor.onSurface)
+                Spacer()
+                Text(viewModel.dominantElement)
+                    .font(AppFont.labelSmall)
+                    .foregroundStyle(AppColor.secondary)
             }
 
             ShareBar(shares: chart.elements, colors: Self.elementColors, height: 8)
@@ -242,7 +232,7 @@ struct NatalBlueprintView: View {
             HairlineDivider()
 
             HStack {
-                Text("Modality Equilibrium".uppercased())
+                Text("Modalities".uppercased())
                     .font(AppFont.labelMedium.weight(.semibold))
                     .tracking(0.8)
                     .foregroundStyle(AppColor.onSurface)
@@ -273,7 +263,7 @@ struct NatalBlueprintView: View {
 
     private func placements(_ chart: NatalChart) -> some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
-            sectionHeader("Planetary Placements", trailing: "Interactive Axis")
+            sectionHeader("Planetary Placements", trailing: "")
 
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 Text("“\(chart.tension)”")
@@ -351,15 +341,9 @@ struct NatalBlueprintView: View {
 
     private var declinations: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            HStack(alignment: .firstTextBaseline) {
-                Text("Planetary Declinations & Bounds")
-                    .font(AppFont.headlineSmall)
-                    .foregroundStyle(AppColor.onPrimary)
-                Spacer()
-                Text("Egyptian Terms")
-                    .font(AppFont.labelSmall)
-                    .foregroundStyle(AppColor.champagne)
-            }
+            Text("Planetary Declinations & Bounds")
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.onPrimary)
 
             VStack(alignment: .leading, spacing: Spacing.xs) {
                 Eyebrow(text: viewModel.outOfBounds.label, color: AppColor.champagne)
@@ -404,14 +388,6 @@ struct NatalBlueprintView: View {
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onSurfaceVariant)
                 .lineSpacing(3)
-            HStack {
-                Text("Swiss Ephemeris DE431 Algorithm")
-                Spacer()
-                Text("Calculated to ±0.001″")
-            }
-            .font(AppFont.labelSmall)
-            .foregroundStyle(AppColor.outline)
-            .padding(.top, Spacing.xs)
         }
         .card(.tinted)
     }
@@ -421,11 +397,13 @@ struct NatalBlueprintView: View {
             Text(title)
                 .font(AppFont.headlineMedium)
                 .foregroundStyle(AppColor.onSurface)
-            Spacer()
-            Text(trailing.uppercased())
-                .font(AppFont.labelSmall)
-                .tracking(1)
-                .foregroundStyle(AppColor.secondary)
+            if !trailing.isEmpty {
+                Spacer()
+                Text(trailing.uppercased())
+                    .font(AppFont.labelSmall)
+                    .tracking(1)
+                    .foregroundStyle(AppColor.secondary)
+            }
         }
         .padding(.top, Spacing.sm)
     }

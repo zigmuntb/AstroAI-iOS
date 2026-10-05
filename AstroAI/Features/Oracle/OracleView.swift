@@ -333,8 +333,6 @@ struct OracleView: View {
             .padding(Spacing.sm)
             .background(AppColor.surfaceContainerLowest, in: panelShape(Radius.md))
             .cardEdge(radius: Radius.md)
-
-            PrivacyFootnote(text: "Private Ephemeris Engine • Encrypted Chart Sanctuary")
         }
         .padding(.horizontal, Spacing.margin)
         .padding(.vertical, Spacing.sm)

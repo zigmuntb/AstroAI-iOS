@@ -26,7 +26,6 @@ struct NameView: View {
 
                 nameField
                 previewCard
-                mechanicsCard
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.vertical, Spacing.md)
@@ -40,7 +39,6 @@ struct NameView: View {
             VStack(spacing: Spacing.md) {
                 PrimaryButton(title: "Continue", action: viewModel.continueTapped)
                     .disabled(!viewModel.canContinue)
-                PrivacyFootnote(text: "Stored privately on your device")
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.vertical, Spacing.md)
@@ -130,23 +128,5 @@ struct NameView: View {
                 .foregroundStyle(AppColor.onSurfaceVariant)
         }
         .card(.elevated)
-    }
-
-    private var mechanicsCard: some View {
-        HStack(alignment: .top, spacing: Spacing.md) {
-            IconBadge(
-                systemName: "lock",
-                size: 28,
-                foreground: AppColor.secondary,
-                background: AppColor.secondaryContainer
-            )
-            VStack(alignment: .leading, spacing: Spacing.xs) {
-                Eyebrow(text: "Context Anonymization")
-                Text("Your name stays on this device. AI Oracle queries strip names and identity markers before synthesis.")
-                    .font(AppFont.bodyMedium)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-            }
-        }
-        .card(.tinted)
     }
 }

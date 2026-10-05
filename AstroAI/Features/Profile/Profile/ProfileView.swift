@@ -26,7 +26,6 @@ struct ProfileView: View {
                         sanctuaryCard
                     }
                     journalSection
-                    foliosSection
                     preferencesSection
                     footer
                 }
@@ -237,45 +236,6 @@ struct ProfileView: View {
         .card(padding: Spacing.lg)
     }
 
-    // MARK: - Folios
-
-    private var foliosSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.lg) {
-            HStack(alignment: .firstTextBaseline) {
-                SectionHeader(title: "Saved Folios & Syntheses", subtitle: "Archived dialogues with your AI Oracle")
-                Button("ORGANIZE") {}
-                    .font(AppFont.labelMedium.weight(.semibold))
-                    .tracking(1)
-                    .foregroundStyle(AppColor.secondary)
-            }
-
-            ForEach(viewModel.folios) { folio in
-                HStack(spacing: Spacing.md) {
-                    IconBadge(
-                        systemName: folio.icon,
-                        size: 44,
-                        foreground: folio.foreground,
-                        background: folio.foreground.opacity(0.15)
-                    )
-                    .clipShape(.rect(cornerRadius: Radius.sm))
-                    VStack(alignment: .leading, spacing: Spacing.xs) {
-                        Text(folio.title)
-                            .font(AppFont.headlineSmall)
-                            .foregroundStyle(AppColor.onSurface)
-                        Text(folio.subtitle)
-                            .font(AppFont.labelMedium)
-                            .foregroundStyle(AppColor.onSurfaceVariant)
-                    }
-                    Spacer(minLength: 0)
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(AppColor.outline)
-                }
-                .card()
-            }
-        }
-    }
-
     // MARK: - Preferences
 
     private var preferencesSection: some View {
@@ -424,15 +384,5 @@ private struct ConstellationOrnament: View {
             context.stroke(cross, with: color, lineWidth: 0.5)
         }
         .allowsHitTesting(false)
-    }
-}
-
-private extension ProfileViewModel.Folio {
-    var foreground: Color {
-        switch tint {
-        case .champagne: AppColor.secondary
-        case .aubergine: AppColor.primaryContainer
-        case .rose: AppColor.dustyRose
-        }
     }
 }

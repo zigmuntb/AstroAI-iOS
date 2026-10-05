@@ -26,9 +26,7 @@ struct TodayView: View {
                     tarot
                     luckyNumbers(reading)
                     balances(reading)
-                    ephemeris(reading)
                     synthesis(reading)
-                    tendencies(reading)
                     attunement(reading)
                     oracle(reading)
                     actions
@@ -267,61 +265,9 @@ struct TodayView: View {
         }
     }
 
-    private func ephemeris(_ reading: DailyReading) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
-            HStack(alignment: .top, spacing: Spacing.md) {
-                VStack(alignment: .leading, spacing: Spacing.sm) {
-                    Eyebrow(text: "Ephemeris Reading")
-                    Text(reading.ephemerisTitle)
-                        .font(AppFont.headlineMedium)
-                        .foregroundStyle(AppColor.onSurface)
-                    Text(reading.ephemerisText)
-                        .font(AppFont.bodyMedium)
-                        .foregroundStyle(AppColor.onSurfaceVariant)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                Spacer(minLength: 0)
-                VStack(spacing: Spacing.sm) {
-                    ZStack {
-                        Circle()
-                            .stroke(AppColor.outline.opacity(0.35), style: StrokeStyle(lineWidth: 0.5, dash: [2, 3]))
-                        Circle()
-                            .stroke(AppColor.outline.opacity(0.25), lineWidth: 0.5)
-                            .padding(8)
-                        AspectChord()
-                            .stroke(AppColor.secondary.opacity(0.8), lineWidth: 0.75)
-                        MoonPhaseView(illumination: reading.moonIllumination)
-                            .frame(width: 40, height: 40)
-                    }
-                    .frame(width: 92, height: 92)
-                    Text("\(reading.moonIllumination)% Illum.")
-                        .font(AppFont.labelMedium)
-                        .foregroundStyle(AppColor.outline)
-                }
-            }
-
-            HairlineDivider()
-
-            HStack {
-                Label("Transit: \(reading.transitLine)", systemImage: "safari")
-                Spacer()
-                Text("Orb: \(reading.orb)")
-            }
-            .font(AppFont.labelMedium)
-            .tracking(0.4)
-            .foregroundStyle(AppColor.onSurfaceVariant)
-        }
-        .card(.tinted, padding: Spacing.md + 4)
-    }
-
     private func synthesis(_ reading: DailyReading) -> some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
-            HStack {
-                Eyebrow(text: "The Daily Synthesis")
-                Spacer()
-                Image(systemName: "book")
-                    .foregroundStyle(AppColor.outline)
-            }
+            Eyebrow(text: "Today")
 
             VStack(alignment: .leading, spacing: Spacing.md) {
                 Text(reading.synthesisTitle)
@@ -345,60 +291,8 @@ struct TodayView: View {
                     }
                 }
                 .clipShape(.rect(cornerRadius: Radius.md))
-
-            VStack(spacing: Spacing.sm) {
-                ForEach(reading.areas) { area in
-                    HStack(alignment: .top, spacing: Spacing.md) {
-                        Image(systemName: area.icon)
-                            .font(.system(size: 14))
-                            .foregroundStyle(AppColor.primaryContainer)
-                            .frame(width: 32, height: 32)
-                            .background(AppColor.surfaceContainerLowest, in: .circle)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(area.title)
-                                .font(AppFont.labelLarge)
-                                .foregroundStyle(AppColor.onSurface)
-                            Text(area.text)
-                                .font(AppFont.bodyMedium)
-                                .foregroundStyle(AppColor.onSurfaceVariant)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        Spacer(minLength: 0)
-                    }
-                    .infoWell()
-                }
-            }
         }
         .card(.elevated, padding: Spacing.lg)
-    }
-
-    private func tendencies(_ reading: DailyReading) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
-            HStack {
-                Eyebrow(text: "Somatic Tendencies")
-                Spacer()
-                Text("Self-Paced")
-                    .font(AppFont.labelMedium)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-            }
-            ForEach(Array(reading.tendencies.enumerated()), id: \.element.id) { index, tendency in
-                if index > 0 { HairlineDivider() }
-                VStack(spacing: Spacing.sm) {
-                    HStack {
-                        Text(tendency.title)
-                            .font(AppFont.bodyMedium.weight(.medium))
-                            .foregroundStyle(AppColor.onSurface)
-                        Spacer()
-                        Text(tendency.value)
-                            .font(AppFont.labelMedium)
-                            .tracking(0.4)
-                            .foregroundStyle(AppColor.onSurfaceVariant)
-                    }
-                    LevelBar(value: tendency.level, color: index == 1 ? AppColor.secondary : AppColor.primary)
-                }
-            }
-        }
-        .card(.tinted, padding: Spacing.md + 4)
     }
 
     private func attunement(_ reading: DailyReading) -> some View {
@@ -414,9 +308,6 @@ struct TodayView: View {
             Text("How is the day finding you?")
                 .font(AppFont.headlineMedium)
                 .foregroundStyle(AppColor.onSurface)
-            Text("Acknowledge your emotional baseline to recalibrate today's transits.")
-                .font(AppFont.bodyMedium)
-                .foregroundStyle(AppColor.onSurfaceVariant)
 
             LazyVGrid(columns: [GridItem(.flexible(), spacing: Spacing.sm), GridItem(.flexible(), spacing: Spacing.sm)], spacing: Spacing.sm) {
                 ForEach(reading.moods, id: \.self) { mood in
@@ -526,21 +417,6 @@ struct TodayView: View {
             .buttonStyle(.astroSecondary)
         }
         .frame(maxWidth: .infinity, minHeight: 300)
-    }
-}
-
-/// Mars–Saturn trine chord with endpoint dots, drawn around the moon disc.
-private struct AspectChord: Shape {
-    func path(in rect: CGRect) -> Path {
-        let start = CGPoint(x: rect.width * 0.22, y: rect.height * 0.28)
-        let end = CGPoint(x: rect.width * 0.78, y: rect.height * 0.72)
-        var path = Path()
-        path.move(to: start)
-        path.addLine(to: end)
-        for point in [start, end] {
-            path.addEllipse(in: CGRect(x: point.x - 2, y: point.y - 2, width: 4, height: 4))
-        }
-        return path
     }
 }
 

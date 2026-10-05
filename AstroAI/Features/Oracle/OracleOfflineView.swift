@@ -17,7 +17,6 @@ struct OracleOfflineView: View {
             hero
             ledger
             actions
-            footnote
         }
     }
 
@@ -29,7 +28,7 @@ struct OracleOfflineView: View {
             Spacer()
             HStack(spacing: 6) {
                 Circle().fill(AppColor.secondary).frame(width: 5, height: 5)
-                Text("OFFLINE MODE · EPHEMERIS CACHED")
+                Text("OFFLINE")
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
@@ -55,11 +54,11 @@ struct OracleOfflineView: View {
             }
             .padding(.vertical, Spacing.lg)
 
-            Eyebrow(text: "Ephemeris Synchronization Paused")
-            Text("The stars remain. The connection has drifted.")
+            Eyebrow(text: "No connection")
+            Text("The Oracle needs the network.")
                 .font(AppFont.headlineLarge)
                 .foregroundStyle(AppColor.onSurface)
-            Text("We are unable to reach the planetary calculation matrix or your AI Oracle dialogue. Your cached natal chart, daily reflections, and saved folios remain accessible locally.")
+            Text("Your chart, today's reading, and journal are still on this phone.")
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onSurfaceVariant)
                 .padding(.top, Spacing.xs)
@@ -71,23 +70,19 @@ struct OracleOfflineView: View {
     private var ledger: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             HStack {
-                Label("Local Ephemeris Ledger", systemImage: "plus.circle")
+                Label("On this phone", systemImage: "iphone")
                     .font(AppFont.bodyMedium.weight(.medium))
                     .foregroundStyle(AppColor.onSurface)
-                Spacer()
-                Text("DE431 Engine")
-                    .font(AppFont.labelMedium)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
             }
             HairlineDivider()
             ledgerRow(
-                icon: "checkmark", title: "Available Offline",
-                text: "Natal Blueprint (Placidus), Today's Transit Matrix, Past 14 Journal Entries",
+                icon: "checkmark", title: "Still here",
+                text: "Your chart, today's reading, and journal",
                 tint: AppColor.secondary, titleColor: AppColor.onSurface
             )
             ledgerRow(
-                icon: "pause.fill", title: "Temporarily Suspended",
-                text: "Real-time Oracle synthesis & Live Ingress sub-second tracking",
+                icon: "pause.fill", title: "Waiting for a connection",
+                text: "Replies from the Oracle",
                 tint: AppColor.primaryContainer, titleColor: AppColor.primaryContainer
             )
         }
@@ -120,14 +115,14 @@ struct OracleOfflineView: View {
                 HStack(spacing: Spacing.sm) {
                     Image(systemName: "arrow.triangle.2.circlepath")
                         .symbolEffect(.rotate, isActive: isRetrying)
-                    Text(isRetrying ? "Probing Celestial Mesh..." : "Retry Ephemeris Handshake")
+                    Text(isRetrying ? "Trying again..." : "Try again")
                 }
             }
             .buttonStyle(.astroPrimary)
             .disabled(isRetrying)
 
             Button(action: onContinue) {
-                Label("Continue Reading Offline Folios", systemImage: "book")
+                Label("Continue offline", systemImage: "book")
                     .font(AppFont.bodyLarge.weight(.semibold))
                     .foregroundStyle(AppColor.onSurface)
                     .frame(maxWidth: .infinity, minHeight: 50)
@@ -135,18 +130,6 @@ struct OracleOfflineView: View {
             }
             .buttonStyle(.plain)
         }
-    }
-
-    private var footnote: some View {
-        VStack(spacing: Spacing.xs) {
-            Text("CODE: EPH_NETWORK_TIMEOUT (504)")
-                .font(AppFont.labelMedium)
-                .tracking(0.6)
-            Text("Swiss Ephemeris DE431 local cache is intact · Last verified 14m ago")
-                .font(AppFont.bodySmall)
-        }
-        .foregroundStyle(AppColor.outline)
-        .multilineTextAlignment(.center)
     }
 }
 

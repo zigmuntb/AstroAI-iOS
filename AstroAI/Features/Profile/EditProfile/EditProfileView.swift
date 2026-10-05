@@ -21,7 +21,6 @@ struct EditProfileView: View {
                 photoSection
                 nameSection
                 personalSection
-                PrivacyFootnote(text: "Your profile is stored only on this device")
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.top, Spacing.md)

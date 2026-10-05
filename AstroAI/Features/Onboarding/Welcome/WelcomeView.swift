@@ -26,8 +26,6 @@ struct WelcomeView: View {
                 wheel
                 features
                 actions
-
-                PrivacyFootnote(text: "Encrypted on-device • Zero-knowledge astrological ephemeris")
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.bottom, Spacing.lg)
@@ -44,7 +42,6 @@ struct WelcomeView: View {
                 .font(AppFont.labelLarge)
                 .tracking(2)
             Spacer()
-            Pill(text: "● EPHEMERIS 4.2")
         }
         .padding(.top, Spacing.sm)
     }

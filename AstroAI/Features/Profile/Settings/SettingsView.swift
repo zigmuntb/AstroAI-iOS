@@ -20,7 +20,6 @@ struct SettingsView: View {
                 notificationsSection
                 privacySection
                 membershipCard
-                colophon
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.top, Spacing.sm)
@@ -29,17 +28,6 @@ struct SettingsView: View {
         .scrollIndicators(.hidden)
         .screenBackground()
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Label("DE431 Engine Active", systemImage: "checkmark.seal")
-                    .labelStyle(.titleAndIcon)
-                    .font(AppFont.labelSmall)
-                    .tracking(0.8)
-                    .textCase(.uppercase)
-                    .foregroundStyle(AppColor.secondary)
-                    .fixedSize()
-            }
-        }
         .onAppear { viewModel.refresh() }
         .confirmationDialog(
             "Purge Enclave & Ephemeris Cache?",
@@ -57,11 +45,11 @@ struct SettingsView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Eyebrow(text: "System Instrumentation", icon: "sun.max")
-            Text("Cosmic Preferences & Ephemeris Engine")
+            Eyebrow(text: "Settings", icon: "sun.max")
+            Text("Chart & notifications")
                 .font(AppFont.displayMobile)
                 .foregroundStyle(AppColor.onSurface)
-            Text("Configure high-precision astronomical algorithms, coordinate frameworks, and encrypted synchronizations across your personal natal chart.")
+            Text("House system, zodiac, and when the app may reach you.")
                 .font(AppFont.bodyLarge)
                 .foregroundStyle(AppColor.onSurfaceVariant)
         }
@@ -70,45 +58,13 @@ struct SettingsView: View {
     // MARK: - Calculation
 
     private var calculationSection: some View {
-        SettingsSection(title: "Calculation Engine", icon: "scope", trailing: "Meeus Algorithms") {
-            VStack(alignment: .leading, spacing: Spacing.sm) {
-                HStack(alignment: .top) {
-                    HStack(spacing: Spacing.sm) {
-                        Text("Ephemeris Precision")
-                            .font(AppFont.bodyLarge.weight(.medium))
-                        Text("Primary")
-                            .font(AppFont.labelSmall)
-                            .foregroundStyle(AppColor.secondary)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(AppColor.secondaryContainer.opacity(0.6), in: .capsule)
-                    }
-                    Spacer()
-                    Image(systemName: "slider.horizontal.3")
-                        .foregroundStyle(AppColor.onSurfaceVariant)
-                }
-                Text("Swiss Ephemeris DE431")
-                    .font(AppFont.headlineSmall)
-                Text("Calibrated to NASA JPL planetary positions; orbital variance ±0.001″ arc-seconds.")
-                    .font(AppFont.bodySmall)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-            }
-            .foregroundStyle(AppColor.onSurface)
-            .padding(Spacing.md)
-
-            SectionDivider()
-
+        SettingsSection(title: "Calculation Engine", icon: "scope", trailing: "") {
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 HStack {
-                    Text("House Division Method")
+                    Text("House system")
                         .font(AppFont.bodyLarge.weight(.medium))
                         .foregroundStyle(AppColor.onSurface)
-                    Spacer()
-                    Eyebrow(text: "Quadrant Based")
                 }
-                Text("Determines the boundary division of life spheres relative to the local horizon and meridian.")
-                    .font(AppFont.bodySmall)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
                 ScrollView(.horizontal) {
                     HStack(spacing: Spacing.sm) {
                         ForEach(viewModel.houseSystems, id: \.self) { system in
@@ -131,12 +87,9 @@ struct SettingsView: View {
             SectionDivider()
 
             VStack(alignment: .leading, spacing: Spacing.sm) {
-                Text("Zodiac Coordinate Horizon")
+                Text("Zodiac")
                     .font(AppFont.bodyLarge.weight(.medium))
                     .foregroundStyle(AppColor.onSurface)
-                Text("Ecliptic coordinate reference adjusting for the equinoctial precession.")
-                    .font(AppFont.bodySmall)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
                 HStack(spacing: Spacing.xs) {
                     ForEach(viewModel.zodiacOptions) { option in
                         zodiacSegment(option)
@@ -152,10 +105,10 @@ struct SettingsView: View {
 
             HStack(spacing: Spacing.md) {
                 VStack(alignment: .leading, spacing: Spacing.xs) {
-                    Text("Lunar Node Ephemeris")
+                    Text("Lunar node")
                         .font(AppFont.bodyLarge.weight(.medium))
                         .foregroundStyle(AppColor.onSurface)
-                    Text("Oscillating lunar path vs averaged elliptical plane")
+                    Text("True node follows the actual path. Mean node uses the average.")
                         .font(AppFont.bodySmall)
                         .foregroundStyle(AppColor.onSurfaceVariant)
                 }
@@ -228,7 +181,7 @@ struct SettingsView: View {
     // MARK: - Notifications
 
     private var notificationsSection: some View {
-        SettingsSection(title: "Cadence & Notifications", icon: "clock", trailing: "Sanctuary Sync") {
+        SettingsSection(title: "Notifications", icon: "clock", trailing: "") {
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 NotificationToggleRow(
                     title: "Daily Morning Attunement",
@@ -298,7 +251,7 @@ struct SettingsView: View {
     // MARK: - Privacy
 
     private var privacySection: some View {
-        SettingsSection(title: "Privacy & Data Sovereignty", icon: "lock.shield", trailing: "On-Device Vault") {
+        SettingsSection(title: "Privacy", icon: "lock.shield", trailing: "") {
             PrivacyRow(
                 icon: "lock.doc",
                 title: "Local Cryptographic Enclave",
@@ -311,14 +264,6 @@ struct SettingsView: View {
                 title: "Context Anonymization",
                 badge: "Active",
                 text: "AI oracle queries strip names, places of birth, and identity markers prior to celestial pattern synthesis."
-            )
-            SectionDivider()
-            ActionRow(
-                icon: "archivebox",
-                title: "Export Celestial Records",
-                text: "Format in vector PDF monograph or raw JSON archive",
-                tint: AppColor.onSurface,
-                action: {}
             )
             SectionDivider()
             ActionRow(
@@ -355,9 +300,6 @@ struct SettingsView: View {
                 .fill(AppColor.onPrimary.opacity(0.15))
                 .frame(height: 0.5)
             HStack {
-                Text(viewModel.membershipFooter)
-                    .font(AppFont.bodySmall)
-                    .foregroundStyle(AppColor.onPrimary.opacity(0.7))
                 Spacer()
                 Button(action: viewModel.manageSubscription) {
                     Text(viewModel.membershipAction)
@@ -369,27 +311,6 @@ struct SettingsView: View {
             }
         }
         .card(.accent, padding: Spacing.lg)
-    }
-
-    private var colophon: some View {
-        VStack(spacing: Spacing.md) {
-            HStack(spacing: Spacing.md) {
-                Rectangle().fill(AppColor.champagne).frame(width: 24, height: 0.5)
-                Text("Colophon")
-                    .font(AppFont.quote)
-                    .foregroundStyle(AppColor.secondary)
-                Rectangle().fill(AppColor.champagne).frame(width: 24, height: 0.5)
-            }
-            Text("AstroAI v2.4.0 (Build 419). Designed in dialogue with Swiss Ephemeris DE431 and historical astronomical tables.")
-                .font(AppFont.bodySmall)
-                .foregroundStyle(AppColor.onSurfaceVariant)
-            Text("ZÜRICH · KYOTO · SAN FRANCISCO")
-                .font(AppFont.labelSmall)
-                .tracking(1.2)
-                .foregroundStyle(AppColor.outline)
-        }
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: .infinity)
     }
 }
 
@@ -408,10 +329,12 @@ private struct SettingsSection<Content: View>: View {
                     .font(AppFont.labelLarge)
                     .tracking(1)
                     .foregroundStyle(AppColor.onSurface)
-                Spacer()
-                Text(trailing)
-                    .font(AppFont.labelSmall)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
+                if !trailing.isEmpty {
+                    Spacer()
+                    Text(trailing)
+                        .font(AppFont.labelSmall)
+                        .foregroundStyle(AppColor.onSurfaceVariant)
+                }
             }
             VStack(alignment: .leading, spacing: 0) {
                 content

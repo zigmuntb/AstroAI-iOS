@@ -19,11 +19,10 @@ struct AddConnectionView: View {
                 identitySection
                 coordinatesSection
                 archetypeSnapshot
-                privacyNote
 
                 Button(action: viewModel.save) {
                     HStack(spacing: Spacing.sm) {
-                        Text("Calculate Synastry Matrix")
+                        Text("Save Connection")
                             .font(AppFont.headlineMedium)
                         Image(systemName: "infinity")
                     }
@@ -46,7 +45,6 @@ struct AddConnectionView: View {
     private var header: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 2) {
-                Eyebrow(text: "Fascicle IV · Relational Ephemeris")
                 Text("Add Connection")
                     .font(AppFont.headlineMedium)
                     .foregroundStyle(AppColor.onSurface)
@@ -70,12 +68,11 @@ struct AddConnectionView: View {
 
     private var intro: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Text("Who are you inviting into your celestial wheel?")
+            Text("Who are you adding?")
                 .font(AppFont.headlineLarge)
                 .foregroundStyle(AppColor.onSurface)
-            Text("Synastry weighs the gravities between two planetary configurations. Exact birth coordinates illuminate ascendant axes, precise Moon degrees, and the intimate geometry of house overlays.")
+            Text("Their birth details are used to compare the two charts.")
                 .font(AppFont.bodyLarge)
-                .lineSpacing(3)
                 .foregroundStyle(AppColor.onSurfaceVariant)
         }
     }
@@ -268,18 +265,6 @@ struct AddConnectionView: View {
             }
         }
         .card(.tinted, padding: Spacing.margin)
-    }
-
-    private var privacyNote: some View {
-        HStack(alignment: .top, spacing: Spacing.sm) {
-            Image(systemName: "lock.open")
-                .foregroundStyle(AppColor.secondary)
-            Text("\(Text("Sacred Data Architecture:").fontWeight(.semibold).foregroundStyle(AppColor.onSurface)) Calculations run purely on-device. Astronomical coordinate ephemerides are shielded under local zero-knowledge secure enclave.")
-                .font(AppFont.bodyMedium)
-                .lineSpacing(3)
-                .foregroundStyle(AppColor.onSurfaceVariant)
-        }
-        .card(.elevated)
     }
 }
 

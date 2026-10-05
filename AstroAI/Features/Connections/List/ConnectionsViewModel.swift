@@ -26,9 +26,9 @@ final class ConnectionsViewModel {
     }
 
     let suggestions = [
-        Suggestion(icon: "heart", title: "Add a romantic partner", text: "Calculates Venus-Mars harmonic chords & lunar emotional resonance."),
-        Suggestion(icon: "brain.head.profile", title: "Add a creative collaborator", text: "Maps Mercury-Saturn architecture, idea execution & creative rhythm."),
-        Suggestion(icon: "infinity", title: "Add a close friend or family member", text: "Explores 4th & 11th house roots, unspoken safety & kindred trust.")
+        Suggestion(icon: "heart", title: "Add a romantic partner", text: "See how you relate in love."),
+        Suggestion(icon: "brain.head.profile", title: "Add a creative collaborator", text: "See how you work and create together."),
+        Suggestion(icon: "infinity", title: "Add a close friend or family member", text: "See where you feel easy, and where you don't.")
     ]
 
     private(set) var rows: [Row] = []

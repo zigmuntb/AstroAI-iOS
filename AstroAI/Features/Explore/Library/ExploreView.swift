@@ -57,7 +57,6 @@ struct ExploreView: View {
                     .foregroundStyle(AppColor.outline)
                     .frame(maxWidth: .infinity)
             }
-            alertCard
         } else if let error = viewModel.errorMessage {
             VStack(spacing: Spacing.md) {
                 Text(error)
@@ -85,8 +84,6 @@ struct ExploreView: View {
                 .foregroundStyle(AppColor.onSurface)
                 .submitLabel(.search)
                 .autocorrectionDisabled()
-            Image(systemName: "slider.horizontal.3")
-                .font(.system(size: 14))
         }
         .foregroundStyle(AppColor.outline)
         .padding(.horizontal, 14)
@@ -180,13 +177,6 @@ struct ExploreView: View {
                     }
 
                 VStack(alignment: .leading, spacing: Spacing.xs) {
-                    HStack(spacing: Spacing.sm) {
-                        Circle().fill(AppColor.secondary).frame(width: 5, height: 5)
-                        Text(viewModel.featuredRelevance.uppercased())
-                            .font(AppFont.labelSmall)
-                            .tracking(1)
-                            .foregroundStyle(AppColor.secondary)
-                    }
                     Text(article.title)
                         .font(AppFont.headlineMedium)
                         .foregroundStyle(AppColor.onSurface)
@@ -198,12 +188,9 @@ struct ExploreView: View {
                         .multilineTextAlignment(.leading)
 
                     HStack {
-                        Text(viewModel.featuredFooter)
-                            .font(.system(size: 12, design: .serif).italic())
-                            .foregroundStyle(AppColor.onSurfaceVariant)
                         Spacer()
                         HStack(spacing: 2) {
-                            Text("Read thesis")
+                            Text("Read")
                             Image(systemName: "arrow.right")
                         }
                         .font(AppFont.labelMedium)
@@ -228,8 +215,7 @@ struct ExploreView: View {
 
     private func transitsSection(range: String) -> some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            sectionTitle("Weekly Ephemeris", icon: "clock.arrow.circlepath", trailing: range, trailingColor: AppColor.outline)
-            sectionCaption("Precise planetary mechanics, angles of tension, and celestial ingress mapped in real time.")
+            sectionTitle("This Week", icon: "clock.arrow.circlepath", trailing: range, trailingColor: AppColor.outline)
 
             VStack(spacing: Spacing.md) {
                 ForEach(Array(viewModel.transits.enumerated()), id: \.element.id) { index, transit in
@@ -276,8 +262,7 @@ struct ExploreView: View {
 
     private var compendiumSection: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            sectionTitle("Knowledge Compendium", icon: "book", trailing: "Vol. II", trailingColor: AppColor.secondary)
-            sectionCaption("Archetypal treatises, mathematical harmonies, and structural manuals for self-interpretation.")
+            sectionTitle("Library", icon: "book", trailing: "", trailingColor: AppColor.secondary)
 
             VStack(spacing: 0) {
                 ForEach(Array(viewModel.tomes.enumerated()), id: \.element.id) { index, tome in
@@ -330,45 +315,6 @@ struct ExploreView: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - Daily alert
-
-    private var alertCard: some View {
-        HStack(spacing: Spacing.sm) {
-            Image(systemName: "hurricane")
-                .font(.system(size: 18))
-                .foregroundStyle(AppColor.secondary)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Daily Ephemeris Alert")
-                    .font(.system(size: 15, weight: .medium, design: .serif))
-                    .foregroundStyle(AppColor.onSurface)
-                Text("Synchronize with local sunrise")
-                    .font(AppFont.bodySmall)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-            }
-            Spacer()
-            Button {
-                viewModel.isAlertEnabled.toggle()
-            } label: {
-                HStack(spacing: 4) {
-                    if viewModel.isAlertEnabled { Image(systemName: "checkmark") }
-                    Text(viewModel.isAlertEnabled ? "Enabled" : "Enable")
-                }
-                    .font(AppFont.labelMedium)
-                    .foregroundStyle(viewModel.isAlertEnabled ? AppColor.onPrimary : AppColor.primary)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(
-                        viewModel.isAlertEnabled ? AppColor.primaryContainer : AppColor.surfaceContainerLowest,
-                        in: .rect(cornerRadius: Radius.sm)
-                    )
-                    .shadow(color: .black.opacity(0.05), radius: 1, y: 1)
-            }
-            .buttonStyle(.plain)
-            .animation(.easeOut(duration: 0.15), value: viewModel.isAlertEnabled)
-        }
-        .card(.tinted)
-    }
-
     // MARK: - Helpers
 
     private func sectionTitle(_ title: String, icon: String, trailing: String, trailingColor: Color) -> some View {
@@ -380,16 +326,12 @@ struct ExploreView: View {
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
             Spacer()
-            Text(trailing)
-                .font(AppFont.labelMedium)
-                .foregroundStyle(trailingColor)
+            if !trailing.isEmpty {
+                Text(trailing)
+                    .font(AppFont.labelMedium)
+                    .foregroundStyle(trailingColor)
+            }
         }
-    }
-
-    private func sectionCaption(_ text: String) -> some View {
-        Text(text)
-            .font(AppFont.bodySmall)
-            .foregroundStyle(AppColor.onSurfaceVariant)
     }
 }
 

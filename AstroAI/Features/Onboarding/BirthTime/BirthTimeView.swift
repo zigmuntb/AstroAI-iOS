@@ -19,7 +19,6 @@ struct BirthTimeView: View {
                 titleBlock
                 pickerCard
                 unknownCard
-                transparencyCard
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.vertical, Spacing.md)
@@ -31,7 +30,6 @@ struct BirthTimeView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack(spacing: Spacing.md) {
                 PrimaryButton(title: "CONTINUE", action: viewModel.continueTapped)
-                PrivacyFootnote(text: "Encrypted natal ephemeris calculation")
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.vertical, Spacing.md)
@@ -49,19 +47,8 @@ struct BirthTimeView: View {
                     .font(AppFont.labelLarge.weight(.medium))
                     .tracking(1)
                     .foregroundStyle(AppColor.secondary)
-                Circle().fill(AppColor.outlineVariant).frame(width: 4, height: 4)
-                Text("TEMPORAL AXIS")
-                    .font(AppFont.labelMedium)
-                    .tracking(1.2)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
             }
             Spacer()
-            Label("UTC Ephemeris", systemImage: "clock")
-                .font(AppFont.bodySmall)
-                .foregroundStyle(AppColor.onSurfaceVariant)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(AppColor.surfaceContainerHigh, in: .capsule)
         }
     }
 
@@ -73,7 +60,7 @@ struct BirthTimeView: View {
                 .background(AppColor.secondaryContainer, in: .capsule)
             ScreenTitle(
                 title: "What time were you born?",
-                subtitle: "Your birth time helps us calculate your Ascendant (Rising sign) and precise astrological house cusps with celestial mathematical accuracy."
+                subtitle: "Birth time sets your Rising sign and the houses of your chart. Without it, those stay approximate."
             )
         }
     }
@@ -105,11 +92,6 @@ struct BirthTimeView: View {
                 Label("Exact birth minute", systemImage: "scope")
                     .font(AppFont.labelMedium)
                     .foregroundStyle(AppColor.onSurface)
-                Spacer()
-                Text("TOLERANCE ±1m")
-                    .font(AppFont.labelMedium)
-                    .tracking(0.6)
-                    .foregroundStyle(AppColor.outline)
             }
         }
         .card(.elevated, padding: Spacing.lg)
@@ -122,7 +104,7 @@ struct BirthTimeView: View {
                     Label("I don't know my exact birth time", systemImage: "questionmark.circle")
                         .font(AppFont.bodyLarge.weight(.medium))
                         .foregroundStyle(AppColor.onSurface)
-                    Text("Estimate or apply traditional solar baseline.")
+                    Text("If the time is unknown, Rising sign and houses are estimated. Sun and most planet signs stay exact.")
                         .font(AppFont.bodyMedium)
                         .foregroundStyle(AppColor.onSurfaceVariant)
                 }
@@ -161,23 +143,5 @@ struct BirthTimeView: View {
             .background(isSelected ? AppColor.primaryContainer : AppColor.surface, in: .rect(cornerRadius: Radius.sm))
         }
         .buttonStyle(.plain)
-    }
-
-    private var transparencyCard: some View {
-        HStack(alignment: .top, spacing: Spacing.md) {
-            Image(systemName: "sparkles")
-                .font(.system(size: 20))
-                .foregroundStyle(AppColor.secondary)
-            VStack(alignment: .leading, spacing: Spacing.xs) {
-                Text("Ephemeris Transparency")
-                    .font(AppFont.bodyLarge.weight(.medium))
-                    .tracking(0.4)
-                    .foregroundStyle(AppColor.onSurface)
-                Text("If exact time is unknown, we will use solar sunrise houses (06:00 AM). Your Sun and major planetary signs remain exact, while Rising sign and house boundaries will be gently approximated.")
-                    .font(AppFont.bodyMedium)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-            }
-        }
-        .card(.elevated, padding: Spacing.lg)
     }
 }

@@ -19,14 +19,13 @@ struct BirthplaceView: View {
                 stepRow
 
                 ScreenTitle(
-                    eyebrow: "Topocentric Horizon",
+                    eyebrow: "Birthplace",
                     title: "Where were you born?",
-                    subtitle: "Your birthplace determines the geographical latitude and longitude for exact topocentric ephemeris calculations and precise house cusps."
+                    subtitle: "The city sets the houses of your chart."
                 )
 
                 searchField
                 resultsSection
-                engineCard
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.vertical, Spacing.md)
@@ -68,10 +67,6 @@ struct BirthplaceView: View {
                     .foregroundStyle(AppColor.onSurfaceVariant)
             }
             Spacer()
-            Text("EPHEMERIS LOCATOR")
-                .font(AppFont.labelMedium)
-                .tracking(0.8)
-                .foregroundStyle(AppColor.secondary)
         }
     }
 
@@ -133,28 +128,6 @@ struct BirthplaceView: View {
             }
             .card(.elevated, padding: Spacing.xs)
         }
-    }
-
-    private var engineCard: some View {
-        HStack(spacing: Spacing.md) {
-            Image(systemName: "safari")
-                .font(.system(size: 18))
-                .foregroundStyle(AppColor.secondary)
-                .frame(width: 36, height: 36)
-                .background(AppColor.secondaryContainer, in: .rect(cornerRadius: Radius.sm))
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Swiss Ephemeris Topocentric Engine Active")
-                    .font(AppFont.bodySmall.weight(.medium))
-                    .foregroundStyle(AppColor.onSurface)
-                Text("Moshier analytical orbital matrix calibrated to sea level")
-                    .font(AppFont.bodyMedium)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-            }
-            .lineLimit(1)
-            Spacer(minLength: 0)
-            Circle().fill(AppColor.secondary).frame(width: 8, height: 8)
-        }
-        .card(.tinted, padding: Spacing.md)
     }
 }
 

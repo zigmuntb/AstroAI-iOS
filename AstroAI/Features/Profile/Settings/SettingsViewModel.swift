@@ -48,7 +48,6 @@ final class SettingsViewModel {
             ? "Full on-device ephemeris, unlimited synastry overlays, and sovereign offline natal synthesis."
             : "Core natal synthesis and daily transits. Upgrade for unlimited synastry overlays and chart-aware AI dialogue."
     }
-    var membershipFooter: String { isPremium ? "Device License: 04 of 05" : "Device License: 01 of 01" }
     var membershipAction: String { isPremium ? "Manage Subscription" : "Explore Sanctuary" }
 
     @ObservationIgnored private let preferences: PreferencesServicing

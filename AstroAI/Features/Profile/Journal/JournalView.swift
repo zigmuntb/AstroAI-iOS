@@ -21,7 +21,6 @@ struct JournalView: View {
                 filters
                 promptCard
                 timeline
-                vaultFooter
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.top, Spacing.sm)
@@ -39,18 +38,11 @@ struct JournalView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             HStack {
-                Eyebrow(text: "Folio Archive · Vol. III", color: AppColor.onSurfaceVariant)
-                Spacer()
-                Label("Zero-Knowledge", systemImage: "lock")
-                    .font(AppFont.labelMedium)
-                    .foregroundStyle(AppColor.secondary)
+                Eyebrow(text: "Journal", color: AppColor.onSurfaceVariant)
             }
-            Text("Personal Journal & Musings")
+            Text("Personal Journal")
                 .font(AppFont.displayMobile)
                 .foregroundStyle(AppColor.onSurface)
-            Text("A contemplative repository of transit observations, nocturnal thoughts, and dialogues with the celestial oracle.")
-                .font(AppFont.bodyLarge)
-                .foregroundStyle(AppColor.onSurfaceVariant)
         }
     }
 
@@ -62,8 +54,6 @@ struct JournalView: View {
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onSurface)
                 .submitLabel(.search)
-            Image(systemName: "slider.horizontal.3")
-                .foregroundStyle(AppColor.outline)
         }
         .padding(.horizontal, Spacing.md)
         .frame(height: 48)
@@ -92,10 +82,6 @@ struct JournalView: View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             HStack(alignment: .top) {
                 Eyebrow(text: viewModel.prompt.context, icon: "infinity")
-                Spacer(minLength: Spacing.sm)
-                Text(viewModel.promptBadge)
-                    .font(AppFont.labelMedium)
-                    .foregroundStyle(AppColor.outline)
             }
             Text("\u{201C}\(viewModel.prompt.question)\u{201D}")
                 .font(AppFont.headlineMedium.weight(.regular).italic())
@@ -124,11 +110,6 @@ struct JournalView: View {
                     .focused($isComposing)
                     .submitLabel(.done)
                     .onSubmit(submit)
-                if !isComposing && viewModel.draft.isEmpty {
-                    Text("Tap to transcribe voice or write prose")
-                        .font(AppFont.labelMedium)
-                        .foregroundStyle(AppColor.outline)
-                }
             }
             Spacer(minLength: 0)
             Button(action: submit) {
@@ -153,7 +134,7 @@ struct JournalView: View {
     private var timeline: some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
             HStack {
-                Eyebrow(text: "Chronological Folios", color: AppColor.onSurfaceVariant)
+                Eyebrow(text: "Entries", color: AppColor.onSurfaceVariant)
                 Spacer()
                 Text(viewModel.seasonTitle)
                     .font(AppFont.labelMedium)
@@ -173,23 +154,6 @@ struct JournalView: View {
                 }
             }
         }
-    }
-
-    private var vaultFooter: some View {
-        HStack(alignment: .top, spacing: Spacing.md) {
-            Image(systemName: "checkmark.shield")
-                .font(.system(size: 18))
-                .foregroundStyle(AppColor.onSurfaceVariant)
-            VStack(alignment: .leading, spacing: Spacing.xs) {
-                Text("Cryptographic Device Vault")
-                    .font(AppFont.bodyMedium.weight(.medium))
-                    .foregroundStyle(AppColor.onSurface)
-                Text("All personal journal folios are encrypted on-device. No telemetry or LLM training.")
-                    .font(AppFont.bodyMedium)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-            }
-        }
-        .card(.tinted, padding: Spacing.lg)
     }
 }
 

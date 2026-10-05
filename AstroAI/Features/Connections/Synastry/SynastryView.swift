@@ -46,11 +46,7 @@ struct SynastryView: View {
     private var recordHeader: some View {
         HStack {
             HStack(spacing: Spacing.xs) {
-                Eyebrow(text: "Synastry Record")
-                Circle().fill(AppColor.champagne).frame(width: 4, height: 4)
-                Text("Vol. IV")
-                    .font(AppFont.labelMedium)
-                    .foregroundStyle(AppColor.outline)
+                Eyebrow(text: "Synastry")
             }
             Spacer()
             Button(action: viewModel.addConnection) {
@@ -89,15 +85,14 @@ struct SynastryView: View {
                     .lineLimit(1)
             }
             Spacer(minLength: 0)
-            Pill(text: "Aligned", icon: "infinity")
         }
         .card(.tinted, padding: 12)
     }
 
     private var personColumns: some View {
         HStack(alignment: .top, spacing: Spacing.sm) {
-            PersonColumn(person: viewModel.user, badgeColor: AppColor.secondaryContainer)
-            PersonColumn(person: viewModel.partner, badgeColor: AppColor.primaryFixed)
+            PersonColumn(person: viewModel.user)
+            PersonColumn(person: viewModel.partner)
         }
     }
 
@@ -175,9 +170,6 @@ struct SynastryView: View {
                     .font(AppFont.headlineMedium)
                     .foregroundStyle(AppColor.onSurface)
             }
-            Text("Curated questions derived from the current lunar cycle to unlock unspoken spaces between you.")
-                .font(AppFont.bodyMedium)
-                .foregroundStyle(AppColor.onSurfaceVariant)
 
             ForEach(viewModel.questions) { question in
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.md) {
@@ -209,9 +201,6 @@ struct SynastryView: View {
                     Text("Relational Artifact")
                         .font(AppFont.headlineMedium)
                         .foregroundStyle(AppColor.onSurface)
-                    Text("Formatted for story sharing or keepsakes")
-                        .font(AppFont.bodySmall)
-                        .foregroundStyle(AppColor.onSurfaceVariant)
                 }
                 Spacer()
                 Button(action: viewModel.toggleDegrees) {
@@ -235,12 +224,6 @@ struct SynastryView: View {
                 Label("Share Compatibility Card", systemImage: "square.and.arrow.up")
             }
             .buttonStyle(.astroPrimary)
-
-            Text("Saves high-resolution portrait graphic directly to your camera roll or Instagram stories.")
-                .font(AppFont.labelMedium)
-                .foregroundStyle(AppColor.outline)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
         }
     }
 
@@ -251,10 +234,6 @@ struct SynastryView: View {
                     .font(AppFont.labelMedium)
                     .tracking(1.2)
                     .textCase(.uppercase)
-                Spacer()
-                Text("EP. 28")
-                    .font(AppFont.labelMedium)
-                    .foregroundStyle(AppColor.outline)
             }
             .foregroundStyle(AppColor.onSurface)
 
@@ -285,23 +264,6 @@ struct SynastryView: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 4)
                     .background(AppColor.secondaryContainer, in: .capsule)
-            }
-            .multilineTextAlignment(.center)
-            .padding(.vertical, Spacing.lg)
-
-            HStack(alignment: .bottom) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Celestial Blueprint")
-                        .font(AppFont.labelMedium)
-                        .foregroundStyle(AppColor.outline)
-                    Text("astroai.com/synastry")
-                        .font(AppFont.bodySmall)
-                        .foregroundStyle(AppColor.onSurface)
-                }
-                Spacer()
-                Image(systemName: "qrcode")
-                    .font(.system(size: 26))
-                    .foregroundStyle(AppColor.onSurface)
             }
         }
         .padding(Spacing.lg)
@@ -340,7 +302,6 @@ struct SynastryView: View {
 
 private struct PersonColumn: View {
     let person: SynastryViewModel.Person
-    let badgeColor: Color
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
@@ -349,13 +310,6 @@ private struct PersonColumn: View {
                     .font(AppFont.labelLarge)
                     .foregroundStyle(AppColor.onSurface)
                     .lineLimit(1)
-                Spacer(minLength: Spacing.xs)
-                Text(person.role)
-                    .font(AppFont.labelMedium)
-                    .foregroundStyle(AppColor.primary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(badgeColor, in: .capsule)
             }
             ForEach(person.placements) { placement in
                 HStack(spacing: Spacing.xs) {

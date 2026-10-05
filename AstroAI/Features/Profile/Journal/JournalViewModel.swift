@@ -28,7 +28,6 @@ final class JournalViewModel {
     private(set) var prompt: JournalPrompt
 
     let filters: [Filter] = [.all] + JournalEntry.Kind.allCases.map(Filter.kind)
-    let promptBadge = "9th House Ingress"
 
     var visibleEntries: [JournalEntry] {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)

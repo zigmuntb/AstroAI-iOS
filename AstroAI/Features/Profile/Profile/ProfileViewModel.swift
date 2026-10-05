@@ -17,16 +17,6 @@ final class ProfileViewModel {
         let detail: String
     }
 
-    struct Folio: Identifiable {
-        var id: String { title }
-        let icon: String
-        let title: String
-        let subtitle: String
-        let tint: Tint
-    }
-
-    enum Tint { case champagne, aubergine, rose }
-
     struct Nudge: Identifiable {
         var id: String { title }
         let icon: String
@@ -57,23 +47,16 @@ final class ProfileViewModel {
     private(set) var isLoading = false
     private(set) var errorMessage: String?
 
-    let folios = [
-        Folio(icon: "scalemass", title: "The Taurus-Scorpio Axis in Motion", subtitle: "Saved Oct 24 • Depth Psychological Reading", tint: .champagne),
-        Folio(icon: "house", title: "4th House Anchors & Domestic Sanctuary", subtitle: "Saved Oct 21 • Natal House Analysis", tint: .aubergine),
-        Folio(icon: "heart", title: "Synastry Synthesis with Julian", subtitle: "Saved Oct 19 • Dual Chart Harmony", tint: .rose)
-    ]
-
     var preferenceRows: [PreferenceRow] {
         [
-            PreferenceRow(icon: "bell.badge", title: "Notification Cadence", subtitle: "Daily Context @ 8:00 AM • Major Transits", trailing: .icon("slider.horizontal.3")),
-            PreferenceRow(icon: "safari", title: "Astrological House System", subtitle: "Used for your natal chart", trailing: .picker(houseSystem)),
-            PreferenceRow(icon: "gearshape.2", title: "Ephemeris Engine", subtitle: "Astronomy Engine • Calculated on-device", trailing: .verified),
-            PreferenceRow(icon: "lock", title: "Privacy & Chart Encryption", subtitle: "Zero-knowledge storage • On-device keys", trailing: .button("Export"))
+            PreferenceRow(icon: "bell.badge", title: "Notifications", subtitle: "Morning reading, exact aspects, moon phases", trailing: .icon("chevron.right")),
+            PreferenceRow(icon: "safari", title: "House System", subtitle: "Used for your natal chart", trailing: .picker(houseSystem)),
+            PreferenceRow(icon: "lock", title: "Privacy", subtitle: "Chart and journal stay on this device", trailing: .icon("chevron.right"))
         ]
     }
 
     let footerQuote = "\u{201C}The soul moves in circles, not straight lines.\u{201D}"
-    let versionLine = "AstroAI v2.4 • Ephemeris Synchronized"
+    let versionLine = "AstroAI v2.4"
 
     var membershipTitle: String {
         isPremium ? "AstroAI Sanctuary • Sanctuary Member" : "AstroAI Seeker • Free Member"

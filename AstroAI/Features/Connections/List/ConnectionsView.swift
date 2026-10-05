@@ -47,7 +47,7 @@ struct ConnectionsView: View {
                 Text("No charts in orbit yet.")
                     .font(AppFont.displayMobile)
                     .foregroundStyle(AppColor.onSurface)
-                Text("Synastry is the study of how two personal skies interact — illuminating where emotional tides align, where friction sparks growth, and how communication flows between two unique configurations.")
+                Text("Add someone to see how your charts interact.")
                     .font(AppFont.bodyLarge)
                     .lineSpacing(4)
                     .foregroundStyle(AppColor.onSurfaceVariant)
@@ -63,19 +63,10 @@ struct ConnectionsView: View {
                 }
             }
 
-            VStack(spacing: Spacing.lg) {
-                Button(action: viewModel.addConnection) {
-                    Label("Add First Connection", systemImage: "plus")
-                }
-                .buttonStyle(.astroPrimary)
-
-                Text("Read introduction to synastry geometry →")
-                    .font(.system(size: 19, design: .serif).italic())
-                    .foregroundStyle(AppColor.secondary)
-
-                PrivacyFootnote(text: "Zero-Knowledge Privacy: Names and birth coordinates never leave your device unencrypted.")
+            Button(action: viewModel.addConnection) {
+                Label("Add First Connection", systemImage: "plus")
             }
-            .padding(.top, Spacing.md)
+            .buttonStyle(.astroPrimary)
         }
     }
 
@@ -113,8 +104,6 @@ struct ConnectionsView: View {
             }
             .buttonStyle(.astroPrimary)
             .padding(.top, Spacing.sm)
-
-            PrivacyFootnote(text: "Zero-Knowledge Privacy: Names and birth coordinates never leave your device unencrypted.")
         }
     }
 }

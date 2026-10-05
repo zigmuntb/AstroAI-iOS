@@ -24,7 +24,6 @@ struct DateOfBirthView: View {
                 )
 
                 pickerCard
-                mechanicsCard
                 insightCards
             }
             .padding(.horizontal, Spacing.margin)
@@ -37,7 +36,6 @@ struct DateOfBirthView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack(spacing: Spacing.md) {
                 PrimaryButton(title: "Continue", action: viewModel.continueTapped)
-                PrivacyFootnote(text: "EPHEMERIS DATA PROCESSED ON-DEVICE")
             }
             .padding(.horizontal, Spacing.margin)
             .padding(.vertical, Spacing.md)
@@ -115,24 +113,6 @@ struct DateOfBirthView: View {
         .background(AppColor.surfaceContainerLow, in: .capsule)
         .contentTransition(.opacity)
         .animation(.easeInOut, value: viewModel.sunSign)
-    }
-
-    private var mechanicsCard: some View {
-        HStack(alignment: .top, spacing: Spacing.md) {
-            IconBadge(
-                systemName: "info.circle",
-                size: 28,
-                foreground: AppColor.secondary,
-                background: AppColor.secondaryContainer
-            )
-            VStack(alignment: .leading, spacing: Spacing.xs) {
-                Eyebrow(text: "Cosmic Mechanics")
-                Text("Determines the exact solar degree, lunar phase, and foundational planetary alignments of your birth.")
-                    .font(AppFont.bodyMedium)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-            }
-        }
-        .card(.tinted)
     }
 
     private var insightCards: some View {

@@ -102,10 +102,6 @@ struct ChartRevealView: View {
                 }
                 .font(AppFont.labelMedium)
                 .foregroundStyle(AppColor.onSurfaceVariant)
-                Spacer()
-                Text("Ephemeris DE441")
-                    .font(AppFont.bodySmall)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
             }
         }
         .card(.tinted, padding: Spacing.lg)
