@@ -18,7 +18,7 @@ struct OracleView: View {
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                VStack(alignment: .leading, spacing: Spacing.lg) {
+                VStack(alignment: .leading, spacing: Spacing.block) {
                     AppTopBar(title: "AI Astrologer", onAvatarTap: viewModel.openProfile)
                         .padding(.horizontal, -Spacing.margin)
 
@@ -99,7 +99,10 @@ struct OracleView: View {
                     .background(AppColor.secondaryContainer.opacity(0.6), in: .capsule)
             }
             .padding(Spacing.sm + 4)
-            .background(AppColor.surfaceContainerHigh.opacity(0.6), in: .rect(cornerRadius: Radius.md))
+            .background(AppColor.surfaceContainerLowest, in: panelShape(Radius.md))
+            .overlay {
+                panelShape(Radius.md).strokeBorder(AppColor.outlineVariant, lineWidth: 1)
+            }
         }
         .card(.tinted, padding: Spacing.md + 4)
     }
@@ -212,7 +215,7 @@ struct OracleView: View {
 
     private func messageActions(_ message: ChatMessage) -> some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            Divider().overlay(AppColor.hairline.opacity(0.2))
+            HairlineDivider()
 
             HStack(spacing: Spacing.lg) {
                 let isSaved = viewModel.savedMessageIDs.contains(message.id)
@@ -255,7 +258,7 @@ struct OracleView: View {
     // MARK: - Suggestions & quota
 
     private var suggestions: some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
             HStack {
                 Eyebrow(text: "Suggested Contemplations", color: AppColor.onSurfaceVariant)
                 Spacer()
@@ -328,9 +331,8 @@ struct OracleView: View {
                 .disabled(!viewModel.canSend)
             }
             .padding(Spacing.sm)
-            .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.md))
-            .overlay(RoundedRectangle(cornerRadius: Radius.md).stroke(AppColor.hairline.opacity(0.2), lineWidth: 0.5))
-            .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
+            .background(AppColor.surfaceContainerLowest, in: panelShape(Radius.md))
+            .cardEdge(radius: Radius.md)
 
             PrivacyFootnote(text: "Private Ephemeris Engine • Encrypted Chart Sanctuary")
         }

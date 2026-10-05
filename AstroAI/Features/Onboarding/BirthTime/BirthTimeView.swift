@@ -14,7 +14,7 @@ struct BirthTimeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 stepRow
                 titleBlock
                 pickerCard
@@ -178,8 +178,6 @@ struct BirthTimeView: View {
                     .foregroundStyle(AppColor.onSurfaceVariant)
             }
         }
-        .padding(Spacing.lg)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
+        .card(.elevated, padding: Spacing.lg)
     }
 }

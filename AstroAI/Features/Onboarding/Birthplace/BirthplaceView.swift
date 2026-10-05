@@ -15,7 +15,7 @@ struct BirthplaceView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 stepRow
 
                 ScreenTitle(
@@ -131,12 +131,7 @@ struct BirthplaceView: View {
                     }
                 }
             }
-            .padding(Spacing.xs)
-            .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.lg))
-            .overlay(
-                RoundedRectangle(cornerRadius: Radius.lg)
-                    .stroke(AppColor.hairline.opacity(0.12), lineWidth: 0.5)
-            )
+            .card(.elevated, padding: Spacing.xs)
         }
     }
 
@@ -159,8 +154,7 @@ struct BirthplaceView: View {
             Spacer(minLength: 0)
             Circle().fill(AppColor.secondary).frame(width: 8, height: 8)
         }
-        .padding(Spacing.md)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
+        .card(.tinted, padding: Spacing.md)
     }
 }
 

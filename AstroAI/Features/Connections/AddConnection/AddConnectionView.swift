@@ -14,7 +14,7 @@ struct AddConnectionView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 intro
                 identitySection
                 coordinatesSection
@@ -230,11 +230,11 @@ struct AddConnectionView: View {
                         }
                         .buttonStyle(.plain)
                         if place.id != viewModel.placeResults.last?.id {
-                            Divider().overlay(AppColor.hairline.opacity(0.15))
+                            HairlineDivider(inset: Spacing.md)
                         }
                     }
                 }
-                .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.md))
+                .card(.elevated, padding: 0)
             } else if viewModel.showsNoResults {
                 Caption(text: "No matching places found")
                     .padding(.horizontal, Spacing.xs)
@@ -279,7 +279,7 @@ struct AddConnectionView: View {
                 .lineSpacing(3)
                 .foregroundStyle(AppColor.onSurfaceVariant)
         }
-        .padding(.horizontal, Spacing.xs)
+        .card(.elevated)
     }
 }
 
@@ -325,8 +325,8 @@ private struct KinshipTile: View {
             .multilineTextAlignment(.leading)
             .padding(Spacing.md)
             .frame(maxWidth: .infinity, minHeight: 88, alignment: .leading)
-            .background(isSelected ? AppColor.primaryContainer : AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.md))
-            .shadow(color: .black.opacity(isSelected ? 0.08 : 0), radius: 4, y: 2)
+            .background(isSelected ? AppColor.primaryContainer : AppColor.surfaceContainerLowest, in: panelShape(Radius.md))
+            .cardEdge(radius: Radius.md, border: isSelected ? AppColor.champagne.opacity(0.7) : AppColor.outlineVariant, shadowOpacity: isSelected ? 0.1 : 0.06)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
@@ -338,6 +338,7 @@ private extension View {
     func fieldBackground() -> some View {
         padding(.horizontal, Spacing.md + 4)
             .frame(minHeight: 56)
-            .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.md))
+            .background(AppColor.surfaceContainerLowest, in: panelShape(Radius.md))
+            .cardEdge(radius: Radius.md, shadowOpacity: 0)
     }
 }

@@ -6,9 +6,9 @@
 import SwiftUI
 
 enum CardStyle {
-    /// White card with hairline border (Layer 1).
+    /// White card, cool border, lifted off the page.
     case elevated
-    /// Tinted surface container, no border.
+    /// Gray well with a warm border, sitting in the page.
     case tinted
     /// Solid aubergine, ivory text.
     case accent
@@ -22,27 +22,87 @@ struct CardModifier: ViewModifier {
         content
             .padding(padding)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(background, in: .rect(cornerRadius: Radius.lg))
-            .overlay {
-                if style == .elevated {
-                    RoundedRectangle(cornerRadius: Radius.lg)
-                        .stroke(AppColor.hairline.opacity(0.18), lineWidth: 0.5)
-                }
-            }
+            .background(background, in: panelShape())
+            .cardEdge(border: border, shadowOpacity: shadowOpacity)
     }
 
     private var background: Color {
         switch style {
         case .elevated: AppColor.surfaceContainerLowest
-        case .tinted: AppColor.surfaceContainer
+        case .tinted: AppColor.surfaceContainerHigh
         case .accent: AppColor.primaryContainer
         }
+    }
+
+    private var border: Color {
+        switch style {
+        case .elevated: AppColor.outlineVariant
+        case .tinted: AppColor.secondary.opacity(0.38)
+        case .accent: AppColor.champagne.opacity(0.55)
+        }
+    }
+
+    /// Tinted blocks sit in the page; elevated ones lift off it.
+    private var shadowOpacity: Double {
+        switch style {
+        case .elevated: 0.08
+        case .tinted: 0
+        case .accent: 0.14
+        }
+    }
+}
+
+/// Visible edge shared by cards and custom panels.
+struct CardEdgeModifier: ViewModifier {
+    var radius: CGFloat = Radius.lg
+    var border: Color = AppColor.outlineVariant
+    var shadowOpacity: Double = 0.08
+
+    func body(content: Content) -> some View {
+        content
+            .overlay {
+                panelShape(radius).strokeBorder(border, lineWidth: 1)
+            }
+            .shadow(color: AppColor.primary.opacity(shadowOpacity), radius: shadowOpacity > 0 ? 12 : 0, y: shadowOpacity > 0 ? 4 : 0)
+    }
+}
+
+func panelShape(_ radius: CGFloat = Radius.lg) -> RoundedRectangle {
+    RoundedRectangle(cornerRadius: radius, style: .continuous)
+}
+
+/// Full-width rule that separates rows inside a block.
+struct HairlineDivider: View {
+    var inset: CGFloat = 0
+    var leadingInset: CGFloat? = nil
+
+    var body: some View {
+        Rectangle()
+            .fill(AppColor.outlineVariant)
+            .frame(height: 1)
+            .padding(.leading, leadingInset ?? inset)
+            .padding(.trailing, leadingInset == nil ? inset : 0)
     }
 }
 
 extension View {
     func card(_ style: CardStyle = .elevated, padding: CGFloat = Spacing.md) -> some View {
         modifier(CardModifier(style: style, padding: padding))
+    }
+
+    func cardEdge(radius: CGFloat = Radius.lg, border: Color = AppColor.outlineVariant, shadowOpacity: Double = 0.08) -> some View {
+        modifier(CardEdgeModifier(radius: radius, border: border, shadowOpacity: shadowOpacity))
+    }
+
+    /// Nested copy that should read as its own block inside a card.
+    func infoWell(padding: CGFloat = Spacing.md) -> some View {
+        self
+            .padding(padding)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(AppColor.surfaceContainerHigh, in: panelShape(Radius.md))
+            .overlay {
+                panelShape(Radius.md).strokeBorder(AppColor.outlineVariant, lineWidth: 1)
+            }
     }
 
     /// Standard screen background + horizontal margin for scroll content.
@@ -84,7 +144,12 @@ struct Pill: View {
         .foregroundStyle(isFilled ? AppColor.onPrimary : AppColor.onSurfaceVariant)
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-        .background(isFilled ? AppColor.primaryContainer : AppColor.surfaceContainerHigh, in: .capsule)
+        .background(isFilled ? AppColor.primaryContainer : AppColor.surfaceContainerLowest, in: .capsule)
+        .overlay {
+            if !isFilled {
+                Capsule().strokeBorder(AppColor.outlineVariant, lineWidth: 1)
+            }
+        }
     }
 }
 

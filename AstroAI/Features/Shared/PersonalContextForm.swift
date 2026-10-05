@@ -39,6 +39,7 @@ struct PersonalContextForm: View {
             Eyebrow(text: title, icon: icon, color: AppColor.onSurfaceVariant)
             content()
         }
+        .card(.tinted)
     }
 
     private func chips<Option: Identifiable & Equatable>(_ options: [Option], selection: Binding<Option?>, title: KeyPath<Option, String>) -> some View {
@@ -66,7 +67,7 @@ struct PersonalContextForm: View {
                 .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.md))
                 .overlay(
                     RoundedRectangle(cornerRadius: Radius.md)
-                        .stroke(isFocusFieldActive ? AppColor.champagne : AppColor.hairline.opacity(0.18), lineWidth: isFocusFieldActive ? 1 : 0.5)
+                        .stroke(isFocusFieldActive ? AppColor.champagne : AppColor.outlineVariant, lineWidth: isFocusFieldActive ? 1.5 : 1)
                 )
             Text("\(text.wrappedValue.count)/\(PersonalContext.focusMaxLength)")
                 .font(AppFont.labelMedium)

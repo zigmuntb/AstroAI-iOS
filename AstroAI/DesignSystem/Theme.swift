@@ -61,6 +61,8 @@ enum Spacing {
     static let md: CGFloat = 16
     static let lg: CGFloat = 24
     static let xl: CGFloat = 36
+    /// Gap between neighboring information blocks on a screen.
+    static let block: CGFloat = 32
     /// Horizontal screen margin.
     static let margin: CGFloat = 20
 }

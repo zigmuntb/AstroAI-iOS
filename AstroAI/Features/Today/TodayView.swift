@@ -17,7 +17,7 @@ struct TodayView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 AppTopBar(title: "Today", onAvatarTap: viewModel.openProfile)
                     .padding(.horizontal, -Spacing.margin)
 
@@ -248,9 +248,7 @@ struct TodayView: View {
             VStack(alignment: .leading, spacing: Spacing.lg) {
                 ForEach(Array(reading.dials.enumerated()), id: \.element.id) { index, dial in
                     if index > 0 {
-                        Rectangle()
-                            .fill(AppColor.hairline.opacity(0.15))
-                            .frame(height: 0.5)
+                        HairlineDivider()
                     }
                     let tints = dialTints(dial)
                     LifeDialMeter(dial: dial, leftTint: tints.0, rightTint: tints.1)
@@ -302,7 +300,7 @@ struct TodayView: View {
                 }
             }
 
-            Divider().overlay(AppColor.hairline.opacity(0.15))
+            HairlineDivider()
 
             HStack {
                 Label("Transit: \(reading.transitLine)", systemImage: "safari")
@@ -367,8 +365,7 @@ struct TodayView: View {
                         }
                         Spacer(minLength: 0)
                     }
-                    .padding(Spacing.md)
-                    .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.md))
+                    .infoWell()
                 }
             }
         }
@@ -385,6 +382,7 @@ struct TodayView: View {
                     .foregroundStyle(AppColor.onSurfaceVariant)
             }
             ForEach(Array(reading.tendencies.enumerated()), id: \.element.id) { index, tendency in
+                if index > 0 { HairlineDivider() }
                 VStack(spacing: Spacing.sm) {
                     HStack {
                         Text(tendency.title)
@@ -443,7 +441,7 @@ struct TodayView: View {
     }
 
     private func oracle(_ reading: DailyReading) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
             HStack {
                 Eyebrow(text: "Consult the Oracle", icon: "questionmark.circle", color: AppColor.onSurfaceVariant)
                 Spacer()
@@ -487,7 +485,7 @@ struct TodayView: View {
             actionButton(title: "Transit Map", icon: "calendar", action: viewModel.openTransitMap)
         }
         .padding(.vertical, Spacing.sm)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
+        .card(.tinted, padding: 0)
     }
 
     private func actionButton(title: String, icon: String, action: @escaping () -> Void) -> some View {

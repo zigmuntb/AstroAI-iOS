@@ -15,7 +15,7 @@ struct NameView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 stepRow
 
                 ScreenTitle(
@@ -110,12 +110,11 @@ struct NameView: View {
             .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.md))
             .overlay(
                 RoundedRectangle(cornerRadius: Radius.md)
-                    .stroke(isFieldFocused ? AppColor.champagne : AppColor.hairline.opacity(0.18), lineWidth: isFieldFocused ? 1 : 0.5)
+                    .stroke(isFieldFocused ? AppColor.champagne : AppColor.outlineVariant, lineWidth: isFieldFocused ? 1.5 : 1)
             )
             .animation(.easeInOut(duration: 0.2), value: isFieldFocused)
         }
-        .padding(Spacing.md)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
+        .card(.elevated, padding: Spacing.md)
     }
 
     private var previewCard: some View {

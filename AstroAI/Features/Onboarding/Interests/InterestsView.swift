@@ -14,7 +14,7 @@ struct InterestsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 titleBlock
                 resonanceCard
                 options
@@ -70,7 +70,7 @@ struct InterestsView: View {
             ),
             in: .rect(cornerRadius: Radius.lg)
         )
-        .overlay(RoundedRectangle(cornerRadius: Radius.lg).stroke(AppColor.hairline.opacity(0.12), lineWidth: 0.5))
+        .cardEdge()
     }
 
     private var options: some View {
@@ -85,9 +85,11 @@ struct InterestsView: View {
             }
             .padding(.bottom, Spacing.xs)
 
-            ForEach(viewModel.options) { interest in
-                InterestRow(interest: interest, isSelected: viewModel.isSelected(interest)) {
-                    viewModel.toggle(interest)
+            VStack(spacing: Spacing.lg) {
+                ForEach(viewModel.options) { interest in
+                    InterestRow(interest: interest, isSelected: viewModel.isSelected(interest)) {
+                        viewModel.toggle(interest)
+                    }
                 }
             }
         }
@@ -151,9 +153,10 @@ private struct InterestRow: View {
             .padding(Spacing.md)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                isSelected ? AppColor.primaryContainer : AppColor.surfaceContainerLow,
-                in: .rect(cornerRadius: Radius.md)
+                isSelected ? AppColor.primaryContainer : AppColor.surfaceContainerLowest,
+                in: panelShape(Radius.md)
             )
+            .cardEdge(radius: Radius.md, border: isSelected ? .clear : AppColor.outlineVariant, shadowOpacity: isSelected ? 0 : 0.06)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)

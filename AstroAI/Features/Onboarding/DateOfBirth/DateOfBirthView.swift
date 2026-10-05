@@ -14,7 +14,7 @@ struct DateOfBirthView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 stepRow
 
                 ScreenTitle(
@@ -99,8 +99,7 @@ struct DateOfBirthView: View {
             }
             .padding(.horizontal, Spacing.xs)
         }
-        .padding(Spacing.md)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
+        .card(.elevated, padding: Spacing.md)
     }
 
     private var signPill: some View {
@@ -168,8 +167,7 @@ struct DateOfBirthView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }
-        .padding(Spacing.md)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
+        .card(.tinted, padding: Spacing.md)
     }
 }

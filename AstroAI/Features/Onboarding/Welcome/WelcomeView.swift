@@ -14,7 +14,7 @@ struct WelcomeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 header
 
                 ScreenTitle(
@@ -78,8 +78,7 @@ struct WelcomeView: View {
                         .foregroundStyle(AppColor.outline)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, Spacing.md)
-                .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.md))
+                .card(.elevated, padding: Spacing.sm)
             }
         }
     }

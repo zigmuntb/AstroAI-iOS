@@ -14,7 +14,7 @@ struct AboutYouView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 titleBlock
                 PersonalContextForm(context: $viewModel.context)
                 note

@@ -138,7 +138,6 @@ struct ExploreView: View {
                     .foregroundStyle(AppColor.outline)
             }
             .card(.elevated)
-            .shadow(color: .black.opacity(0.04), radius: 4, y: 1)
         }
         .buttonStyle(.plain)
     }
@@ -218,9 +217,9 @@ struct ExploreView: View {
                 .padding([.horizontal, .bottom], Spacing.md)
                 .padding(.top, Spacing.xs)
             }
-            .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.md))
-            .clipShape(.rect(cornerRadius: Radius.md))
-            .shadow(color: .black.opacity(0.05), radius: 3, y: 1)
+            .background(AppColor.surfaceContainerLowest, in: panelShape(Radius.md))
+            .clipShape(panelShape(Radius.md))
+            .cardEdge(radius: Radius.md)
         }
         .buttonStyle(.plain)
     }
@@ -232,7 +231,7 @@ struct ExploreView: View {
             sectionTitle("Weekly Ephemeris", icon: "clock.arrow.circlepath", trailing: range, trailingColor: AppColor.outline)
             sectionCaption("Precise planetary mechanics, angles of tension, and celestial ingress mapped in real time.")
 
-            VStack(spacing: 10) {
+            VStack(spacing: Spacing.md) {
                 ForEach(Array(viewModel.transits.enumerated()), id: \.element.id) { index, transit in
                     transitRow(transit, tone: TransitTone.allCases[index % TransitTone.allCases.count])
                 }
@@ -270,9 +269,7 @@ struct ExploreView: View {
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(AppColor.outline)
         }
-        .padding(14)
-        .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.md))
-        .shadow(color: .black.opacity(0.04), radius: 2, y: 1)
+        .card(.elevated, padding: 14)
     }
 
     // MARK: - Knowledge Compendium
@@ -285,16 +282,12 @@ struct ExploreView: View {
             VStack(spacing: 0) {
                 ForEach(Array(viewModel.tomes.enumerated()), id: \.element.id) { index, tome in
                     if index > 0 {
-                        Rectangle()
-                            .fill(AppColor.surfaceContainerHigh)
-                            .frame(height: 1)
-                            .padding(.horizontal, Spacing.md)
+                        HairlineDivider(inset: Spacing.md)
                     }
                     tomeRow(tome, accent: index.isMultiple(of: 2) ? AppColor.primary : AppColor.secondary)
                 }
             }
-            .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.md))
-            .shadow(color: .black.opacity(0.04), radius: 2, y: 1)
+            .card(.elevated, padding: 0)
             .padding(.top, Spacing.sm)
         }
     }

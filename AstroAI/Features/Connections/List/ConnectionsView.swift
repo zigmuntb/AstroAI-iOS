@@ -82,7 +82,7 @@ struct ConnectionsView: View {
     // MARK: - Saved people
 
     private var list: some View {
-        VStack(alignment: .leading, spacing: Spacing.lg) {
+        VStack(alignment: .leading, spacing: Spacing.block) {
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 Eyebrow(text: "The Relational Ephemeris")
                 Text("Charts in orbit")
@@ -138,10 +138,8 @@ private struct SuggestionRow: View {
             .multilineTextAlignment(.leading)
             Spacer(minLength: 0)
         }
-        .padding(Spacing.md + 4)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
-        .contentShape(.rect)
+            .card(.elevated, padding: Spacing.md + 4)
+            .contentShape(.rect)
     }
 }
 
@@ -167,10 +165,8 @@ private struct ConnectionRow: View {
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(AppColor.outline)
         }
-        .padding(Spacing.md + 4)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
-        .contentShape(.rect)
+            .card(.elevated, padding: Spacing.md + 4)
+            .contentShape(.rect)
     }
 }
 

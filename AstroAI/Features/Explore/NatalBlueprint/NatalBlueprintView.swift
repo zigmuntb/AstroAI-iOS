@@ -14,7 +14,7 @@ struct NatalBlueprintView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 masthead
                 modePicker
 
@@ -170,7 +170,7 @@ struct NatalBlueprintView: View {
     // MARK: - Big Three
 
     private func bigThree(_ chart: NatalChart) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
             sectionHeader("The Big Three Trinity", trailing: "Core Architecture")
 
             ForEach(chart.bigThree) { placement in
@@ -239,7 +239,7 @@ struct NatalBlueprintView: View {
                 }
             }
 
-            Divider().overlay(AppColor.surfaceContainerHigh)
+            HairlineDivider()
 
             HStack {
                 Text("Modality Equilibrium".uppercased())
@@ -272,7 +272,7 @@ struct NatalBlueprintView: View {
     // MARK: - Placements
 
     private func placements(_ chart: NatalChart) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
             sectionHeader("Planetary Placements", trailing: "Interactive Axis")
 
             VStack(alignment: .leading, spacing: Spacing.sm) {
@@ -338,9 +338,7 @@ struct NatalBlueprintView: View {
                         Label(placement.aspectNote, systemImage: "infinity")
                             .font(AppFont.bodySmall)
                             .foregroundStyle(AppColor.primary)
-                            .padding(Spacing.sm + 2)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.sm))
+                            .infoWell(padding: Spacing.sm + 2)
                     }
                 }
                 .transition(.opacity)

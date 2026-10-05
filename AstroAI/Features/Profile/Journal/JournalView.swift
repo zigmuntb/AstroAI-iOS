@@ -15,7 +15,7 @@ struct JournalView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 header
                 searchField
                 filters
@@ -67,7 +67,8 @@ struct JournalView: View {
         }
         .padding(.horizontal, Spacing.md)
         .frame(height: 48)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.md))
+        .background(AppColor.surfaceContainerLowest, in: panelShape(Radius.md))
+        .cardEdge(radius: Radius.md, shadowOpacity: 0)
     }
 
     private var filters: some View {
@@ -139,8 +140,7 @@ struct JournalView: View {
             .buttonStyle(.plain)
             .disabled(!viewModel.canSubmit)
         }
-        .padding(Spacing.md)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.md))
+        .infoWell()
     }
 
     private func submit() {
@@ -151,7 +151,7 @@ struct JournalView: View {
     // MARK: - Timeline
 
     private var timeline: some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
             HStack {
                 Eyebrow(text: "Chronological Folios", color: AppColor.onSurfaceVariant)
                 Spacer()

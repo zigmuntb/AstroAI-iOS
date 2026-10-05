@@ -187,7 +187,7 @@ struct ProfileView: View {
     // MARK: - Journal
 
     private var journalSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
             SectionHeader(
                 title: "Personal Journal & Reflections",
                 subtitle: "Private meditations aligned to planetary cycles",
@@ -230,9 +230,7 @@ struct ProfileView: View {
                 }
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.outline)
-                .padding(Spacing.md)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.md))
+                .infoWell()
             }
             .buttonStyle(.plain)
         }
@@ -242,7 +240,7 @@ struct ProfileView: View {
     // MARK: - Folios
 
     private var foliosSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
             HStack(alignment: .firstTextBaseline) {
                 SectionHeader(title: "Saved Folios & Syntheses", subtitle: "Archived dialogues with your AI Oracle")
                 Button("ORGANIZE") {}
@@ -287,10 +285,7 @@ struct ProfileView: View {
             VStack(spacing: 0) {
                 ForEach(Array(viewModel.preferenceRows.enumerated()), id: \.element.id) { index, row in
                     if index > 0 {
-                        Rectangle()
-                            .fill(AppColor.hairline.opacity(0.15))
-                            .frame(height: 0.5)
-                            .padding(.leading, 56)
+                        HairlineDivider(leadingInset: 56)
                     }
                     Button(action: viewModel.openSettings) {
                         PreferenceRowView(row: row)

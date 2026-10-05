@@ -423,10 +423,7 @@ private struct SettingsSection<Content: View>: View {
 
 private struct SectionDivider: View {
     var body: some View {
-        Rectangle()
-            .fill(AppColor.hairline.opacity(0.15))
-            .frame(height: 0.5)
-            .padding(.horizontal, Spacing.md)
+        HairlineDivider(inset: Spacing.md)
     }
 }
 

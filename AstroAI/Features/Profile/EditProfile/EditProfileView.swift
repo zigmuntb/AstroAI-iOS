@@ -17,7 +17,7 @@ struct EditProfileView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 photoSection
                 nameSection
                 personalSection
@@ -167,7 +167,7 @@ struct EditProfileView: View {
             .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.md))
             .overlay(
                 RoundedRectangle(cornerRadius: Radius.md)
-                    .stroke(isNameFocused ? AppColor.champagne : AppColor.hairline.opacity(0.18), lineWidth: isNameFocused ? 1 : 0.5)
+                    .stroke(isNameFocused ? AppColor.champagne : AppColor.outlineVariant, lineWidth: isNameFocused ? 1.5 : 1)
             )
             .animation(.easeInOut(duration: 0.2), value: isNameFocused)
 
@@ -177,8 +177,7 @@ struct EditProfileView: View {
                     .foregroundStyle(AppColor.error)
             }
         }
-        .padding(Spacing.md)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
+        .card(.elevated, padding: Spacing.md)
     }
 
     // MARK: - Personal Context
@@ -196,8 +195,7 @@ struct EditProfileView: View {
             }
             PersonalContextForm(context: $viewModel.personal)
         }
-        .padding(Spacing.md)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
+        .card(.elevated, padding: Spacing.md)
     }
 
     // MARK: - Helpers

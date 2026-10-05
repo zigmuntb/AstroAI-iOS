@@ -14,10 +14,10 @@ struct IntentionsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 titleBlock
                 calibrationBar
-                VStack(spacing: Spacing.sm) {
+                VStack(spacing: Spacing.lg) {
                     ForEach(viewModel.options) { intention in
                         IntentionRow(intention: intention, isSelected: viewModel.isSelected(intention)) {
                             viewModel.toggle(intention)
@@ -81,7 +81,8 @@ struct IntentionsView: View {
         }
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.sm + 4)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.sm))
+        .background(AppColor.surfaceContainer, in: panelShape(Radius.md))
+        .cardEdge(radius: Radius.md, shadowOpacity: 0)
     }
 
     private var note: some View {
@@ -135,7 +136,8 @@ private struct IntentionRow: View {
             }
             .padding(Spacing.md + 4)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(isSelected ? AppColor.primary : AppColor.surfaceContainer, in: .rect(cornerRadius: Radius.sm))
+            .background(isSelected ? AppColor.primary : AppColor.surfaceContainerLowest, in: panelShape())
+            .cardEdge(border: isSelected ? .clear : AppColor.outlineVariant, shadowOpacity: isSelected ? 0 : 0.06)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)

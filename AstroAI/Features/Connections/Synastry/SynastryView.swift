@@ -14,7 +14,7 @@ struct SynastryView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 recordHeader
                 pairSwitcher
                 personColumns
@@ -147,7 +147,7 @@ struct SynastryView: View {
     // MARK: - Dimensions
 
     private func dimensions(_ report: SynastryReport) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
             SectionHeader(title: "Dimensional Architecture", trailing: "\(report.dimensions.count) Dimensions")
                 .padding(.top, Spacing.sm)
             ForEach(Array(report.dimensions.enumerated()), id: \.element.id) { index, dimension in

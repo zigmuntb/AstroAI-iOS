@@ -69,17 +69,13 @@ struct ChartPreparationView: View {
         VStack(spacing: 0) {
             ForEach(viewModel.steps) { step in
                 if step.id > 0 {
-                    Rectangle()
-                        .fill(AppColor.outlineVariant.opacity(0.6))
-                        .frame(height: 0.5)
+                    HairlineDivider()
                         .padding(.vertical, Spacing.md)
                 }
                 StepRow(step: step)
             }
         }
-        .padding(Spacing.lg)
-        .background(AppColor.surfaceContainerLow, in: .rect(cornerRadius: Radius.lg))
-        .shadow(color: .black.opacity(0.03), radius: 8, y: 2)
+        .card(.elevated, padding: Spacing.lg)
     }
 }
 

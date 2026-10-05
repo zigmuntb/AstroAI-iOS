@@ -11,7 +11,7 @@ struct ArticleView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.block) {
                 VStack(alignment: .leading, spacing: Spacing.md) {
                     Text(article.glyph)
                         .font(.system(size: 26, design: .serif).italic())
@@ -36,14 +36,16 @@ struct ArticleView: View {
                     .lineSpacing(4)
                     .padding(.leading, Spacing.md)
                     .overlay(alignment: .leading) {
-                        Rectangle().fill(AppColor.champagne).frame(width: 2)
+                        Rectangle().fill(AppColor.champagne).frame(width: 3)
                     }
+                    .card(.tinted, padding: Spacing.lg)
 
-                ForEach(paragraphs, id: \.self) { paragraph in
+                ForEach(Array(paragraphs.enumerated()), id: \.offset) { _, paragraph in
                     Text(paragraph)
                         .font(AppFont.bodyLarge)
-                        .foregroundStyle(AppColor.onSurfaceVariant)
+                        .foregroundStyle(AppColor.onSurface)
                         .lineSpacing(5)
+                        .card(.elevated, padding: Spacing.lg)
                 }
 
                 PrivacyFootnote(text: "Symbolic language, not fixed fate", icon: "sparkles")

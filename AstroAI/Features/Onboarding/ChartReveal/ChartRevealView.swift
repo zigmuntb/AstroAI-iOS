@@ -14,10 +14,10 @@ struct ChartRevealView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: Spacing.lg) {
+            VStack(spacing: Spacing.block) {
                 titleBlock
                 wheel
-                VStack(spacing: Spacing.sm + 4) {
+                VStack(spacing: Spacing.lg) {
                     ForEach(viewModel.bigThree) { placement in
                         BigThreeCard(placement: placement, isSelected: viewModel.selectedPlanet == placement.planet) {
                             viewModel.select(placement.planet)
@@ -150,6 +150,7 @@ struct ChartRevealView: View {
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .multilineTextAlignment(.center)
+                    .card(.tinted)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }

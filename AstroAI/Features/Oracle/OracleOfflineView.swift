@@ -79,7 +79,7 @@ struct OracleOfflineView: View {
                     .font(AppFont.labelMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
             }
-            Divider().overlay(AppColor.hairline.opacity(0.15))
+            HairlineDivider()
             ledgerRow(
                 icon: "checkmark", title: "Available Offline",
                 text: "Natal Blueprint (Placidus), Today's Transit Matrix, Past 14 Journal Entries",
