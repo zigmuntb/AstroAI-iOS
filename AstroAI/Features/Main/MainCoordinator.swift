@@ -176,7 +176,7 @@ final class MainCoordinator: MainRouting {
             ))
         case .synastry(let connection):
             SynastryView(viewModel: SynastryViewModel(
-                connection: connection, connections: dependencies.connectionsService,
+                connection: connection,
                 astrology: dependencies.astrologyService, userService: dependencies.userService, router: self
             ))
         case .journal:

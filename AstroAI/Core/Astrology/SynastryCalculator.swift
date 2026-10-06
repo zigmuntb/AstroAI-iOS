@@ -5,6 +5,15 @@
 
 import Foundation
 
+/// An aspect between the partner's planet and the user's planet, tightest first.
+struct SynastryAspect: Hashable, Identifiable {
+    var id: String { "\(partnerPlanet.rawValue)-\(userPlanet.rawValue)-\(kind.rawValue)" }
+    let partnerPlanet: Planet
+    let userPlanet: Planet
+    let kind: AspectKind
+    let orb: Double
+}
+
 /// Compares two natal charts and writes a synastry report from the tightest contacts.
 enum SynastryCalculator {
     private static let personal: Set<Planet> = [.sun, .moon, .mercury, .venus, .mars, .jupiter, .saturn, .ascendant]
@@ -65,6 +74,13 @@ enum SynastryCalculator {
             }
         }
         return result.sorted { $0.orb < $1.orb }
+    }
+
+    /// Every cross-chart aspect the report is written from, tightest first.
+    static func aspects(between user: NatalChart, and partner: NatalChart) -> [SynastryAspect] {
+        contacts(from: partner, to: user).map {
+            SynastryAspect(partnerPlanet: $0.from, userPlanet: $0.to, kind: $0.kind, orb: $0.orb)
+        }
     }
 
     // MARK: - Copy

@@ -16,10 +16,10 @@ struct SynastryView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.block) {
                 recordHeader
-                pairSwitcher
-                personColumns
+                pairHeader
 
                 if let report = viewModel.report {
+                    personColumns
                     topology(report)
                     dimensions(report)
                     inquiries(report)
@@ -38,6 +38,7 @@ struct SynastryView: View {
         .scrollIndicators(.hidden)
         .screenBackground()
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear { viewModel.refreshPhoto() }
         .task { await viewModel.load() }
     }
 
@@ -63,23 +64,19 @@ struct SynastryView: View {
         .padding(.top, Spacing.sm)
     }
 
-    private var pairSwitcher: some View {
+    private var pairHeader: some View {
         HStack(spacing: Spacing.md) {
             HStack(spacing: -12) {
-                portrait(viewModel.user.portrait, size: 44)
-                portrait(viewModel.partner.portrait, size: 44)
+                AvatarView(content: viewModel.userAvatar, size: 44)
+                    .overlay(Circle().stroke(AppColor.surface, lineWidth: 2))
+                PartnerInitial(name: viewModel.partnerName, size: 44)
             }
             VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: Spacing.xs) {
-                    Text(viewModel.title)
-                        .font(AppFont.headlineMedium)
-                        .foregroundStyle(AppColor.onSurface)
-                        .lineLimit(1)
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(AppColor.outline)
-                }
-                Text("\(viewModel.relationLabel) • Synced")
+                Text(viewModel.title)
+                    .font(AppFont.headlineMedium)
+                    .foregroundStyle(AppColor.onSurface)
+                    .lineLimit(1)
+                Text(viewModel.pairSubtitle)
                     .font(AppFont.bodySmall)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .lineLimit(1)
@@ -96,15 +93,6 @@ struct SynastryView: View {
         }
     }
 
-    private func portrait(_ name: String, size: CGFloat) -> some View {
-        Image(name)
-            .resizable()
-            .scaledToFill()
-            .frame(width: size, height: size)
-            .clipShape(.circle)
-            .overlay(Circle().stroke(AppColor.surface, lineWidth: 2))
-    }
-
     // MARK: - Topology
 
     private func topology(_ report: SynastryReport) -> some View {
@@ -117,9 +105,14 @@ struct SynastryView: View {
                     .foregroundStyle(AppColor.outline)
             }
 
-            NatalWheel(showsSigns: false)
-                .frame(height: 220)
+            SynastryWheel(user: viewModel.userChart, partner: viewModel.partnerChart, aspects: viewModel.aspects)
+                .frame(height: 280)
                 .padding(.vertical, Spacing.sm)
+
+            HStack(spacing: Spacing.lg) {
+                wheelKey(color: AppColor.primaryContainer, name: viewModel.userName, ring: "Inner")
+                wheelKey(color: AppColor.secondary, name: viewModel.partnerName, ring: "Outer")
+            }
 
             VStack(spacing: Spacing.sm) {
                 Text(report.title.uppercased())
@@ -137,6 +130,22 @@ struct SynastryView: View {
             .multilineTextAlignment(.center)
         }
         .card(.tinted, padding: Spacing.lg)
+    }
+
+    private func wheelKey(color: Color, name: String, ring: String) -> some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(color)
+                .frame(width: 8, height: 8)
+            Text(name)
+                .font(AppFont.labelMedium)
+                .foregroundStyle(AppColor.onSurface)
+                .lineLimit(1)
+            Text(ring)
+                .font(AppFont.labelSmall)
+                .tracking(0.4)
+                .foregroundStyle(AppColor.outline)
+        }
     }
 
     // MARK: - Dimensions
@@ -299,6 +308,34 @@ struct SynastryView: View {
 }
 
 // MARK: - Pieces
+
+/// The partner has no stored photo: the first letter of their name on a warm ground.
+private struct PartnerInitial: View {
+    let name: String
+    var size: CGFloat = 44
+
+    private var initial: String {
+        name.trimmingCharacters(in: .whitespaces).first.map { String($0).uppercased() } ?? ""
+    }
+
+    var body: some View {
+        ZStack {
+            AppColor.secondaryContainer
+            if initial.isEmpty {
+                Image(systemName: "person")
+                    .font(.system(size: size * 0.4, weight: .medium))
+            } else {
+                Text(initial)
+                    .font(.system(size: size * 0.42, weight: .regular, design: .serif))
+            }
+        }
+        .foregroundStyle(AppColor.secondary)
+        .frame(width: size, height: size)
+        .clipShape(.circle)
+        .overlay(Circle().stroke(AppColor.surface, lineWidth: 2))
+        .accessibilityLabel(name.isEmpty ? "Partner" : name)
+    }
+}
 
 private struct PersonColumn: View {
     let person: SynastryViewModel.Person

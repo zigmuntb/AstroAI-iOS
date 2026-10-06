@@ -10,8 +10,6 @@ import Observation
 final class SynastryViewModel {
     struct Person {
         let name: String
-        let role: String
-        let portrait: String
         let placements: [Placement]
     }
 
@@ -32,6 +30,12 @@ final class SynastryViewModel {
     private(set) var report: SynastryReport?
     private(set) var isLoading = false
     private(set) var errorMessage: String?
+    /// JPEG of the signed-in user's photo. Nil when they have not chosen one.
+    private(set) var userPhoto: Data?
+    /// Full calculated charts, used to draw the bi-wheel.
+    private(set) var userChart: [PlanetPlacement] = []
+    private(set) var partnerChart: [PlanetPlacement] = []
+    private(set) var aspects: [SynastryAspect] = []
     var hidesDegrees = false
 
     let userName: String
@@ -41,16 +45,14 @@ final class SynastryViewModel {
     private(set) var partner: Person
 
     @ObservationIgnored private let connection: Connection
-    @ObservationIgnored private let connections: ConnectionsServicing
     @ObservationIgnored private let astrology: AstrologyServicing
     @ObservationIgnored private let userService: UserServicing
     @ObservationIgnored private weak var router: MainRouting?
-    @ObservationIgnored private var userSign: ZodiacSign
+    @ObservationIgnored private var userSign: ZodiacSign?
     @ObservationIgnored private var partnerSign: ZodiacSign
 
-    init(connection: Connection, connections: ConnectionsServicing, astrology: AstrologyServicing, userService: UserServicing, router: MainRouting) {
+    init(connection: Connection, astrology: AstrologyServicing, userService: UserServicing, router: MainRouting) {
         self.connection = connection
-        self.connections = connections
         self.astrology = astrology
         self.userService = userService
         self.router = router
@@ -59,23 +61,32 @@ final class SynastryViewModel {
         userName = name.isEmpty ? "You" : name
         partnerName = connection.name
         relationLabel = connection.kinship.relationLabel
-        userSign = userService.profile.map { astrology.sunSign(for: $0.birth.date) } ?? .scorpio
+        userPhoto = userService.avatarData
+        userSign = userService.profile.map { astrology.sunSign(for: $0.birth.date) }
         partnerSign = astrology.sunSign(for: connection.birth.date)
 
-        user = Person(name: userName, role: "Initiator", portrait: "SynastryElena", placements: [
-            Placement(glyph: "☉", label: "SUN", value: userSign.name)
-        ])
-        partner = Person(name: connection.name, role: "Anchor", portrait: "SynastryJulian", placements: [
-            Placement(glyph: "☉", label: "SUN", value: partnerSign.name)
-        ])
+        user = Person(name: userName, placements: [])
+        partner = Person(name: partnerName, placements: [])
     }
 
     var title: String { "\(userName) & \(partnerName)" }
-    var userGlyph: String { userSign.glyph }
+
+    var userAvatar: AvatarContent {
+        AvatarContent(imageData: userPhoto, name: userName)
+    }
+
+    /// Kinship they chose, plus the two Sun signs once both birth dates are known.
+    var pairSubtitle: String {
+        guard let userSign else { return relationLabel }
+        return "\(relationLabel) · \(userSign.name) & \(partnerSign.name)"
+    }
+
+    var userGlyph: String { userSign?.glyph ?? "" }
     var partnerGlyph: String { partnerSign.glyph }
 
     var cardSubtitle: String {
-        hidesDegrees
+        guard let userSign else { return relationLabel }
+        return hidesDegrees
             ? "\(userSign.element) & \(partnerSign.element) Resonance"
             : "\(userSign.name) Sun • \(partnerSign.name) Sun"
     }
@@ -95,20 +106,33 @@ final class SynastryViewModel {
         guard report == nil else { return }
         isLoading = true
         errorMessage = nil
+        userPhoto = userService.avatarData
         do {
-            if let birth = userService.profile?.birth {
-                let userChart = try await astrology.natalChart(for: birth)
-                let otherChart = try await astrology.natalChart(for: connection.birth)
-                userSign = userChart.placement(.sun)?.sign ?? userSign
-                partnerSign = otherChart.placement(.sun)?.sign ?? partnerSign
-                user = Person(name: userName, role: "Initiator", portrait: user.portrait, placements: Self.placements(from: userChart))
-                partner = Person(name: partnerName, role: "Anchor", portrait: partner.portrait, placements: Self.placements(from: otherChart))
-            }
-            report = try await connections.synastry(with: connection)
+            guard let profile = userService.profile else { throw UserServiceError.noProfile }
+            let userChart = try await astrology.natalChart(for: profile.birth)
+            let partnerChart = try await astrology.natalChart(for: connection.birth)
+            if let sun = userChart.placement(.sun)?.sign { userSign = sun }
+            if let sun = partnerChart.placement(.sun)?.sign { partnerSign = sun }
+            self.userChart = userChart.placements
+            self.partnerChart = partnerChart.placements
+            aspects = SynastryCalculator.aspects(between: userChart, and: partnerChart)
+            user = Person(name: userName, placements: Self.placements(from: userChart))
+            partner = Person(name: partnerName, placements: Self.placements(from: partnerChart))
+            report = SynastryCalculator.report(
+                user: userChart,
+                other: partnerChart,
+                userName: userName,
+                connection: connection
+            )
         } catch {
             errorMessage = "The synastry matrix couldn't be calculated. Please try again."
         }
         isLoading = false
+    }
+
+    /// Picks up a photo chosen after this screen was opened.
+    func refreshPhoto() {
+        userPhoto = userService.avatarData
     }
 
     func toggleDegrees() {

@@ -43,7 +43,7 @@ struct CelestialMark: View {
 }
 
 /// Hairline natal wheel: zodiac ring, house spokes, planets and aspect chords.
-/// Used on Welcome, Chart Reveal, Natal Blueprint, Paywall and Synastry.
+/// Used on Welcome, Chart Reveal, Natal Blueprint and Paywall.
 struct NatalWheel: View {
     var placements: [PlanetPlacement] = MockData.natalChart.placements
     var highlighted: Set<Planet> = [.sun, .moon, .ascendant]
