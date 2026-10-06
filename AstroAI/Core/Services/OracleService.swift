@@ -25,7 +25,6 @@ enum OracleError: LocalizedError {
 
 protocol OracleServicing: AnyObject {
     var quota: OracleQuota { get }
-    var suggestions: [String] { get }
     var requiresNetwork: Bool { get }
 
     /// Streams snapshots of the answer as it is generated. Every snapshot carries
@@ -56,16 +55,15 @@ extension AsyncThrowingStream where Failure == Error {
 final class OracleService: OracleServicing {
     private let network: NetworkManaging
     private let monitor: NetworkMonitoring
-    private var usedToday = 2
-    private let dailyLimit = 3
+    private let quotaStore: OracleQuotaStoring
 
-    init(network: NetworkManaging, monitor: NetworkMonitoring) {
+    init(network: NetworkManaging, monitor: NetworkMonitoring, quotaStore: OracleQuotaStoring) {
         self.network = network
         self.monitor = monitor
+        self.quotaStore = quotaStore
     }
 
-    var quota: OracleQuota { OracleQuota(used: usedToday, limit: dailyLimit) }
-    var suggestions: [String] { MockData.oracleSuggestions }
+    var quota: OracleQuota { quotaStore.quota }
     var requiresNetwork: Bool { true }
 
     func ask(_ question: String, history: [ChatMessage], isPremium: Bool) -> AsyncThrowingStream<ChatMessage, Error> {
@@ -74,7 +72,7 @@ final class OracleService: OracleServicing {
             guard isPremium || quota.remaining > 0 else { throw OracleError.limitReached }
 
             try await Task.sleep(for: .seconds(1))
-            usedToday += 1
+            quotaStore.recordUse()
             continuation.yield(MockData.oracleAnswer(to: question))
         }
     }

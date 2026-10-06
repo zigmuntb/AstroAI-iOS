@@ -145,12 +145,6 @@ enum MockData {
 
     // MARK: - Oracle
 
-    static let oracleSuggestions = [
-        "What should I focus on this week?",
-        "What does my chart say about my creative work?",
-        "How can I find more balance right now?"
-    ]
-
     static func oracleAnswer(to question: String) -> ChatMessage {
         ChatMessage(
             role: .oracle,

@@ -18,6 +18,7 @@ final class OnDeviceOracleService: OracleServicing {
     private let connections: ConnectionsServicing
     private let journal: JournalServicing
     private let memory: OracleMemoryStoring
+    private let quotaStore: OracleQuotaStoring
 
     /// Created lazily so it always carries the latest profile, chart, sky and connections.
     private var session: LanguageModelSession?
@@ -25,8 +26,6 @@ final class OnDeviceOracleService: OracleServicing {
     private var sessionSnapshot: (profile: UserProfile?, connections: [Connection], day: Date, options: ChartOptions)?
     /// Keeps the tool lookups alive for the session.
     private var toolbox: OracleToolbox?
-    private var usedToday = 0
-    private let dailyLimit = 3
 
     /// How many recent messages are carried over when the context window overflows.
     private let carriedOverMessages = 4
@@ -45,17 +44,18 @@ final class OnDeviceOracleService: OracleServicing {
         astrology: AstrologyServicing,
         connections: ConnectionsServicing,
         journal: JournalServicing,
-        memory: OracleMemoryStoring
+        memory: OracleMemoryStoring,
+        quotaStore: OracleQuotaStoring
     ) {
         self.userService = userService
         self.astrology = astrology
         self.connections = connections
         self.journal = journal
         self.memory = memory
+        self.quotaStore = quotaStore
     }
 
-    var quota: OracleQuota { OracleQuota(used: usedToday, limit: dailyLimit) }
-    var suggestions: [String] { MockData.oracleSuggestions }
+    var quota: OracleQuota { quotaStore.quota }
     var requiresNetwork: Bool { false }
 
     func ask(_ question: String, history: [ChatMessage], isPremium: Bool) -> AsyncThrowingStream<ChatMessage, Error> {
@@ -88,7 +88,7 @@ final class OnDeviceOracleService: OracleServicing {
                 return
             }
 
-            usedToday += 1
+            quotaStore.recordUse()
             memory.record(question: question, answer: answer)
         }
     }

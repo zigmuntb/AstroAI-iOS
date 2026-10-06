@@ -69,24 +69,7 @@ final class OracleViewModel {
     }
 
     var suggestions: [String] {
-        var result: [String] = []
-        if let transit = sky?.keyTransit {
-            result.append("How does \(transit.transiting.name) \(transit.verb.replacingOccurrences(of: "gently ", with: "")) my natal \(transit.natal.name) affect me?")
-        }
-        let interests = userService.profile?.interests ?? []
-        let byInterest: [(Interest, String)] = [
-            (.love, "What does my chart say about love right now?"),
-            (.career, "Is this a good time for a career move?"),
-            (.emotions, "Why do my emotions feel so intense lately?"),
-            (.selfDiscovery, "What are my greatest natural strengths?"),
-            (.growth, "What is my next step for personal growth?"),
-            (.friendship, "Which kind of people bring out my best?"),
-            (.dailyGuidance, "What should I focus on today?")
-        ]
-        result += byInterest.filter { interests.contains($0.0) }.map(\.1)
-        result += oracle.suggestions
-        var seen = Set<String>()
-        return Array(result.filter { seen.insert($0).inserted }.prefix(3))
+        OracleSuggestions.make(chart: chart, sky: sky, interests: userService.profile?.interests ?? [])
     }
 
     var quotaText: String { "\(quota.used) of \(quota.limit) daily free inquiries used" }
@@ -121,6 +104,7 @@ final class OracleViewModel {
             chart = nil
         }
         sky = astrology.sky(at: .now, natal: chart)
+        quota = oracle.quota
         if isUntouched {
             messages = [greeting]
         }

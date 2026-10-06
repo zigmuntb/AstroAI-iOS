@@ -7,6 +7,7 @@ import SwiftUI
 
 struct OracleView: View {
     @State private var viewModel: OracleViewModel
+    @Environment(\.scenePhase) private var scenePhase
     @FocusState private var isInputFocused: Bool
 
     private let typingID = "typing"
@@ -55,6 +56,10 @@ struct OracleView: View {
         .screenBackground()
         .toolbarVisibility(.hidden, for: .navigationBar)
         .task { await viewModel.loadSky() }
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
+            Task { await viewModel.loadSky() }
+        }
     }
 
     // MARK: - Context
@@ -257,7 +262,14 @@ struct OracleView: View {
 
     // MARK: - Suggestions & quota
 
+    @ViewBuilder
     private var suggestions: some View {
+        if !viewModel.suggestions.isEmpty {
+            suggestionsList
+        }
+    }
+
+    private var suggestionsList: some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
             HStack {
                 Eyebrow(text: "Suggested Contemplations", color: AppColor.onSurfaceVariant)

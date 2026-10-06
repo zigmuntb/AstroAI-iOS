@@ -40,15 +40,17 @@ final class AppDependencies {
         locationService = LocationService()
         connectionsService = ConnectionsService(storage: storage, astrology: astrologyService, userService: userService)
         journalService = JournalService(storage: storage, astrology: astrologyService, userService: userService)
+        let oracleQuota = OracleQuotaStore(storage: storage)
         oracleService = OnDeviceOracleService.isSupported
             ? OnDeviceOracleService(
                 userService: userService,
                 astrology: astrologyService,
                 connections: connectionsService,
                 journal: journalService,
-                memory: OracleMemoryStore(storage: storage)
+                memory: OracleMemoryStore(storage: storage),
+                quotaStore: oracleQuota
             )
-            : OracleService(network: network, monitor: networkMonitor)
+            : OracleService(network: network, monitor: networkMonitor, quotaStore: oracleQuota)
         subscriptionService = SubscriptionService(userService: userService)
     }
 }
