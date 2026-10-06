@@ -104,7 +104,7 @@ final class LocalModelOracleService: OracleServicing {
             }
 
             guard !answer.isEmpty else { throw OracleError.generationFailed }
-            quotaStore.recordUse()
+            if !isPremium { quotaStore.recordUse() }
             memory.record(question: question, answer: answer)
         }
     }

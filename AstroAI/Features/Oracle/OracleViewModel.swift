@@ -14,6 +14,8 @@ final class OracleViewModel {
     private(set) var streamingMessageID: UUID?
     private(set) var isRetrying = false
     private(set) var quota: OracleQuota
+    /// Free-tier counter and the upgrade prompt. Hidden once the account has a paid subscription.
+    private(set) var showsFreeQuota: Bool
     /// Set when a free on-device model still has to be downloaded.
     private(set) var modelInstall: OracleModelInstall?
     /// Download progress while the on-device model is being installed, from 0 to 1.
@@ -47,6 +49,7 @@ final class OracleViewModel {
         self.networkMonitor = networkMonitor
         self.router = router
         self.quota = oracle.quota
+        self.showsFreeQuota = !(userService.profile?.isPremium ?? false)
         self.modelInstall = oracle.modelInstall
         self.messages = [Self.greeting(name: userService.profile?.name, chart: nil, sky: nil)]
     }
@@ -111,7 +114,7 @@ final class OracleViewModel {
             chart = nil
         }
         sky = astrology.sky(at: .now, natal: chart)
-        quota = oracle.quota
+        refreshAccess()
         modelInstall = oracle.modelInstall
         if isUntouched {
             messages = [greeting]
@@ -239,9 +242,15 @@ final class OracleViewModel {
             }
             isTyping = false
             streamingMessageID = nil
-            quota = oracle.quota
+            refreshAccess()
             modelInstall = oracle.modelInstall
         }
+    }
+
+    /// Keeps the free-tier banner in step with the stored subscription. Premium accounts never see it.
+    private func refreshAccess() {
+        quota = oracle.quota
+        showsFreeQuota = !isPremium
     }
 
     private var greeting: ChatMessage {

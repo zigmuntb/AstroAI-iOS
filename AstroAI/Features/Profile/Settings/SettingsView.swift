@@ -296,18 +296,20 @@ struct SettingsView: View {
             Text(viewModel.membershipText)
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onPrimary.opacity(0.75))
-            Rectangle()
-                .fill(AppColor.onPrimary.opacity(0.15))
-                .frame(height: 0.5)
-            HStack {
-                Spacer()
-                Button(action: viewModel.manageSubscription) {
-                    Text(viewModel.membershipAction)
-                        .font(AppFont.bodySmall.weight(.semibold))
-                        .underline()
-                        .foregroundStyle(AppColor.champagne)
+            if !viewModel.isPremium {
+                Rectangle()
+                    .fill(AppColor.onPrimary.opacity(0.15))
+                    .frame(height: 0.5)
+                HStack {
+                    Spacer()
+                    Button(action: viewModel.manageSubscription) {
+                        Text(viewModel.membershipAction)
+                            .font(AppFont.bodySmall.weight(.semibold))
+                            .underline()
+                            .foregroundStyle(AppColor.champagne)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
         }
         .card(.accent, padding: Spacing.lg)

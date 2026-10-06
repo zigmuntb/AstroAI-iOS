@@ -85,7 +85,7 @@ final class OracleService: OracleServicing {
             guard isPremium || quota.remaining > 0 else { throw OracleError.limitReached }
 
             try await Task.sleep(for: .seconds(1))
-            quotaStore.recordUse()
+            if !isPremium { quotaStore.recordUse() }
             continuation.yield(MockData.oracleAnswer(to: question))
         }
     }

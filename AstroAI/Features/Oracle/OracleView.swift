@@ -37,7 +37,9 @@ struct OracleView: View {
                         } else {
                             suggestions
                         }
-                        quota
+                        if viewModel.showsFreeQuota {
+                            quota
+                        }
                     }
                 }
                 .padding(.horizontal, Spacing.margin)

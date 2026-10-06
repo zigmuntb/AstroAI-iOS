@@ -86,7 +86,7 @@ final class OnDeviceOracleService: OracleServicing {
                 return
             }
 
-            quotaStore.recordUse()
+            if !isPremium { quotaStore.recordUse() }
             memory.record(question: question, answer: answer)
         }
     }
