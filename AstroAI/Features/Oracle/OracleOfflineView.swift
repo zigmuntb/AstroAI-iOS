@@ -55,10 +55,10 @@ struct OracleOfflineView: View {
             .padding(.vertical, Spacing.lg)
 
             Eyebrow(text: "No connection")
-            Text("The Oracle needs the network.")
+            Text("The download needs a connection.")
                 .font(AppFont.headlineLarge)
                 .foregroundStyle(AppColor.onSurface)
-            Text("Your chart, today's reading, and journal are still on this phone.")
+            Text("A free model is installed on this phone once. Your chart and journal stay here either way.")
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onSurfaceVariant)
                 .padding(.top, Spacing.xs)
@@ -82,7 +82,7 @@ struct OracleOfflineView: View {
             )
             ledgerRow(
                 icon: "pause.fill", title: "Waiting for a connection",
-                text: "Replies from the Oracle",
+                text: "The on-device Oracle, downloaded once",
                 tint: AppColor.primaryContainer, titleColor: AppColor.primaryContainer
             )
         }

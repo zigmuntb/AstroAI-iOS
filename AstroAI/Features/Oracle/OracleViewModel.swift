@@ -14,6 +14,11 @@ final class OracleViewModel {
     private(set) var streamingMessageID: UUID?
     private(set) var isRetrying = false
     private(set) var quota: OracleQuota
+    /// Set when a free on-device model still has to be downloaded.
+    private(set) var modelInstall: OracleModelInstall?
+    /// Download progress while the on-device model is being installed, from 0 to 1.
+    private(set) var installProgress: Double?
+    private(set) var installError: String?
     private(set) var savedMessageIDs: Set<UUID> = []
     private(set) var copiedMessageID: UUID?
     var draft = ""
@@ -42,6 +47,7 @@ final class OracleViewModel {
         self.networkMonitor = networkMonitor
         self.router = router
         self.quota = oracle.quota
+        self.modelInstall = oracle.modelInstall
         self.messages = [Self.greeting(name: userService.profile?.name, chart: nil, sky: nil)]
     }
 
@@ -86,7 +92,8 @@ final class OracleViewModel {
     var showsTypingIndicator: Bool { isTyping && streamingMessageID == nil }
 
     var canSend: Bool {
-        !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isTyping
+        modelInstall == nil && installProgress == nil
+            && !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isTyping
     }
 
     func timestamp(for message: ChatMessage) -> String {
@@ -105,6 +112,7 @@ final class OracleViewModel {
         }
         sky = astrology.sky(at: .now, natal: chart)
         quota = oracle.quota
+        modelInstall = oracle.modelInstall
         if isUntouched {
             messages = [greeting]
         }
@@ -112,9 +120,30 @@ final class OracleViewModel {
 
     func ask(_ question: String) {
         let text = question.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty, !isTyping else { return }
+        guard !text.isEmpty, !isTyping, modelInstall == nil, installProgress == nil else { return }
         messages.append(ChatMessage(role: .user, text: text))
         request(text)
+    }
+
+    func installModel() {
+        guard modelInstall != nil, installProgress == nil else { return }
+        installError = nil
+        installProgress = 0
+        Task {
+            do {
+                for try await progress in oracle.installModel() {
+                    installProgress = progress
+                }
+                installProgress = nil
+                modelInstall = oracle.modelInstall
+            } catch is CancellationError {
+                installProgress = nil
+            } catch {
+                installProgress = nil
+                installError = error.localizedDescription
+                modelInstall = oracle.modelInstall
+            }
+        }
     }
 
     func send() {
@@ -211,6 +240,7 @@ final class OracleViewModel {
             isTyping = false
             streamingMessageID = nil
             quota = oracle.quota
+            modelInstall = oracle.modelInstall
         }
     }
 

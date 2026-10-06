@@ -32,7 +32,11 @@ struct OracleView: View {
                     } else {
                         contextBar
                         transcript
-                        suggestions
+                        if let install = viewModel.modelInstall {
+                            modelInstallCard(install)
+                        } else {
+                            suggestions
+                        }
                         quota
                     }
                 }
@@ -261,6 +265,38 @@ struct OracleView: View {
     }
 
     // MARK: - Suggestions & quota
+
+    private func modelInstallCard(_ install: OracleModelInstall) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            Eyebrow(text: "On this phone")
+            Text("Install the Oracle")
+                .font(AppFont.headlineMedium)
+                .foregroundStyle(AppColor.onSurface)
+            Text("Apple Intelligence isn't available here, so the Oracle uses a free open model. It downloads once (\(install.sizeDescription)) and then answers stay on this phone, without a server.")
+                .font(AppFont.bodyMedium)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+                .fixedSize(horizontal: false, vertical: true)
+            if let progress = viewModel.installProgress {
+                ProgressView(value: progress) {
+                    Text(progress > 0 && progress < 1 ? "Downloading…" : "Preparing the Oracle…")
+                        .font(AppFont.labelMedium)
+                        .foregroundStyle(AppColor.onSurfaceVariant)
+                }
+                .tint(AppColor.primary)
+            } else {
+                Button(action: viewModel.installModel) {
+                    Text("Download the Oracle")
+                }
+                .buttonStyle(.astroPrimary)
+            }
+            if let installError = viewModel.installError {
+                Text(installError)
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.primaryContainer)
+            }
+        }
+        .card(.tinted, padding: Spacing.md + 4)
+    }
 
     @ViewBuilder
     private var suggestions: some View {

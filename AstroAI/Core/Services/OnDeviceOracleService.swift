@@ -28,9 +28,7 @@ final class OnDeviceOracleService: OracleServicing {
     private var toolbox: OracleToolbox?
 
     /// How many recent messages are carried over when the context window overflows.
-    private let carriedOverMessages = 4
-    /// People whose synastry goes straight into the instructions; the rest are looked up with a tool.
-    private let closePeopleCount = 3
+    private let carriedOverMessages = OraclePrompt.carriedOverMessages
 
     /// The model may still be downloading or Apple Intelligence may be turned off;
     /// that is checked per request, so only device eligibility matters here.
@@ -114,64 +112,20 @@ final class OnDeviceOracleService: OracleServicing {
     }
 
     private func makeSession(history: [ChatMessage]) async -> LanguageModelSession {
-        let profile = userService.profile
-        let people = connections.connections()
-        var chart: NatalChart?
-        if let birth = profile?.birth {
-            chart = try? await astrology.natalChart(for: birth)
-        }
-        let now = Date.now
-        let toolbox = OracleToolbox(journal: journal, connections: connections, astrology: astrology, natal: chart)
-        var peopleNotes: [String] = []
-        for person in people.prefix(closePeopleCount) {
-            peopleNotes.append(await toolbox.personChart(person))
-        }
-        let context = OracleContext(
-            profile: profile,
-            chart: chart,
-            sky: astrology.sky(at: now, natal: chart),
-            connections: people,
-            peopleNotes: peopleNotes,
-            memory: memory.entries(),
-            hasJournal: !journal.entries().isEmpty,
-            date: now
+        let material = await OraclePrompt.make(
+            userService: userService,
+            astrology: astrology,
+            connections: connections,
+            journal: journal,
+            memory: memory,
+            history: history,
+            offersTools: true
         )
-
-        let session = LanguageModelSession(
-            tools: toolbox.tools,
-            instructions: Self.instructions(context: context, history: history)
-        )
+        let session = LanguageModelSession(tools: material.toolbox.tools, instructions: material.instructions)
         self.session = session
-        self.toolbox = toolbox
-        sessionSnapshot = (profile, people, now, astrology.chartOptions)
+        self.toolbox = material.toolbox
+        sessionSnapshot = (material.profile, material.connections, material.date, material.options)
         return session
-    }
-
-    private static func instructions(context: OracleContext, history: [ChatMessage]) -> String {
-        let personal = context.profile?.personal
-        var instructions = """
-            You are the AstroAI Oracle — a warm, poetic but grounded astrologer.
-            You help the user reflect on their feelings, relationships and life path through the lens of astrology.
-            \(personal?.length?.instruction ?? "Answer in 2–4 short paragraphs.") Reply in the same language the user writes in.
-            \(personal?.tone?.instruction ?? "Be warm but honest.")
-            Do not use markdown headings or lists.
-            Never give medical, legal or financial advice; gently suggest a professional instead.
-
-            What you know about the user is below. Weave relevant details into your answers \
-            (their placements, today's transits, their situation, interests and goals), occasionally \
-            address them by name, but never recite this information back as a list.
-            Ground answers about today in the transits below.
-            \(context.toolRules)
-
-            \(context.prompt)
-            """
-        let recap = history
-            .map { "\($0.role == .user ? "User" : "Oracle"): \($0.text)" }
-            .joined(separator: "\n")
-        if !recap.isEmpty {
-            instructions += "\n\nRecent conversation:\n\(recap)"
-        }
-        return instructions
     }
 
     // MARK: - Generation

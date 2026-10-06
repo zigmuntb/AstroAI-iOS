@@ -12,6 +12,8 @@ enum StorageKey: String {
     case journal
     case oracleMemory
     case oracleQuota
+    /// Id of the on-device fallback model, once its weights are on this phone.
+    case localOracleModel
 }
 
 protocol StorageManaging {

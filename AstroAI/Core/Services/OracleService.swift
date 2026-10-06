@@ -11,6 +11,7 @@ enum OracleError: LocalizedError {
     case unsupportedLanguage
     case busy
     case generationFailed
+    case installFailed
 
     var errorDescription: String? {
         switch self {
@@ -19,6 +20,7 @@ enum OracleError: LocalizedError {
         case .unsupportedLanguage: "The Oracle doesn't speak this language yet. Try asking in English."
         case .busy: "The Oracle is still contemplating. Please try again in a moment."
         case .generationFailed: "The connection to the stars was lost. Please try again."
+        case .installFailed: "The on-device Oracle couldn't be installed. Check your connection and try again."
         }
     }
 }
@@ -31,6 +33,18 @@ protocol OracleServicing: AnyObject {
     /// the same message `id` and the full text produced so far.
     func ask(_ question: String, history: [ChatMessage], isPremium: Bool) -> AsyncThrowingStream<ChatMessage, Error>
     func resetSession()
+
+    /// Set when a free on-device model still has to be downloaded. Nil once the Oracle can answer.
+    var modelInstall: OracleModelInstall? { get }
+    func installModel() -> AsyncThrowingStream<Double, Error>
+}
+
+extension OracleServicing {
+    var modelInstall: OracleModelInstall? { nil }
+
+    func installModel() -> AsyncThrowingStream<Double, Error> {
+        .run { _ in }
+    }
 }
 
 extension AsyncThrowingStream where Failure == Error {
@@ -50,8 +64,7 @@ extension AsyncThrowingStream where Failure == Error {
     }
 }
 
-/// AI astrologer dialogue. The real implementation will call an AI proxy
-/// (Supabase edge function) through `NetworkManager`.
+/// Network stub kept for a future online Oracle. Phones without Apple Intelligence use `LocalModelOracleService`.
 final class OracleService: OracleServicing {
     private let network: NetworkManaging
     private let monitor: NetworkMonitoring

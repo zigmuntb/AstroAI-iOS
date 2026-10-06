@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		85A1E0012F00000000000001 /* AstronomyEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 85A1E0032F00000000000001 /* AstronomyEngine */; };
+		85A1E0302F00000000000030 /* MLXLLM in Frameworks */ = {isa = PBXBuildFile; productRef = 85A1E0202F00000000000020 /* MLXLLM */; };
+		85A1E0312F00000000000031 /* MLXLMCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 85A1E0212F00000000000021 /* MLXLMCommon */; };
+		85A1E0322F00000000000032 /* MLXHuggingFace in Frameworks */ = {isa = PBXBuildFile; productRef = 85A1E0222F00000000000022 /* MLXHuggingFace */; };
+		85A1E0332F00000000000033 /* HuggingFace in Frameworks */ = {isa = PBXBuildFile; productRef = 85A1E0232F00000000000023 /* HuggingFace */; };
+		85A1E0342F00000000000034 /* Tokenizers in Frameworks */ = {isa = PBXBuildFile; productRef = 85A1E0242F00000000000024 /* Tokenizers */; };
+		85A1E0352F00000000000035 /* MLX in Frameworks */ = {isa = PBXBuildFile; productRef = 85A1E0252F00000000000025 /* MLX */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +34,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				85A1E0012F00000000000001 /* AstronomyEngine in Frameworks */,
+				85A1E0302F00000000000030 /* MLXLLM in Frameworks */,
+				85A1E0312F00000000000031 /* MLXLMCommon in Frameworks */,
+				85A1E0322F00000000000032 /* MLXHuggingFace in Frameworks */,
+				85A1E0332F00000000000033 /* HuggingFace in Frameworks */,
+				85A1E0342F00000000000034 /* Tokenizers in Frameworks */,
+				85A1E0352F00000000000035 /* MLX in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +83,12 @@
 			name = AstroAI;
 			packageProductDependencies = (
 				85A1E0032F00000000000001 /* AstronomyEngine */,
+				85A1E0202F00000000000020 /* MLXLLM */,
+				85A1E0212F00000000000021 /* MLXLMCommon */,
+				85A1E0222F00000000000022 /* MLXHuggingFace */,
+				85A1E0232F00000000000023 /* HuggingFace */,
+				85A1E0242F00000000000024 /* Tokenizers */,
+				85A1E0252F00000000000025 /* MLX */,
 			);
 			productName = AstroAI;
 			productReference = 852E3727306FE3F000A73D80 /* AstroAI.app */;
@@ -102,6 +120,10 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				85A1E0022F00000000000001 /* XCLocalSwiftPackageReference "Packages/AstronomyEngine" */,
+				85A1E0102F00000000000010 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */,
+				85A1E0112F00000000000011 /* XCRemoteSwiftPackageReference "swift-huggingface" */,
+				85A1E0122F00000000000012 /* XCRemoteSwiftPackageReference "swift-transformers" */,
+				85A1E0132F00000000000013 /* XCRemoteSwiftPackageReference "mlx-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 852E3728306FE3F000A73D80 /* Products */;
@@ -261,6 +283,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_ENTITLEMENTS = AstroAI.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = R7UFNAWC4M;
 				ENABLE_PREVIEWS = YES;
@@ -294,6 +317,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_ENTITLEMENTS = AstroAI.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = R7UFNAWC4M;
 				ENABLE_PREVIEWS = YES;
@@ -351,11 +375,76 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		85A1E0102F00000000000010 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift-lm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.32.3;
+			};
+		};
+		85A1E0112F00000000000011 /* XCRemoteSwiftPackageReference "swift-huggingface" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/huggingface/swift-huggingface";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
+		85A1E0122F00000000000012 /* XCRemoteSwiftPackageReference "swift-transformers" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/huggingface/swift-transformers";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
+		85A1E0132F00000000000013 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.32.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		85A1E0032F00000000000001 /* AstronomyEngine */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 85A1E0022F00000000000001 /* XCLocalSwiftPackageReference "Packages/AstronomyEngine" */;
 			productName = AstronomyEngine;
+		};
+		85A1E0202F00000000000020 /* MLXLLM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85A1E0102F00000000000010 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
+			productName = MLXLLM;
+		};
+		85A1E0212F00000000000021 /* MLXLMCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85A1E0102F00000000000010 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
+			productName = MLXLMCommon;
+		};
+		85A1E0222F00000000000022 /* MLXHuggingFace */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85A1E0102F00000000000010 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
+			productName = MLXHuggingFace;
+		};
+		85A1E0232F00000000000023 /* HuggingFace */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85A1E0112F00000000000011 /* XCRemoteSwiftPackageReference "swift-huggingface" */;
+			productName = HuggingFace;
+		};
+		85A1E0242F00000000000024 /* Tokenizers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85A1E0122F00000000000012 /* XCRemoteSwiftPackageReference "swift-transformers" */;
+			productName = Tokenizers;
+		};
+		85A1E0252F00000000000025 /* MLX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 85A1E0132F00000000000013 /* XCRemoteSwiftPackageReference "mlx-swift" */;
+			productName = MLX;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
