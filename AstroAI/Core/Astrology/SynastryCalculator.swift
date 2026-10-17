@@ -95,6 +95,14 @@ enum SynastryCalculator {
         )
     }
 
+    /// Midpoint longitudes of the relationship's own chart. Used for the week's sky on the bond.
+    static func compositeLongitudes(user: NatalChart, other: NatalChart) -> [(planet: Planet, longitude: Double)] {
+        [Planet.sun, .moon, .mercury, .venus, .mars].compactMap { planet in
+            guard let ours = user.placement(planet)?.longitude, let theirs = other.placement(planet)?.longitude else { return nil }
+            return (planet, midpoint(ours, theirs))
+        }
+    }
+
     /// Shorter-arc midpoint of two ecliptic longitudes.
     private static func midpoint(_ a: Double, _ b: Double) -> Double {
         var value = b + Ephemeris.signedDifference(a, b) / 2

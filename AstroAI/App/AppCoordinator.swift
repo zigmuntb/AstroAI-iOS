@@ -37,11 +37,18 @@ final class AppCoordinator {
         let coordinator = MainCoordinator(dependencies: dependencies)
         coordinator.onSignOut = { [weak self] in self?.showOnboarding() }
         withAnimation { flow = .main(coordinator) }
+        dependencies.attunement.refresh()
+    }
+
+    func attune() {
+        guard case .main = flow else { return }
+        dependencies.attunement.refresh()
     }
 }
 
 struct AppCoordinatorView: View {
     let coordinator: AppCoordinator
+    @Environment(\.scenePhase) private var scenePhase
     @State private var showsLaunchAnimation = true
 
     var body: some View {
@@ -63,5 +70,13 @@ struct AppCoordinatorView: View {
             }
         }
         .tint(AppColor.primary)
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active, !showsLaunchAnimation else { return }
+            coordinator.attune()
+        }
+        .onChange(of: showsLaunchAnimation) { _, showing in
+            guard !showing, scenePhase == .active else { return }
+            coordinator.attune()
+        }
     }
 }

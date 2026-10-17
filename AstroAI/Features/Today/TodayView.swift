@@ -20,6 +20,9 @@ struct TodayView: View {
             VStack(alignment: .leading, spacing: Spacing.block) {
                 if let reading = viewModel.reading {
                     masthead(reading)
+                    if let motion = viewModel.moonMotion {
+                        moonMotionCard(motion)
+                    }
                     synthesis(reading)
                     balances(reading)
                     luckyNumbers(reading)
@@ -107,6 +110,22 @@ struct TodayView: View {
                 .foregroundStyle(AppColor.onSurfaceVariant)
                 .fixedSize(horizontal: false, vertical: true)
         }
+    }
+
+    private func moonMotionCard(_ motion: MoonMotion) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.xs) {
+            Text(motion.line)
+                .font(AppFont.bodyMedium.weight(.medium))
+                .foregroundStyle(AppColor.onSurface)
+                .fixedSize(horizontal: false, vertical: true)
+            if motion.isVoid {
+                Text("Nothing new needs a decision until the Moon changes sign.")
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .card(.tinted)
     }
 
     private var tarot: some View {

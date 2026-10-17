@@ -27,6 +27,7 @@ final class AppDependencies {
     let journalService: JournalServicing
     let subscriptionService: SubscriptionServicing
     let preferencesService: PreferencesServicing
+    let attunement: AttunementScheduling
 
     init() {
         network = NetworkManager(baseURL: AppConfig.apiBaseURL, defaultHeaders: ["apikey": AppConfig.apiKey])
@@ -63,5 +64,10 @@ final class AppDependencies {
         let subscriptions = SubscriptionService(userService: userService)
         subscriptions.start()
         subscriptionService = subscriptions
+        attunement = AttunementScheduler(
+            astrology: astrologyService,
+            userService: userService,
+            preferences: preferencesService
+        )
     }
 }

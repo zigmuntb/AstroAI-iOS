@@ -15,6 +15,8 @@ final class ExploreViewModel {
 
     private(set) var library: ExploreLibrary?
     private(set) var isPremium = false
+    private(set) var timeline: PersonalTransitTimeline?
+    private(set) var year: YearAhead?
     /// Placements drawn on the blueprint card. Empty until the user's chart is calculated.
     private(set) var placements: [PlanetPlacement] = []
     /// "Scorpio Sun · Cancer Moon · Leo Rising", from the user's chart.
@@ -57,7 +59,22 @@ final class ExploreViewModel {
     }
 
     var hasNoResults: Bool {
-        library != nil && !query.isEmpty && transits.isEmpty && lifeCycles.isEmpty
+        library != nil && !query.isEmpty && transits.isEmpty && lifeCycles.isEmpty && monthEvents.isEmpty && !showsYear
+    }
+
+    var monthEvents: [PersonalTransitEvent] {
+        guard let timeline else { return [] }
+        return timeline.events.filter { matches($0.title, $0.houseLine, $0.advice, $0.whenLabel) }
+    }
+
+    var showsMonth: Bool {
+        timeline != nil && (query.isEmpty || !monthEvents.isEmpty)
+    }
+
+    var showsYear: Bool {
+        guard let year else { return false }
+        guard !query.isEmpty else { return true }
+        return matches(year.eyebrow, year.title, year.lordLine, year.theme, year.refrain, year.turningLine ?? "", year.basis)
     }
 
     private func matches(_ fields: String...) -> Bool {
@@ -80,6 +97,7 @@ final class ExploreViewModel {
             }
         }
         await refreshChart()
+        refreshForecasts()
     }
 
     func retry() async {
@@ -124,6 +142,17 @@ final class ExploreViewModel {
                 blueprintLine = nil
             }
         }
+    }
+
+    private func refreshForecasts() {
+        guard let birth = userService.profile?.birth else {
+            timeline = nil
+            year = nil
+            return
+        }
+        let chart = NatalChartCalculator.chart(for: birth, options: astrology.chartOptions)
+        timeline = PersonalTransitForecast.timeline(chart: chart, options: astrology.chartOptions)
+        year = AnnualProfection.reading(chart: chart, born: birth.date)
     }
 
     private static func blueprintLine(for chart: NatalChart) -> String {

@@ -17,6 +17,12 @@ struct ExploreView: View {
             VStack(alignment: .leading, spacing: 0) {
                 VStack(alignment: .leading, spacing: Spacing.xl) {
                     blueprintCard
+                    if let year = viewModel.year, viewModel.showsYear {
+                        yearCard(year)
+                    }
+                    if viewModel.showsMonth {
+                        monthSection
+                    }
                     content
                 }
                 .padding(.horizontal, Spacing.margin)
@@ -34,7 +40,7 @@ struct ExploreView: View {
                 ProfileToolbarButton(action: viewModel.openProfile)
             }
         }
-        .searchable(text: $viewModel.searchText, prompt: "Search this week's sky")
+        .searchable(text: $viewModel.searchText, prompt: "Search your sky")
         .task { await viewModel.load() }
     }
 
@@ -100,6 +106,101 @@ struct ExploreView: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - Year and month
+
+    private func yearCard(_ year: YearAhead) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(year.eyebrow.uppercased())
+                    .font(AppFont.labelSmall)
+                    .tracking(1.2)
+                    .foregroundStyle(AppColor.secondary)
+                Spacer()
+                Text(year.trailing)
+                    .font(AppFont.labelMedium)
+                    .foregroundStyle(AppColor.outline)
+            }
+            Text(year.title)
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.onSurface)
+            Text(year.lordLine)
+                .font(AppFont.bodyMedium.weight(.medium))
+                .foregroundStyle(AppColor.onSurface)
+            Text(year.theme)
+                .font(AppFont.bodyMedium)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(year.refrain)
+                .font(AppFont.bodyMedium.italic())
+                .foregroundStyle(AppColor.onSurface)
+                .fixedSize(horizontal: false, vertical: true)
+            if let turning = year.turningLine {
+                Text(turning)
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Text(year.basis)
+                .font(AppFont.labelMedium)
+                .foregroundStyle(AppColor.outline)
+        }
+        .card(.tinted)
+    }
+
+    private var monthSection: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            sectionTitle(
+                "Your Month",
+                icon: "calendar",
+                trailing: viewModel.timeline?.rangeLabel ?? "",
+                trailingColor: AppColor.outline
+            )
+            if viewModel.monthEvents.isEmpty {
+                Text("No exact transit falls on your chart in this stretch.")
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .padding(.top, Spacing.sm)
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(Array(viewModel.monthEvents.enumerated()), id: \.element.id) { index, event in
+                        if index > 0 { HairlineDivider() }
+                        monthRow(event)
+                    }
+                }
+                .padding(.top, Spacing.sm)
+            }
+        }
+    }
+
+    private func monthRow(_ event: PersonalTransitEvent) -> some View {
+        HStack(alignment: .top, spacing: Spacing.md) {
+            GlyphBadge(glyph: event.glyph, size: 40)
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(event.title)
+                        .font(AppFont.bodyMedium.weight(.medium))
+                        .foregroundStyle(AppColor.onSurface)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: Spacing.sm)
+                    Text(event.whenLabel)
+                        .font(AppFont.labelMedium)
+                        .foregroundStyle(AppColor.outline)
+                        .multilineTextAlignment(.trailing)
+                }
+                Text(event.houseLine)
+                    .font(AppFont.labelMedium)
+                    .foregroundStyle(AppColor.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(event.advice)
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.vertical, 12)
+        .accessibilityElement(children: .combine)
     }
 
     // MARK: - Weekly Ephemeris

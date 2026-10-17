@@ -14,16 +14,61 @@
 		85A1E0332F00000000000033 /* HuggingFace in Frameworks */ = {isa = PBXBuildFile; productRef = 85A1E0232F00000000000023 /* HuggingFace */; };
 		85A1E0342F00000000000034 /* Tokenizers in Frameworks */ = {isa = PBXBuildFile; productRef = 85A1E0242F00000000000024 /* Tokenizers */; };
 		85A1E0352F00000000000035 /* MLX in Frameworks */ = {isa = PBXBuildFile; productRef = 85A1E0252F00000000000025 /* MLX */; };
+		85B1E0012F00000000000001 /* AstroAIWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 85B1E0022F00000000000002 /* AstroAIWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		85B1E0032F00000000000003 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 852E371F306FE3F000A73D80 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 85B1E0042F00000000000004;
+			remoteInfo = AstroAIWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		85B1E0052F00000000000005 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				85B1E0012F00000000000001 /* AstroAIWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		852E3727306FE3F000A73D80 /* AstroAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AstroAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		85B1E0022F00000000000002 /* AstroAIWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AstroAIWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		85B1E0062F00000000000006 /* Exceptions for "AstroAIWidget" folder in "AstroAIWidget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AstroAIWidget.entitlements,
+				Info.plist,
+			);
+			target = 85B1E0042F00000000000004 /* AstroAIWidget */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		852E3729306FE3F000A73D80 /* AstroAI */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = AstroAI;
+			sourceTree = "<group>";
+		};
+		85B1E0072F00000000000007 /* AstroAIWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				85B1E0062F00000000000006 /* Exceptions for "AstroAIWidget" folder in "AstroAIWidget" target */,
+			);
+			path = AstroAIWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -43,6 +88,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		85B1E00B2F0000000000000B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -50,6 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				852E3729306FE3F000A73D80 /* AstroAI */,
+				85B1E0072F00000000000007 /* AstroAIWidget */,
 				852E3728306FE3F000A73D80 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -58,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				852E3727306FE3F000A73D80 /* AstroAI.app */,
+				85B1E0022F00000000000002 /* AstroAIWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -72,10 +126,12 @@
 				852E3723306FE3F000A73D80 /* Sources */,
 				852E3724306FE3F000A73D80 /* Frameworks */,
 				852E3725306FE3F000A73D80 /* Resources */,
+				85B1E0052F00000000000005 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				85B1E0082F00000000000008 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				852E3729306FE3F000A73D80 /* AstroAI */,
@@ -94,6 +150,26 @@
 			productReference = 852E3727306FE3F000A73D80 /* AstroAI.app */;
 			productType = "com.apple.product-type.application";
 		};
+		85B1E0042F00000000000004 /* AstroAIWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 85B1E0092F00000000000009 /* Build configuration list for PBXNativeTarget "AstroAIWidget" */;
+			buildPhases = (
+				85B1E00A2F0000000000000A /* Sources */,
+				85B1E00B2F0000000000000B /* Frameworks */,
+				85B1E00C2F0000000000000C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				85B1E0072F00000000000007 /* AstroAIWidget */,
+			);
+			name = AstroAIWidget;
+			productName = AstroAIWidget;
+			productReference = 85B1E0022F00000000000002 /* AstroAIWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -105,6 +181,9 @@
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					852E3726306FE3F000A73D80 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+					85B1E0042F00000000000004 = {
 						CreatedOnToolsVersion = 26.0;
 					};
 				};
@@ -131,12 +210,20 @@
 			projectRoot = "";
 			targets = (
 				852E3726306FE3F000A73D80 /* AstroAI */,
+				85B1E0042F00000000000004 /* AstroAIWidget */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		852E3725306FE3F000A73D80 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		85B1E00C2F0000000000000C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -153,7 +240,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		85B1E00A2F0000000000000A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		85B1E0082F00000000000008 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 85B1E0042F00000000000004 /* AstroAIWidget */;
+			targetProxy = 85B1E0032F00000000000003 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		852E3732306FE3F000A73D80 /* Debug */ = {
@@ -345,6 +447,60 @@
 			};
 			name = Release;
 		};
+		85B1E00D2F0000000000000D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = AstroAIWidget/AstroAIWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R7UFNAWC4M;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AstroAIWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Attunement;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BogdanArsenkin.AstroAI.Attunement;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		85B1E00E2F0000000000000E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = AstroAIWidget/AstroAIWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R7UFNAWC4M;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AstroAIWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Attunement;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BogdanArsenkin.AstroAI.Attunement;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -362,6 +518,15 @@
 			buildConfigurations = (
 				852E3735306FE3F000A73D80 /* Debug */,
 				852E3736306FE3F000A73D80 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		85B1E0092F00000000000009 /* Build configuration list for PBXNativeTarget "AstroAIWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				85B1E00D2F0000000000000D /* Debug */,
+				85B1E00E2F0000000000000E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

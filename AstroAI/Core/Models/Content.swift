@@ -151,6 +151,20 @@ struct SynastryDimension: Codable, Hashable, Identifiable {
 
 // MARK: - Journal
 
+/// The sky at the moment a journal entry was written.
+struct JournalSky: Codable, Hashable {
+    var moonPhase: String
+    var moonSign: String
+    var transit: String?
+
+    var caption: String {
+        var parts = [moonPhase]
+        if !moonSign.isEmpty { parts.append("Moon in \(moonSign)") }
+        if let transit, !transit.isEmpty { parts.append(transit) }
+        return parts.joined(separator: " · ")
+    }
+}
+
 struct JournalEntry: Codable, Hashable, Identifiable {
     enum Kind: String, Codable, CaseIterable { case reflection, oracle, bookmark }
 
@@ -161,6 +175,8 @@ struct JournalEntry: Codable, Hashable, Identifiable {
     let quote: String
     let body: String
     let tags: [String]
+    /// Nil for entries saved before the sky was kept with the page.
+    var sky: JournalSky? = nil
 }
 
 // MARK: - Subscription

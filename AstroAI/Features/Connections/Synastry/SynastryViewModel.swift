@@ -28,6 +28,7 @@ final class SynastryViewModel {
     }
 
     private(set) var report: SynastryReport?
+    private(set) var week: RelationshipWeek?
     private(set) var isLoading = false
     private(set) var errorMessage: String?
     /// JPEG of the signed-in user's photo. Nil when they have not chosen one.
@@ -118,6 +119,12 @@ final class SynastryViewModel {
             aspects = SynastryCalculator.aspects(between: userChart, and: partnerChart)
             user = Person(name: userName, placements: Self.placements(from: userChart))
             partner = Person(name: partnerName, placements: Self.placements(from: partnerChart))
+            week = RelationshipWeekBuilder.week(
+                user: userChart,
+                other: partnerChart,
+                connection: connection,
+                options: astrology.chartOptions
+            )
             report = SynastryCalculator.report(
                 user: userChart,
                 other: partnerChart,

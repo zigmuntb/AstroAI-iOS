@@ -10,6 +10,7 @@ import UIKit
 @Observable
 final class TodayViewModel {
     private(set) var reading: DailyReading?
+    private(set) var moonMotion: MoonMotion?
     private(set) var isLoading = false
     private(set) var errorMessage: String?
     private(set) var selectedMood: String?
@@ -80,6 +81,7 @@ final class TodayViewModel {
         errorMessage = nil
         do {
             reading = try await astrology.dailyReading(for: userService.profile)
+            moonMotion = MoonMotionCalculator.make(at: .now, options: astrology.chartOptions)
         } catch {
             errorMessage = error.localizedDescription
         }

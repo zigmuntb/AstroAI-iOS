@@ -133,6 +133,7 @@ struct JournalView: View {
 
     private var timeline: some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
+            patternsCard
             HStack {
                 Eyebrow(text: "Entries", color: AppColor.onSurfaceVariant)
                 Spacer()
@@ -154,6 +155,32 @@ struct JournalView: View {
                 }
             }
         }
+    }
+
+    private var patternsCard: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Eyebrow(text: "Patterns", color: AppColor.onSurfaceVariant)
+            if viewModel.patterns.isEmpty {
+                Text("The next reflections keep the Moon and the transit. After a few under the same Moon, a pattern shows up here.")
+                    .font(AppFont.bodyMedium)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                ForEach(viewModel.patterns) { pattern in
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(pattern.title)
+                            .font(AppFont.bodyMedium.weight(.medium))
+                            .foregroundStyle(AppColor.onSurface)
+                        Text(pattern.detail)
+                            .font(AppFont.bodySmall)
+                            .foregroundStyle(AppColor.onSurfaceVariant)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(.top, Spacing.xs)
+                }
+            }
+        }
+        .card(.tinted)
     }
 }
 
@@ -177,6 +204,13 @@ private struct JournalEntryCard: View {
                     .lineLimit(1)
                 Spacer(minLength: Spacing.sm)
                 badge
+            }
+
+            if let caption = entry.sky?.caption, !caption.isEmpty {
+                Text(caption)
+                    .font(AppFont.labelMedium)
+                    .foregroundStyle(AppColor.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Text("\u{201C}\(entry.quote)\u{201D}")

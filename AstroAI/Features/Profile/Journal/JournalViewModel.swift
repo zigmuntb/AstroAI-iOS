@@ -34,7 +34,7 @@ final class JournalViewModel {
         return entries.filter { entry in
             if case .kind(let kind) = selectedFilter, entry.kind != kind { return false }
             guard !query.isEmpty else { return true }
-            return ([entry.context, entry.quote, entry.body] + entry.tags)
+            return ([entry.context, entry.quote, entry.body, entry.sky?.caption ?? ""] + entry.tags)
                 .contains { $0.localizedCaseInsensitiveContains(query) }
         }
     }
@@ -43,7 +43,8 @@ final class JournalViewModel {
         !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    let seasonTitle = "Scorpio Season · 2024"
+    var seasonTitle: String { journal.skyLine }
+    var patterns: [JournalPattern] { journal.patterns() }
 
     @ObservationIgnored private let journal: JournalServicing
     @ObservationIgnored private weak var router: MainRouting?

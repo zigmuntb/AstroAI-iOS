@@ -20,6 +20,9 @@ struct SynastryView: View {
                 pairHeader
 
                 if let report = viewModel.report {
+                    if let week = viewModel.week {
+                        weekSection(week)
+                    }
                     personColumns
                     topology(report)
                     compositeSection(report)
@@ -86,6 +89,39 @@ struct SynastryView: View {
             Spacer(minLength: 0)
         }
         .card(.tinted, padding: 12)
+    }
+
+    private func weekSection(_ week: RelationshipWeek) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            SectionHeader(title: "This Week", trailing: week.rangeLabel)
+            ForEach(week.beats) { beat in
+                HStack(alignment: .top, spacing: Spacing.md) {
+                    GlyphBadge(glyph: beat.glyph, size: 40)
+                    VStack(alignment: .leading, spacing: Spacing.xs) {
+                        HStack(alignment: .firstTextBaseline) {
+                            Text(beat.title)
+                                .font(AppFont.bodyMedium.weight(.medium))
+                                .foregroundStyle(AppColor.onSurface)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Spacer(minLength: Spacing.sm)
+                            Text(beat.when)
+                                .font(AppFont.labelMedium)
+                                .foregroundStyle(AppColor.outline)
+                                .multilineTextAlignment(.trailing)
+                        }
+                        Text(beat.detail)
+                            .font(AppFont.bodySmall)
+                            .foregroundStyle(AppColor.onSurfaceVariant)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+            Text("“\(week.question)”")
+                .font(AppFont.quote)
+                .foregroundStyle(AppColor.onSurface)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .card(.tinted)
     }
 
     private var personColumns: some View {

@@ -29,6 +29,7 @@ struct SettingsView: View {
         .scrollIndicators(.hidden)
         .screenBackground()
         .navigationBarTitleDisplayMode(.inline)
+        .task { await viewModel.refreshNotifications() }
         .sheet(item: $legalDocument) { document in
             LegalDocumentView(document: document)
         }
@@ -248,6 +249,14 @@ struct SettingsView: View {
                 .buttonStyle(.plain)
             }
             .padding(Spacing.md)
+            if let note = viewModel.notificationNote {
+                Text(note)
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, Spacing.md)
+                    .padding(.bottom, Spacing.md)
+            }
         }
     }
 

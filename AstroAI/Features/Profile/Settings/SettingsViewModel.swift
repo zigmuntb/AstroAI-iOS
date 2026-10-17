@@ -19,10 +19,12 @@ final class SettingsViewModel {
         didSet {
             guard prefs != oldValue else { return }
             preferences.save(prefs)
+            Task { await refreshNotifications() }
         }
     }
 
     var isConfirmingPurge = false
+    private(set) var notificationNote: String?
 
     let houseSystems = HouseSystem.allCases.map(\.rawValue)
     let zodiacOptions = [
@@ -53,12 +55,20 @@ final class SettingsViewModel {
     @ObservationIgnored private let preferences: PreferencesServicing
     @ObservationIgnored private let userService: UserServicing
     @ObservationIgnored private let subscriptions: SubscriptionServicing
+    @ObservationIgnored private let attunement: AttunementScheduling
     @ObservationIgnored private weak var router: MainRouting?
 
-    init(preferences: PreferencesServicing, userService: UserServicing, subscriptions: SubscriptionServicing, router: MainRouting) {
+    init(
+        preferences: PreferencesServicing,
+        userService: UserServicing,
+        subscriptions: SubscriptionServicing,
+        attunement: AttunementScheduling,
+        router: MainRouting
+    ) {
         self.preferences = preferences
         self.userService = userService
         self.subscriptions = subscriptions
+        self.attunement = attunement
         self.router = router
         prefs = preferences.load()
     }
@@ -69,6 +79,10 @@ final class SettingsViewModel {
     func selectZodiac(_ zodiac: String) { prefs.zodiac = zodiac }
     func selectLunarNode(_ node: String) { prefs.lunarNode = node }
     func toggleQuietWindow() { prefs.quietWindow.toggle() }
+
+    func refreshNotifications() async {
+        notificationNote = await attunement.sync()
+    }
 
     func requestPurge() {
         isConfirmingPurge = true

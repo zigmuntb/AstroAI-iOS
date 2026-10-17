@@ -161,6 +161,7 @@ final class MainCoordinator: MainRouting {
     }
 
     func signOut() {
+        dependencies.attunement.clear()
         TarotCardStore.clear()
         dependencies.userService.signOut()
         onSignOut?()
@@ -198,6 +199,7 @@ final class MainCoordinator: MainRouting {
                 preferences: dependencies.preferencesService,
                 userService: dependencies.userService,
                 subscriptions: dependencies.subscriptionService,
+                attunement: dependencies.attunement,
                 router: self
             ))
         }
