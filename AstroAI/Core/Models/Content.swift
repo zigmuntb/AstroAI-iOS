@@ -172,6 +172,8 @@ struct SubscriptionPlan: Codable, Hashable, Identifiable {
     let price: String
     let period: String
     var badge: String? = nil
+    /// Spoken trial length, such as "1-week". Nil when the plan has no free trial.
+    var trial: String? = nil
 }
 
 // MARK: - Settings

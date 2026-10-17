@@ -60,6 +60,8 @@ final class AppDependencies {
                 quotaStore: oracleQuota,
                 storage: storage
             )
-        subscriptionService = SubscriptionService(userService: userService)
+        let subscriptions = SubscriptionService(userService: userService)
+        subscriptions.start()
+        subscriptionService = subscriptions
     }
 }

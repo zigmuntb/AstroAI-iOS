@@ -203,13 +203,6 @@ enum MockData {
         )
     ]
 
-    // MARK: - Subscription
-
-    static let plans = [
-        SubscriptionPlan(id: "astroai.annual", title: "Annual Sanctuary", subtitle: "$4.99 / month, billed annually", price: "$59.99", period: "/ year", badge: "7-Day Free Trial • Save 48%"),
-        SubscriptionPlan(id: "astroai.monthly", title: "Monthly Membership", subtitle: "Standard monthly cadence", price: "$9.99", period: "/ month")
-    ]
-
     // MARK: - Helpers
 
     private static func date(_ year: Int, _ month: Int, _ day: Int, _ hour: Int, _ minute: Int) -> Date {

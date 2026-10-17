@@ -7,6 +7,7 @@ import SwiftUI
 
 struct PaywallView: View {
     @State private var viewModel: PaywallViewModel
+    @State private var legalDocument: LegalDocument?
 
     init(viewModel: PaywallViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -43,6 +44,9 @@ struct PaywallView: View {
         .presentationDragIndicator(.hidden)
         .interactiveDismissDisabled(viewModel.isPurchasing)
         .task { await viewModel.load() }
+        .sheet(item: $legalDocument) { document in
+            LegalDocumentView(document: document)
+        }
         .alert(
             viewModel.alert?.title ?? "",
             isPresented: Binding(get: { viewModel.alert != nil }, set: { if !$0 { viewModel.alert = nil } }),
@@ -248,9 +252,9 @@ struct PaywallView: View {
 
     private var legal: some View {
         HStack(spacing: 12) {
-            Button("Terms of Service") {}
+            Button("Terms of Service") { legalDocument = .terms }
             Text("•")
-            Button("Privacy Policy") {}
+            Button("Privacy Policy") { legalDocument = .privacy }
             Text("•")
             Button("Restore") { Task { await viewModel.restore() } }
                 .disabled(viewModel.isBusy)

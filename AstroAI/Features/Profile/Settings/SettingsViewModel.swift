@@ -39,10 +39,10 @@ final class SettingsViewModel {
         }
     }
 
-    private(set) var isPremium = false
+    var isPremium: Bool { userService.profile?.isPremium ?? false }
 
     var membershipTitle: String { isPremium ? "AstroAI Sanctuary Edition" : "AstroAI Seeker Edition" }
-    var membershipBadge: String { isPremium ? "Renews Sep 2025" : "Free Tier" }
+    var membershipBadge: String { isPremium ? (subscriptions.renewalDescription ?? "Sanctuary") : "Free Tier" }
     var membershipText: String {
         isPremium
             ? "Full on-device ephemeris, unlimited synastry overlays, and sovereign offline natal synthesis."
@@ -52,18 +52,15 @@ final class SettingsViewModel {
 
     @ObservationIgnored private let preferences: PreferencesServicing
     @ObservationIgnored private let userService: UserServicing
+    @ObservationIgnored private let subscriptions: SubscriptionServicing
     @ObservationIgnored private weak var router: MainRouting?
 
-    init(preferences: PreferencesServicing, userService: UserServicing, router: MainRouting) {
+    init(preferences: PreferencesServicing, userService: UserServicing, subscriptions: SubscriptionServicing, router: MainRouting) {
         self.preferences = preferences
         self.userService = userService
+        self.subscriptions = subscriptions
         self.router = router
         prefs = preferences.load()
-        refresh()
-    }
-
-    func refresh() {
-        isPremium = userService.profile?.isPremium ?? false
     }
 
     // MARK: - Actions
@@ -83,7 +80,11 @@ final class SettingsViewModel {
     }
 
     func manageSubscription() {
-        router?.present(.paywall)
+        if isPremium {
+            Task { await subscriptions.showManageSubscriptions() }
+        } else {
+            router?.present(.paywall)
+        }
     }
 
     func back() {

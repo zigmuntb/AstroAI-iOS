@@ -195,7 +195,10 @@ final class MainCoordinator: MainRouting {
             JournalView(viewModel: JournalViewModel(journal: dependencies.journalService, router: self))
         case .settings:
             SettingsView(viewModel: SettingsViewModel(
-                preferences: dependencies.preferencesService, userService: dependencies.userService, router: self
+                preferences: dependencies.preferencesService,
+                userService: dependencies.userService,
+                subscriptions: dependencies.subscriptionService,
+                router: self
             ))
         }
     }

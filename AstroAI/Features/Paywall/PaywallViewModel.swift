@@ -52,21 +52,21 @@ final class PaywallViewModel {
         plans.first { $0.id == selectedPlanID }
     }
 
-    private var isTrialPlan: Bool {
-        selectedPlan?.badge?.localizedCaseInsensitiveContains("trial") ?? false
-    }
-
     var ctaTitle: String {
-        guard let plan = selectedPlan else { return "Begin 7-Day Free Trial" }
-        return isTrialPlan ? "Begin 7-Day Free Trial" : "Subscribe for \(plan.price) \(plan.period.capitalized)"
+        guard let plan = selectedPlan else { return "Subscribe" }
+        if let trial = plan.trial { return "Begin \(trial) Free Trial" }
+        return "Subscribe for \(plan.price) \(plan.period)"
     }
 
     var termsText: String {
         guard let plan = selectedPlan else { return "" }
         let period = plan.period.replacingOccurrences(of: "/ ", with: "")
-        return isTrialPlan
-            ? "After 7 days, renews at \(plan.price)/\(period). Cancel anytime in Apple ID settings with zero penalty."
-            : "Billed \(period == "month" ? "monthly" : "every \(period)") at \(plan.price) until canceled. Cancel anytime in Apple ID settings."
+        let cancel = "Cancel anytime in Settings › Apple ID › Subscriptions."
+        if let trial = plan.trial {
+            return "After the \(trial) free trial, renews at \(plan.price)/\(period) until canceled. \(cancel)"
+        }
+        let cadence = period == "month" ? "monthly" : "every \(period)"
+        return "Billed \(cadence) at \(plan.price) until canceled. \(cancel)"
     }
 
     var isBusy: Bool { isLoading || isPurchasing }
@@ -94,9 +94,9 @@ final class PaywallViewModel {
         guard let plan = selectedPlan, !isPurchasing else { return }
         isPurchasing = true
         do {
-            try await subscriptions.purchase(plan)
+            let purchased = try await subscriptions.purchase(plan)
             isPurchasing = false
-            router?.dismissSheet()
+            if purchased { router?.dismissSheet() }
         } catch {
             isPurchasing = false
             alert = AlertContent(title: "Purchase Failed", message: error.localizedDescription)

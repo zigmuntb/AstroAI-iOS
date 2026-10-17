@@ -7,6 +7,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @State private var viewModel: SettingsViewModel
+    @State private var legalDocument: LegalDocument?
 
     init(viewModel: SettingsViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -28,16 +29,18 @@ struct SettingsView: View {
         .scrollIndicators(.hidden)
         .screenBackground()
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear { viewModel.refresh() }
+        .sheet(item: $legalDocument) { document in
+            LegalDocumentView(document: document)
+        }
         .confirmationDialog(
-            "Purge Enclave & Ephemeris Cache?",
+            "Erase everything on this iPhone?",
             isPresented: $viewModel.isConfirmingPurge,
             titleVisibility: .visible
         ) {
-            Button("Purge & Sign Out", role: .destructive, action: viewModel.confirmPurge)
+            Button("Erase Chart and Journal", role: .destructive, action: viewModel.confirmPurge)
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("This irrevocably erases your chart, journal and local ephemeris calculations from this device.")
+            Text("This deletes your chart, journal, saved people, and calculations from this device.")
         }
     }
 
@@ -253,23 +256,46 @@ struct SettingsView: View {
     private var privacySection: some View {
         SettingsSection(title: "Privacy", icon: "lock.shield", trailing: "") {
             PrivacyRow(
-                icon: "lock.doc",
-                title: "Local Cryptographic Enclave",
-                badge: "AES-GCM-256",
-                text: "Your natal chart coordinates, exact latitude/longitude, and journal annotations never touch third-party servers unencrypted."
+                icon: "iphone",
+                title: "On this iPhone",
+                badge: "Local",
+                text: "Your chart, birth place, journal, and saved people stay in the app on this device. They are not encrypted, and they are not sent to an AstroAI server."
             )
             SectionDivider()
             PrivacyRow(
                 icon: "brain.head.profile",
-                title: "Context Anonymization",
-                badge: "Active",
-                text: "AI oracle queries strip names, places of birth, and identity markers prior to celestial pattern synthesis."
+                title: "Oracle",
+                badge: "On device",
+                text: "The reading runs on this iPhone and can use your name, chart, and the people you saved. Questions are not sent to a server."
+            )
+            SectionDivider()
+            PrivacyRow(
+                icon: "map",
+                title: "Birth city lookup",
+                badge: "Apple Maps",
+                text: "The city name you type is sent to Apple to find coordinates and the time zone. Your chart is not sent with it."
+            )
+            SectionDivider()
+            ActionRow(
+                icon: "hand.raised",
+                title: "Privacy Policy",
+                text: "What stays on this iPhone",
+                tint: AppColor.primary,
+                action: { legalDocument = .privacy }
+            )
+            SectionDivider()
+            ActionRow(
+                icon: "doc.text",
+                title: "Terms of Use",
+                text: "Subscription terms and Apple's standard EULA",
+                tint: AppColor.primary,
+                action: { legalDocument = .terms }
             )
             SectionDivider()
             ActionRow(
                 icon: "xmark.bin",
-                title: "Purge Enclave & Ephemeris Cache",
-                text: "Irrevocably erase local ephemeris calculations",
+                title: "Erase Chart and Journal",
+                text: "Deletes your chart, journal, and saved people from this iPhone",
                 tint: AppColor.error,
                 action: viewModel.requestPurge
             )
@@ -296,20 +322,18 @@ struct SettingsView: View {
             Text(viewModel.membershipText)
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onPrimary.opacity(0.75))
-            if !viewModel.isPremium {
-                Rectangle()
-                    .fill(AppColor.onPrimary.opacity(0.15))
-                    .frame(height: 0.5)
-                HStack {
-                    Spacer()
-                    Button(action: viewModel.manageSubscription) {
-                        Text(viewModel.membershipAction)
-                            .font(AppFont.bodySmall.weight(.semibold))
-                            .underline()
-                            .foregroundStyle(AppColor.champagne)
-                    }
-                    .buttonStyle(.plain)
+            Rectangle()
+                .fill(AppColor.onPrimary.opacity(0.15))
+                .frame(height: 0.5)
+            HStack {
+                Spacer()
+                Button(action: viewModel.manageSubscription) {
+                    Text(viewModel.membershipAction)
+                        .font(AppFont.bodySmall.weight(.semibold))
+                        .underline()
+                        .foregroundStyle(AppColor.champagne)
                 }
+                .buttonStyle(.plain)
             }
         }
         .card(.accent, padding: Spacing.lg)
