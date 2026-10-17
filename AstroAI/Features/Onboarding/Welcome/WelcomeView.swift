@@ -24,7 +24,7 @@ struct WelcomeView: View {
                 )
 
                 wheel
-                features
+                promise
                 actions
             }
             .padding(.horizontal, Spacing.margin)
@@ -61,23 +61,11 @@ struct WelcomeView: View {
         }
     }
 
-    private var features: some View {
-        HStack(spacing: Spacing.sm) {
-            ForEach(viewModel.features) { feature in
-                VStack(spacing: Spacing.xs) {
-                    Eyebrow(text: feature.eyebrow)
-                    Text(feature.title)
-                        .font(AppFont.headlineMedium)
-                        .foregroundStyle(AppColor.onSurface)
-                    Text(feature.caption)
-                        .font(AppFont.labelMedium)
-                        .tracking(0.6)
-                        .foregroundStyle(AppColor.outline)
-                }
-                .frame(maxWidth: .infinity)
-                .card(.elevated, padding: Spacing.sm)
-            }
-        }
+    private var promise: some View {
+        Text("A birth chart, the day’s sky, and the people in it. Calculated on this iPhone.")
+            .font(AppFont.bodyLarge)
+            .foregroundStyle(AppColor.onSurfaceVariant)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     private var actions: some View {

@@ -15,8 +15,6 @@ struct ProfileView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                AppTopBar(title: "Profile")
-
                 VStack(alignment: .leading, spacing: Spacing.xl) {
                     identity
                     ForEach(viewModel.nudges) { nudge in
@@ -36,7 +34,8 @@ struct ProfileView: View {
         }
         .scrollIndicators(.hidden)
         .screenBackground()
-        .toolbarVisibility(.hidden, for: .navigationBar)
+        .navigationTitle("Profile")
+        .navigationBarTitleDisplayMode(.large)
         // Runs on every appearance, so premium status and journal stay fresh after the paywall / journal.
         .task { await viewModel.load() }
     }
@@ -76,32 +75,16 @@ struct ProfileView: View {
             }
             .multilineTextAlignment(.center)
 
-            Pill(text: viewModel.membershipTitle.uppercased(), icon: viewModel.isPremium ? "checkmark.seal" : "checkmark.shield")
+            Pill(text: viewModel.membershipTitle, icon: viewModel.isPremium ? "checkmark.seal" : "checkmark.shield")
 
-            HStack(spacing: Spacing.sm) {
+            Group {
                 if viewModel.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity, minHeight: 88)
                 } else {
-                    ForEach(viewModel.bigThree) { tile in
-                        VStack(spacing: Spacing.xs) {
-                            HStack(spacing: Spacing.xs) {
-                                Text(tile.glyph)
-                                    .font(.system(size: 13, design: .serif))
-                                Text(tile.label.uppercased())
-                                    .font(AppFont.labelSmall)
-                                    .tracking(1)
-                            }
-                            .foregroundStyle(AppColor.onSurfaceVariant)
-                            Text(tile.sign)
-                                .font(AppFont.headlineSmall)
-                                .foregroundStyle(AppColor.onSurface)
-                            Text(tile.detail)
-                                .font(AppFont.labelMedium)
-                                .foregroundStyle(AppColor.outline)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .card(padding: Spacing.md)
+                    ViewThatFits(in: .horizontal) {
+                        bigThree(axis: .horizontal)
+                        bigThree(axis: .vertical)
                     }
                 }
             }
@@ -114,6 +97,49 @@ struct ProfileView: View {
             }
         }
         .frame(maxWidth: .infinity)
+    }
+
+    private func bigThree(axis: Axis) -> some View {
+        let tiles = Array(viewModel.bigThree.enumerated())
+        let row = ForEach(tiles, id: \.element.id) { index, tile in
+            HStack(spacing: 0) {
+                if axis == .horizontal, index > 0 {
+                    Rectangle()
+                        .fill(AppColor.hairline)
+                        .frame(width: 0.5)
+                        .padding(.vertical, Spacing.sm)
+                }
+                bigThreeTile(tile)
+            }
+        }
+        return Group {
+            if axis == .horizontal {
+                HStack(spacing: 0) { row }
+            } else {
+                VStack(spacing: Spacing.md) { row }
+            }
+        }
+    }
+
+    private func bigThreeTile(_ tile: ProfileViewModel.BigThreeTile) -> some View {
+        VStack(spacing: Spacing.xs) {
+            Text(tile.glyph)
+                .font(AppFont.headlineMedium)
+                .foregroundStyle(AppColor.primary)
+            Text(tile.sign)
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.onSurface)
+                .multilineTextAlignment(.center)
+            Text(tile.label)
+                .font(AppFont.labelMedium)
+                .foregroundStyle(AppColor.secondary)
+            Text(tile.detail)
+                .font(AppFont.labelMedium)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, Spacing.sm)
     }
 
     // MARK: - Nudges

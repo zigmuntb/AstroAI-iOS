@@ -18,16 +18,13 @@ struct TodayView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.block) {
-                AppTopBar(title: "Today", onAvatarTap: viewModel.openProfile)
-                    .padding(.horizontal, -Spacing.margin)
-
                 if let reading = viewModel.reading {
-                    greeting(reading)
-                    tarot
-                    luckyNumbers(reading)
-                    balances(reading)
+                    masthead(reading)
                     synthesis(reading)
+                    balances(reading)
+                    luckyNumbers(reading)
                     attunement(reading)
+                    tarot
                     oracle(reading)
                     actions
                 } else if viewModel.isLoading {
@@ -43,7 +40,13 @@ struct TodayView: View {
         }
         .scrollIndicators(.hidden)
         .screenBackground()
-        .toolbarVisibility(.hidden, for: .navigationBar)
+        .navigationTitle("Today")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ProfileToolbarButton(action: viewModel.openProfile)
+            }
+        }
         .task { await viewModel.load() }
         .sheet(isPresented: $viewModel.isTarotComposerPresented, onDismiss: viewModel.tarotComposerDismissed) {
             tarotComposer
@@ -61,39 +64,56 @@ struct TodayView: View {
 
     // MARK: - Sections
 
-    private func greeting(_ reading: DailyReading) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
-            HStack(spacing: Spacing.sm) {
-                Text(viewModel.dateLine)
-                    .font(AppFont.labelLarge.weight(.medium))
-                    .tracking(0.8)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-                Circle().fill(AppColor.outlineVariant).frame(width: 4, height: 4)
-                Text(viewModel.moonLine)
-                    .font(AppFont.labelLarge.weight(.medium))
-                    .foregroundStyle(AppColor.secondary)
-            }
+    private func masthead(_ reading: DailyReading) -> some View {
+        ViewThatFits(in: .horizontal) {
+            mastheadRow(reading, axis: .horizontal)
+            mastheadRow(reading, axis: .vertical)
+        }
+    }
 
+    private func mastheadRow(_ reading: DailyReading, axis: Axis) -> some View {
+        let stack = (axis == .horizontal)
+        return Group {
+            if stack {
+                HStack(alignment: .center, spacing: Spacing.md) {
+                    moon(reading)
+                    mastheadText(reading)
+                }
+            } else {
+                VStack(alignment: .leading, spacing: Spacing.md) {
+                    moon(reading)
+                    mastheadText(reading)
+                }
+            }
+        }
+    }
+
+    private func moon(_ reading: DailyReading) -> some View {
+        MoonPhaseView(illumination: reading.moonIllumination)
+            .frame(width: 64, height: 64)
+            .accessibilityLabel("\(reading.moonPhase), \(reading.moonIllumination) percent illuminated")
+    }
+
+    private func mastheadText(_ reading: DailyReading) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.xs) {
+            Text(viewModel.dateLine)
+                .font(AppFont.labelLarge)
+                .foregroundStyle(AppColor.secondary)
             Text(viewModel.greeting)
                 .font(AppFont.displayMobile)
                 .foregroundStyle(AppColor.onSurface)
-
-            HStack(spacing: 6) {
-                Circle().fill(AppColor.secondary).frame(width: 6, height: 6)
-                Text("Atmosphere: \(reading.atmosphere)")
-                    .font(AppFont.labelMedium)
-                    .tracking(0.4)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(AppColor.surfaceContainer, in: .capsule)
+            Text("\(reading.moonPhase) in \(reading.moonSign.name) · \(reading.atmosphere)")
+                .font(AppFont.bodyMedium)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
     private var tarot: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            Eyebrow(text: "Tarot", icon: "sparkles")
+            Text("Tarot")
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.onSurface)
 
             if let data = viewModel.tarotImageData, let image = UIImage(data: data) {
                 Image(uiImage: image)
@@ -196,31 +216,27 @@ struct TodayView: View {
 
     private func luckyNumbers(_ reading: DailyReading) -> some View {
         let lucky = reading.luckyNumbers
-        return VStack(alignment: .leading, spacing: Spacing.md) {
-            HStack(alignment: .firstTextBaseline) {
-                Eyebrow(text: "Lucky Numbers")
-                Spacer(minLength: Spacing.sm)
-                Text("Personal day \(lucky.personalDay)")
-                    .font(AppFont.labelMedium)
-                    .tracking(0.4)
-                    .foregroundStyle(AppColor.secondary)
-            }
+        let companions = lucky.values.dropFirst().map(String.init).joined(separator: "   ")
+        return VStack(alignment: .leading, spacing: Spacing.sm) {
+            Text("Lucky numbers")
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.onSurface)
 
-            HStack(spacing: Spacing.sm) {
-                ForEach(Array(lucky.values.enumerated()), id: \.offset) { index, number in
-                    Text("\(number)")
-                        .font(AppFont.headlineSmall)
-                        .monospacedDigit()
-                        .foregroundStyle(index == 0 ? AppColor.onPrimary : AppColor.onSurface)
-                        .frame(maxWidth: .infinity)
-                        .aspectRatio(1, contentMode: .fit)
-                        .background(index == 0 ? AppColor.primaryContainer : AppColor.surfaceContainerLowest, in: .circle)
-                        .overlay {
-                            if index > 0 {
-                                Circle().stroke(AppColor.hairline.opacity(0.28), lineWidth: 0.5)
-                            }
-                        }
-                        .accessibilityLabel(index == 0 ? "Personal day \(number)" : "\(number)")
+            HStack(alignment: .firstTextBaseline, spacing: Spacing.md) {
+                Text("\(lucky.personalDay)")
+                    .font(AppFont.displayMobile)
+                    .monospacedDigit()
+                    .foregroundStyle(AppColor.primary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Personal day")
+                        .font(AppFont.labelLarge)
+                        .foregroundStyle(AppColor.secondary)
+                    if !companions.isEmpty {
+                        Text(companions)
+                            .font(AppFont.headlineSmall)
+                            .monospacedDigit()
+                            .foregroundStyle(AppColor.onSurface)
+                    }
                 }
             }
 
@@ -229,14 +245,15 @@ struct TodayView: View {
                 .foregroundStyle(AppColor.onSurfaceVariant)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .card(.tinted, padding: Spacing.md + 4)
-        .accessibilityElement(children: .contain)
+        .accessibilityElement(children: .combine)
     }
 
     private func balances(_ reading: DailyReading) -> some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
             VStack(alignment: .leading, spacing: Spacing.xs) {
-                Eyebrow(text: "Today's Balance")
+                Text("Today's balance")
+                    .font(AppFont.headlineSmall)
+                    .foregroundStyle(AppColor.onSurface)
                 Text("Each pair shares one scale, from 0 to 100.")
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
@@ -267,8 +284,6 @@ struct TodayView: View {
 
     private func synthesis(_ reading: DailyReading) -> some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
-            Eyebrow(text: "Today")
-
             VStack(alignment: .leading, spacing: Spacing.md) {
                 Text(reading.synthesisTitle)
                     .font(AppFont.headlineLarge)
@@ -286,24 +301,21 @@ struct TodayView: View {
                         LinearGradient(colors: [.clear, AppColor.midnight.opacity(0.55)], startPoint: .center, endPoint: .bottom)
                         Text(reading.imageCaption)
                             .font(AppFont.labelMedium)
-                            .foregroundStyle(AppColor.onPrimary)
+                            .foregroundStyle(AppColor.ivory)
                             .padding(Spacing.md)
                     }
                 }
                 .clipShape(.rect(cornerRadius: Radius.md))
         }
-        .card(.elevated, padding: Spacing.lg)
     }
 
     private func attunement(_ reading: DailyReading) -> some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             HStack {
-                Eyebrow(text: "Morning Attunement")
-                Spacer()
-                Text(viewModel.isMoodRecorded ? "Recorded" : "Unrecorded")
+                Text(viewModel.isMoodRecorded ? "Recorded" : "Not recorded")
                     .font(AppFont.labelMedium.weight(viewModel.isMoodRecorded ? .semibold : .medium))
-                    .tracking(0.6)
                     .foregroundStyle(viewModel.isMoodRecorded ? AppColor.secondary : AppColor.outline)
+                Spacer()
             }
             Text("How is the day finding you?")
                 .font(AppFont.headlineMedium)
@@ -317,8 +329,8 @@ struct TodayView: View {
                     } label: {
                         Text(mood)
                             .font(AppFont.bodyMedium)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
                             .foregroundStyle(isSelected ? AppColor.onPrimary : AppColor.onSurface)
                             .frame(maxWidth: .infinity, minHeight: 44)
                             .background(isSelected ? AppColor.primary : AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.sm))
@@ -332,30 +344,35 @@ struct TodayView: View {
     }
 
     private func oracle(_ reading: DailyReading) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.lg) {
-            HStack {
-                Eyebrow(text: "Consult the Oracle", icon: "questionmark.circle", color: AppColor.onSurfaceVariant)
-                Spacer()
-                Text("\(reading.moonSign.name) Transit Focus")
-                    .font(AppFont.labelMedium.weight(.semibold))
-                    .foregroundStyle(AppColor.secondary)
-            }
-            ForEach(reading.oracleQuestions, id: \.self) { question in
-                Button {
-                    viewModel.ask(question)
-                } label: {
-                    HStack(spacing: Spacing.md) {
-                        Text(question)
-                            .font(AppFont.bodyMedium)
-                            .foregroundStyle(AppColor.onSurface)
-                            .multilineTextAlignment(.leading)
-                        Spacer(minLength: 0)
-                        Image(systemName: "arrow.right")
-                            .foregroundStyle(AppColor.outline)
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Text("Ask the Oracle")
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.onSurface)
+            Text("\(reading.moonSign.name) is the focus")
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.secondary)
+
+            VStack(spacing: 0) {
+                ForEach(Array(reading.oracleQuestions.enumerated()), id: \.element) { index, question in
+                    if index > 0 { HairlineDivider() }
+                    Button {
+                        viewModel.ask(question)
+                    } label: {
+                        HStack(spacing: Spacing.md) {
+                            Text(question)
+                                .font(AppFont.bodyLarge)
+                                .foregroundStyle(AppColor.onSurface)
+                                .multilineTextAlignment(.leading)
+                            Spacer(minLength: 0)
+                            Image(systemName: "chevron.right")
+                                .font(.body.weight(.semibold))
+                                .foregroundStyle(AppColor.outline)
+                        }
+                        .frame(minHeight: 44)
+                        .contentShape(.rect)
                     }
-                    .card(.elevated)
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
         }
     }
@@ -369,14 +386,13 @@ struct TodayView: View {
             )
             actionDivider
             ShareLink(item: viewModel.shareText) {
-                actionLabel(title: "Share Folio", icon: "square.and.arrow.up")
+                actionLabel(title: "Share", icon: "square.and.arrow.up")
             }
             .buttonStyle(.plain)
             actionDivider
             actionButton(title: "Transit Map", icon: "calendar", action: viewModel.openTransitMap)
         }
         .padding(.vertical, Spacing.sm)
-        .card(.tinted, padding: 0)
     }
 
     private func actionButton(title: String, icon: String, action: @escaping () -> Void) -> some View {

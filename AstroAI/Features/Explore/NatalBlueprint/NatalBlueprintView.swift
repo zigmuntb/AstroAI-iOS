@@ -346,7 +346,7 @@ struct NatalBlueprintView: View {
                 .foregroundStyle(AppColor.onPrimary)
 
             VStack(alignment: .leading, spacing: Spacing.xs) {
-                Eyebrow(text: viewModel.outOfBounds.label, color: AppColor.champagne)
+                Eyebrow(text: viewModel.outOfBounds.label, color: AppColor.onPrimary)
                 Text(viewModel.outOfBounds.value)
                     .font(AppFont.bodyMedium.weight(.semibold))
                     .foregroundStyle(AppColor.onPrimary)
@@ -368,7 +368,7 @@ struct NatalBlueprintView: View {
                             .foregroundStyle(AppColor.onPrimary)
                         Text(ruler.caption)
                             .font(AppFont.labelMedium)
-                            .foregroundStyle(AppColor.champagne)
+                            .foregroundStyle(AppColor.onPrimary.opacity(0.75))
                     }
                     .padding(12)
                     .frame(maxWidth: .infinity, alignment: .leading)

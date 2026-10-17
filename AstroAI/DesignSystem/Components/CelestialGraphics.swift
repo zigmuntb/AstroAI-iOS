@@ -26,7 +26,7 @@ struct CelestialMark: View {
             context.stroke(orbit, with: .color(AppColor.primaryContainer), lineWidth: 1.4)
 
             context.fill(Path(ellipseIn: CGRect(x: 36, y: 36, width: 28, height: 28)), with: .color(AppColor.midnight))
-            context.fill(Path(ellipseIn: CGRect(x: 39, y: 39, width: 22, height: 22)), with: .color(AppColor.onPrimary))
+            context.fill(Path(ellipseIn: CGRect(x: 39, y: 39, width: 22, height: 22)), with: .color(AppColor.moonLit))
             context.fill(Path(ellipseIn: CGRect(x: 46, y: 46, width: 8, height: 8)), with: .color(AppColor.primaryContainer))
             context.fill(Path(ellipseIn: CGRect(x: 74.5, y: 33.5, width: 7, height: 7)), with: .color(AppColor.champagne))
             context.fill(Path(ellipseIn: CGRect(x: 19.5, y: 60.5, width: 5, height: 5)), with: .color(AppColor.dustyRose))
@@ -154,14 +154,14 @@ struct MoonPhaseView: View {
         GeometryReader { proxy in
             let size = min(proxy.size.width, proxy.size.height)
             ZStack {
-                Circle().fill(AppColor.surfaceContainerLowest)
+                Circle().fill(AppColor.moonLit)
                 Circle()
-                    .fill(AppColor.primaryContainer)
+                    .fill(AppColor.moonShade)
                     .mask(
                         Circle()
                             .offset(x: -size * CGFloat(illumination) / 100)
                     )
-                Circle().stroke(AppColor.primaryContainer.opacity(0.4), lineWidth: 0.75)
+                Circle().stroke(AppColor.moonShade.opacity(0.35), lineWidth: 0.75)
             }
             .frame(width: size, height: size)
         }

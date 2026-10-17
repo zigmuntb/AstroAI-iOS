@@ -11,11 +11,10 @@ struct PrimaryButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 17, weight: .semibold))
-            .tracking(0.3)
+            .font(.body.weight(.semibold))
             .foregroundStyle(AppColor.onPrimary)
             .frame(maxWidth: .infinity, minHeight: 52)
-            .background(AppColor.primaryContainer.opacity(isEnabled ? 1 : 0.4), in: .rect(cornerRadius: Radius.md))
+            .background(AppColor.primaryContainer.opacity(isEnabled ? 1 : 0.4), in: Capsule())
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
@@ -26,13 +25,9 @@ struct SecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(AppFont.labelLarge)
-            .foregroundStyle(AppColor.primaryContainer)
+            .foregroundStyle(AppColor.primary)
             .frame(maxWidth: .infinity, minHeight: 48)
-            .background(AppColor.primaryContainer.opacity(0.08), in: .rect(cornerRadius: Radius.md))
-            .overlay(
-                RoundedRectangle(cornerRadius: Radius.md)
-                    .stroke(AppColor.primaryContainer.opacity(0.25), lineWidth: 0.5)
-            )
+            .background(AppColor.surfaceContainerHighest, in: Capsule())
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
     }
 }
@@ -41,7 +36,7 @@ struct SecondaryButtonStyle: ButtonStyle {
 struct GhostButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 19, design: .serif).italic())
+            .font(AppFont.quote)
             .foregroundStyle(AppColor.secondary)
             .opacity(configuration.isPressed ? 0.6 : 1)
     }

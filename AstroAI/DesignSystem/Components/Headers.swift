@@ -5,34 +5,16 @@
 
 import SwiftUI
 
-/// Top bar of main tab screens: "✦ Title   ∞  (avatar)".
-struct AppTopBar: View {
-    let title: String
-    var onAvatarTap: (() -> Void)? = nil
-
+/// Avatar in the trailing toolbar. The bar supplies the 44 pt hit target.
+struct ProfileToolbarButton: View {
+    let action: () -> Void
     @Environment(\.userAvatar) private var avatar
 
     var body: some View {
-        HStack(spacing: Spacing.sm) {
-            Image(systemName: "sparkles")
-                .font(.system(size: 18))
-            Text(title)
-                .font(AppFont.headlineMedium)
-            Spacer()
-            Image(systemName: "infinity")
-                .font(.system(size: 18))
-                .padding(.trailing, Spacing.sm)
-            Button {
-                onAvatarTap?()
-            } label: {
-                AvatarView(content: avatar, size: 32)
-                    .shadow(color: .black.opacity(0.08), radius: 2, y: 1)
-            }
-            .buttonStyle(.plain)
+        Button(action: action) {
+            AvatarView(content: avatar, size: 28)
         }
-        .foregroundStyle(AppColor.onSurface)
-        .padding(.horizontal, Spacing.margin)
-        .padding(.vertical, Spacing.sm)
+        .accessibilityLabel("Profile")
     }
 }
 
@@ -49,22 +31,20 @@ struct OnboardingHeader: View {
                 Button(action: onBack) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 20, weight: .medium))
-                        .frame(width: 32, height: 44)
+                        .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.plain)
             }
             CelestialMark()
                 .frame(width: 30, height: 30)
-            Text("AstroAI")
-                .font(AppFont.headlineMedium)
+                .accessibilityHidden(true)
 
             Spacer(minLength: Spacing.sm)
 
             if let step {
                 VStack(spacing: Spacing.xs) {
-                    Text("STEP \(step) OF \(total)")
+                    Text("Step \(step) of \(total)")
                         .font(AppFont.labelMedium)
-                        .tracking(1)
                         .foregroundStyle(AppColor.onSurfaceVariant)
                     HStack(spacing: 3) {
                         ForEach(1...total, id: \.self) { index in
@@ -75,13 +55,6 @@ struct OnboardingHeader: View {
                     }
                 }
             }
-
-            Image(systemName: "person")
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(AppColor.onPrimary)
-                .frame(width: 32, height: 32)
-                .background(AppColor.primary, in: .circle)
-                .padding(.leading, Spacing.xs)
         }
         .foregroundStyle(AppColor.onSurface)
         .padding(.horizontal, Spacing.margin)

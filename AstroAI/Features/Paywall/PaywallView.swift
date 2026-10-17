@@ -12,7 +12,7 @@ struct PaywallView: View {
         _viewModel = State(initialValue: viewModel)
     }
 
-    private let ivory = AppColor.onPrimary
+    private let ivory = AppColor.ivory
     private let gold = AppColor.champagne
 
     var body: some View {
@@ -265,7 +265,7 @@ struct PaywallView: View {
 
 /// Fine orbit diagram of the hero: rings, aspect chords, Sun core and two orbiting tags.
 private struct OrbitDiagram: View {
-    private let ivory = AppColor.onPrimary
+    private let ivory = AppColor.ivory
     private let gold = AppColor.champagne
 
     var body: some View {

@@ -20,9 +20,6 @@ struct OracleView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.block) {
-                    AppTopBar(title: "AI Astrologer", onAvatarTap: viewModel.openProfile)
-                        .padding(.horizontal, -Spacing.margin)
-
                     if viewModel.isOffline {
                         OracleOfflineView(
                             isRetrying: viewModel.isRetrying,
@@ -60,7 +57,27 @@ struct OracleView: View {
             if !viewModel.isOffline { inputBar }
         }
         .screenBackground()
-        .toolbarVisibility(.hidden, for: .navigationBar)
+        .navigationTitle("Oracle")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: viewModel.openJournal) {
+                    Image(systemName: "book")
+                }
+                .accessibilityLabel("Journal")
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    withAnimation { viewModel.resetSession() }
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .accessibilityLabel("New reading")
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                ProfileToolbarButton(action: viewModel.openProfile)
+            }
+        }
         .task { await viewModel.loadSky() }
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
@@ -71,62 +88,25 @@ struct OracleView: View {
     // MARK: - Context
 
     private var contextBar: some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: Spacing.xs) {
-                    HStack(spacing: 6) {
-                        Circle().fill(AppColor.secondary).frame(width: 6, height: 6)
-                        Eyebrow(text: "Sanctuary Chamber")
-                    }
-                    Text("AstroAI Sanctuary")
-                        .font(AppFont.headlineMedium)
-                        .foregroundStyle(AppColor.onSurface)
-                    Text(viewModel.syncLine)
-                        .font(AppFont.bodyMedium)
-                        .foregroundStyle(AppColor.onSurfaceVariant)
-                }
-                Spacer()
-                HStack(spacing: Spacing.sm) {
-                    squareButton(icon: "book", action: viewModel.openJournal)
-                    squareButton(icon: "arrow.clockwise") {
-                        withAnimation { viewModel.resetSession() }
-                    }
-                }
-            }
-
-            HStack(spacing: Spacing.sm) {
-                Image(systemName: "arrow.left.arrow.right")
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-                Text(viewModel.transitLine)
-                    .font(AppFont.bodySmall)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-                Spacer(minLength: 0)
-                Text(viewModel.transitBadge)
-                    .font(AppFont.labelSmall)
-                    .tracking(0.6)
-                    .foregroundStyle(AppColor.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(AppColor.secondaryContainer.opacity(0.6), in: .capsule)
-            }
-            .padding(Spacing.sm + 4)
-            .background(AppColor.surfaceContainerLowest, in: panelShape(Radius.md))
-            .overlay {
-                panelShape(Radius.md).strokeBorder(AppColor.outlineVariant, lineWidth: 1)
-            }
-        }
-        .card(.tinted, padding: Spacing.md + 4)
-    }
-
-    private func squareButton(icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: icon)
-                .font(.system(size: 16))
+        VStack(alignment: .leading, spacing: Spacing.xs) {
+            Text(viewModel.syncLine)
+                .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
-                .frame(width: 40, height: 40)
-                .background(AppColor.surfaceContainerHighest, in: .rect(cornerRadius: Radius.sm))
+                .fixedSize(horizontal: false, vertical: true)
+            Text(viewModel.transitLine)
+                .font(AppFont.bodyMedium)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+                .fixedSize(horizontal: false, vertical: true)
+            if !viewModel.transitBadge.isEmpty {
+                Text(viewModel.transitBadge)
+                    .font(AppFont.labelLarge)
+                    .foregroundStyle(AppColor.secondary)
+            }
+            Text("Generated from your chart. Not a forecast.")
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.secondary)
+                .padding(.top, Spacing.xs)
         }
-        .buttonStyle(.plain)
     }
 
     // MARK: - Transcript
@@ -180,12 +160,11 @@ struct OracleView: View {
 
     private var oracleHeader: some View {
         HStack(spacing: Spacing.sm) {
-            Image(systemName: "hurricane")
-                .font(.system(size: 11))
-                .foregroundStyle(AppColor.onPrimary)
-                .frame(width: 22, height: 22)
-                .background(AppColor.primary, in: .circle)
-            Text("AstroAI Guide • Hermetic Reading")
+            Text("☽")
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.primary)
+                .accessibilityHidden(true)
+            Text("Oracle")
                 .font(AppFont.bodySmall.weight(.medium))
                 .foregroundStyle(AppColor.onSurfaceVariant)
         }
@@ -294,7 +273,7 @@ struct OracleView: View {
             if let installError = viewModel.installError {
                 Text(installError)
                     .font(AppFont.bodySmall)
-                    .foregroundStyle(AppColor.primaryContainer)
+                    .foregroundStyle(AppColor.error)
             }
         }
         .card(.tinted, padding: Spacing.md + 4)
@@ -309,29 +288,31 @@ struct OracleView: View {
 
     private var suggestionsList: some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
-            HStack {
-                Eyebrow(text: "Suggested Contemplations", color: AppColor.onSurfaceVariant)
-                Spacer()
-                Image(systemName: "lightbulb")
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-            }
-            ForEach(viewModel.suggestions, id: \.self) { suggestion in
-                Button {
-                    viewModel.ask(suggestion)
-                } label: {
-                    HStack(spacing: Spacing.md) {
-                        Text(suggestion)
-                            .font(AppFont.bodyMedium)
-                            .foregroundStyle(AppColor.onSurface)
-                            .multilineTextAlignment(.leading)
-                        Spacer(minLength: 0)
-                        Image(systemName: "arrow.up.right")
-                            .foregroundStyle(AppColor.outlineVariant)
+            Text("Try asking")
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.onSurface)
+            VStack(spacing: 0) {
+                ForEach(Array(viewModel.suggestions.enumerated()), id: \.element) { index, suggestion in
+                    if index > 0 { HairlineDivider() }
+                    Button {
+                        viewModel.ask(suggestion)
+                    } label: {
+                        HStack(spacing: Spacing.md) {
+                            Text(suggestion)
+                                .font(AppFont.bodyLarge)
+                                .foregroundStyle(AppColor.onSurface)
+                                .multilineTextAlignment(.leading)
+                            Spacer(minLength: 0)
+                            Image(systemName: "arrow.up.right")
+                                .font(.body.weight(.semibold))
+                                .foregroundStyle(AppColor.outline)
+                        }
+                        .frame(minHeight: 44)
+                        .contentShape(.rect)
                     }
-                    .card(.elevated)
+                    .buttonStyle(.plain)
+                    .disabled(viewModel.isTyping)
                 }
-                .buttonStyle(.plain)
-                .disabled(viewModel.isTyping)
             }
         }
     }
@@ -374,8 +355,8 @@ struct OracleView: View {
                     Image(systemName: "arrow.up.right")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(AppColor.onPrimary)
-                        .frame(width: 40, height: 40)
-                        .background(AppColor.primary.opacity(viewModel.canSend ? 1 : 0.5), in: .rect(cornerRadius: Radius.sm))
+                        .frame(width: 44, height: 44)
+                        .background(AppColor.primary.opacity(viewModel.canSend ? 1 : 0.5), in: Circle())
                 }
                 .buttonStyle(.plain)
                 .disabled(!viewModel.canSend)

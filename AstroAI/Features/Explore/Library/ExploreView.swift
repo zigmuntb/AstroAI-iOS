@@ -15,10 +15,7 @@ struct ExploreView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                AppTopBar(title: "Explore", onAvatarTap: viewModel.openProfile)
-
                 VStack(alignment: .leading, spacing: Spacing.xl) {
-                    searchField
                     blueprintCard
                     content
                 }
@@ -30,7 +27,14 @@ struct ExploreView: View {
         .scrollIndicators(.hidden)
         .scrollDismissesKeyboard(.immediately)
         .screenBackground()
-        .toolbarVisibility(.hidden, for: .navigationBar)
+        .navigationTitle("Explore")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ProfileToolbarButton(action: viewModel.openProfile)
+            }
+        }
+        .searchable(text: $viewModel.searchText, prompt: "Search this week's sky")
         .task { await viewModel.load() }
     }
 
@@ -62,25 +66,6 @@ struct ExploreView: View {
         }
     }
 
-    // MARK: - Search
-
-    private var searchField: some View {
-        HStack(spacing: Spacing.sm) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 15))
-            TextField("Search this week's sky", text: $viewModel.searchText)
-                .font(AppFont.bodySmall)
-                .foregroundStyle(AppColor.onSurface)
-                .submitLabel(.search)
-                .autocorrectionDisabled()
-        }
-        .foregroundStyle(AppColor.outline)
-        .padding(.horizontal, 14)
-        .frame(height: 44)
-        .background(AppColor.surfaceContainerLowest, in: .rect(cornerRadius: Radius.sm))
-        .shadow(color: .black.opacity(0.04), radius: 2, y: 1)
-    }
-
     // MARK: - Cosmic Blueprint entry
 
     private var blueprintCard: some View {
@@ -91,8 +76,7 @@ struct ExploreView: View {
                     .allowsHitTesting(false)
 
                 VStack(alignment: .leading, spacing: Spacing.xs) {
-                    Eyebrow(text: "Natal Synthesis", icon: "sparkles")
-                    Text("Your Cosmic Blueprint")
+                    Text("Your chart")
                         .font(AppFont.headlineSmall)
                         .foregroundStyle(AppColor.onSurface)
                     Text(viewModel.blueprintLine ?? "Big Three, elemental balance and every placement.")
@@ -104,10 +88,11 @@ struct ExploreView: View {
                 Spacer(minLength: 0)
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.body.weight(.semibold))
                     .foregroundStyle(AppColor.outline)
             }
-            .card(.elevated)
+            .padding(.vertical, Spacing.sm)
+            .contentShape(.rect)
         }
         .buttonStyle(.plain)
     }
@@ -118,8 +103,9 @@ struct ExploreView: View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             sectionTitle("This Week", icon: "clock.arrow.circlepath", trailing: range, trailingColor: AppColor.outline)
 
-            VStack(spacing: Spacing.md) {
+            VStack(spacing: 0) {
                 ForEach(Array(viewModel.transits.enumerated()), id: \.element.id) { index, transit in
+                    if index > 0 { HairlineDivider() }
                     transitRow(transit, tone: TransitTone.allCases[index % TransitTone.allCases.count])
                 }
             }
@@ -133,14 +119,13 @@ struct ExploreView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
-                    Text(transit.kind.uppercased())
-                        .font(AppFont.labelSmall)
-                        .tracking(1)
+                    Text(transit.kind)
+                        .font(AppFont.labelLarge)
                         .foregroundStyle(tone.foreground)
                     Spacer()
                     Text(transit.date)
-                        .font(AppFont.labelSmall)
-                        .foregroundStyle(tone == .rose ? tone.foreground : AppColor.outline)
+                        .font(AppFont.labelMedium)
+                        .foregroundStyle(AppColor.outline)
                 }
                 Text(transit.title)
                     .font(AppFont.bodyMedium.weight(.medium))
@@ -153,7 +138,7 @@ struct ExploreView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .card(.elevated, padding: 14)
+        .padding(.vertical, 12)
         .accessibilityElement(children: .combine)
     }
 

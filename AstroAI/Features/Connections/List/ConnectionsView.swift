@@ -15,8 +15,6 @@ struct ConnectionsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                AppTopBar(title: "Connections")
-
                 Group {
                     if viewModel.isEmpty {
                         emptyState
@@ -30,7 +28,8 @@ struct ConnectionsView: View {
         }
         .scrollIndicators(.hidden)
         .screenBackground()
-        .toolbarVisibility(.hidden, for: .navigationBar)
+        .navigationTitle("Synastry")
+        .navigationBarTitleDisplayMode(.large)
         .task { await viewModel.load() }
     }
 
@@ -43,7 +42,6 @@ struct ConnectionsView: View {
                 .padding(.top, Spacing.lg)
 
             VStack(spacing: Spacing.sm) {
-                Eyebrow(text: "The Relational Ephemeris")
                 Text("No charts in orbit yet.")
                     .font(AppFont.displayMobile)
                     .foregroundStyle(AppColor.onSurface)
@@ -75,17 +73,13 @@ struct ConnectionsView: View {
     private var list: some View {
         VStack(alignment: .leading, spacing: Spacing.block) {
             VStack(alignment: .leading, spacing: Spacing.sm) {
-                Eyebrow(text: "The Relational Ephemeris")
-                Text("Charts in orbit")
-                    .font(AppFont.displayMobile)
-                    .foregroundStyle(AppColor.onSurface)
                 Text("Tap a person to read how your skies interact. Long-press to remove.")
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
             }
             .padding(.top, Spacing.md)
 
-            VStack(spacing: Spacing.sm) {
+            VStack(spacing: 0) {
                 ForEach(viewModel.rows) { row in
                     Button { viewModel.open(row) } label: {
                         ConnectionRow(row: row)
@@ -127,7 +121,7 @@ private struct SuggestionRow: View {
             .multilineTextAlignment(.leading)
             Spacer(minLength: 0)
         }
-            .card(.elevated, padding: Spacing.md + 4)
+            .padding(.vertical, Spacing.md)
             .contentShape(.rect)
     }
 }
@@ -150,11 +144,12 @@ private struct ConnectionRow: View {
                 .foregroundStyle(AppColor.onSurfaceVariant)
             }
             Spacer(minLength: 0)
-            Image(systemName: "arrow.right")
-                .font(.system(size: 14, weight: .medium))
+            Image(systemName: "chevron.right")
+                .font(.body.weight(.semibold))
                 .foregroundStyle(AppColor.outline)
         }
-            .card(.elevated, padding: Spacing.md + 4)
+            .padding(.vertical, Spacing.sm)
+            .overlay(alignment: .bottom) { HairlineDivider() }
             .contentShape(.rect)
     }
 }

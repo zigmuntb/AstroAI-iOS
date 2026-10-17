@@ -52,7 +52,6 @@ struct AppCoordinatorView: View {
                 MainCoordinatorView(coordinator: main)
             }
         }
-        .preferredColorScheme(.light)
-        .tint(AppColor.primaryContainer)
+        .tint(AppColor.primary)
     }
 }

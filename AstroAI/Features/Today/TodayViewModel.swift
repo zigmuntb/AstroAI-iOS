@@ -57,7 +57,7 @@ final class TodayViewModel {
     }
 
     var dateLine: String {
-        (reading?.date ?? .now).formatted(.dateTime.weekday(.wide).month(.wide).day()).uppercased()
+        (reading?.date ?? .now).formatted(.dateTime.weekday(.wide).month(.wide).day())
     }
 
     var moonLine: String {

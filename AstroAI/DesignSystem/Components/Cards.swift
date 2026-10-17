@@ -36,20 +36,13 @@ struct CardModifier: ViewModifier {
 
     private var border: Color {
         switch style {
-        case .elevated: AppColor.outlineVariant
-        case .tinted: AppColor.secondary.opacity(0.38)
+        case .elevated, .tinted: .clear
         case .accent: AppColor.champagne.opacity(0.55)
         }
     }
 
-    /// Tinted blocks sit in the page; elevated ones lift off it.
-    private var shadowOpacity: Double {
-        switch style {
-        case .elevated: 0.08
-        case .tinted: 0
-        case .accent: 0.14
-        }
-    }
+    /// Groups separate by fill, the way an inset list does. Shadows read as a widget stack.
+    private var shadowOpacity: Double { 0 }
 }
 
 /// Visible edge shared by cards and custom panels.
@@ -100,9 +93,6 @@ extension View {
             .padding(padding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(AppColor.surfaceContainerHigh, in: panelShape(Radius.md))
-            .overlay {
-                panelShape(Radius.md).strokeBorder(AppColor.outlineVariant, lineWidth: 1)
-            }
     }
 
     /// Standard screen background + horizontal margin for scroll content.
@@ -111,7 +101,7 @@ extension View {
     }
 }
 
-/// Uppercase tracked label, e.g. "EPHEMERIS READING".
+/// A marginal note. Sentence case, so it reads as a caption rather than a stamped label.
 struct Eyebrow: View {
     let text: String
     var icon: String? = nil
@@ -120,10 +110,9 @@ struct Eyebrow: View {
     var body: some View {
         HStack(spacing: Spacing.xs) {
             if let icon { Image(systemName: icon) }
-            Text(text.uppercased())
+            Text(text)
         }
         .font(AppFont.labelMedium)
-        .tracking(1.2)
         .foregroundStyle(color)
     }
 }
@@ -162,12 +151,13 @@ struct Chip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(AppFont.bodySmall.weight(.medium))
-                .foregroundStyle(isSelected ? AppColor.onPrimary : AppColor.outline)
+                .font(AppFont.bodyMedium.weight(.medium))
+                .foregroundStyle(isSelected ? AppColor.onPrimary : AppColor.onSurface)
                 .padding(.horizontal, 14)
-                .frame(height: 32)
+                .padding(.vertical, 8)
+                .frame(minHeight: 44)
                 .background(isSelected ? AppColor.primaryContainer : AppColor.surfaceContainerLowest, in: .capsule)
-                .overlay(Capsule().stroke(AppColor.hairline.opacity(isSelected ? 0 : 0.3), lineWidth: 0.5))
+                .overlay(Capsule().stroke(AppColor.hairline.opacity(isSelected ? 0 : 1), lineWidth: 0.5))
         }
         .buttonStyle(.plain)
     }

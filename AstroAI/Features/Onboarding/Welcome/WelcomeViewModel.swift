@@ -8,19 +8,6 @@ import Observation
 
 @Observable
 final class WelcomeViewModel {
-    struct Feature: Identifiable {
-        var id: String { title }
-        let eyebrow: String
-        let title: String
-        let caption: String
-    }
-
-    let features = [
-        Feature(eyebrow: "Planetary", title: "Swiss", caption: "Ephemeris"),
-        Feature(eyebrow: "Cognition", title: "Adaptive", caption: "Deep Synthesis"),
-        Feature(eyebrow: "Integrity", title: "Private", caption: "On-Device Key")
-    ]
-
     var selectedPlanet: Planet?
 
     @ObservationIgnored private weak var router: OnboardingRouting?

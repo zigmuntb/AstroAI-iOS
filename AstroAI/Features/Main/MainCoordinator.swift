@@ -20,11 +20,11 @@ enum AppTab: Hashable, CaseIterable {
 
     var icon: String {
         switch self {
-        case .today: "sun.max"
-        case .explore: "globe"
-        case .oracle: "questionmark.bubble"
-        case .synastry: "circle.circle"
-        case .profile: "person.crop.circle"
+        case .today: "moon.stars.fill"
+        case .explore: "calendar"
+        case .oracle: "bubble.left.and.text.bubble.right.fill"
+        case .synastry: "person.2.fill"
+        case .profile: "person.crop.circle.fill"
         }
     }
 }
