@@ -142,8 +142,14 @@ enum AstrologyLexicon {
         }
     }
 
-    /// Essential dignity note, if the planet is in a sign of strength or challenge.
-    static func dignity(of planet: Planet, in sign: ZodiacSign) -> String? {
+    struct EssentialDignity {
+        /// Domicile, Exalted, Detriment, Fall or Peregrine.
+        let name: String
+        let text: String
+    }
+
+    /// Essential dignity of a classical planet. Peregrine means no special strength or weakness.
+    static func dignityStatus(of planet: Planet, in sign: ZodiacSign) -> EssentialDignity {
         let domicile: [Planet: [ZodiacSign]] = [
             .sun: [.leo], .moon: [.cancer], .mercury: [.gemini, .virgo], .venus: [.taurus, .libra],
             .mars: [.aries, .scorpio], .jupiter: [.sagittarius, .pisces], .saturn: [.capricorn, .aquarius]
@@ -153,18 +159,27 @@ enum AstrologyLexicon {
             .mars: .capricorn, .jupiter: .cancer, .saturn: .libra
         ]
         if domicile[planet]?.contains(sign) == true {
-            return "In its own sign, \(planet.name) works with natural ease and authority here."
+            return EssentialDignity(name: "Domicile", text: "In its own sign, \(planet.name) works with natural ease and authority here.")
         }
         if exaltation[planet] == sign {
-            return "Exalted in \(sign.name), \(planet.name) expresses its finest qualities."
+            return EssentialDignity(name: "Exalted", text: "Exalted in \(sign.name), \(planet.name) expresses its finest qualities.")
         }
         if domicile[planet]?.contains(sign.opposite) == true {
-            return "In detriment here, \(planet.name) has to work in unfamiliar ways, which builds unusual skill."
+            return EssentialDignity(name: "Detriment", text: "In detriment here, \(planet.name) has to work in unfamiliar ways, which builds unusual skill.")
         }
         if exaltation[planet] == sign.opposite {
-            return "In fall here, \(planet.name) matures slowly and asks for self-compassion."
+            return EssentialDignity(name: "Fall", text: "In fall here, \(planet.name) matures slowly and asks for self-compassion.")
         }
-        return nil
+        return EssentialDignity(
+            name: "Peregrine",
+            text: "Peregrine in \(sign.name), \(planet.name) borrows the sign's manner without the authority of rulership."
+        )
+    }
+
+    /// Essential dignity note, if the planet is in a sign of strength or challenge.
+    static func dignity(of planet: Planet, in sign: ZodiacSign) -> String? {
+        let status = dignityStatus(of: planet, in: sign)
+        return status.name == "Peregrine" ? nil : status.text
     }
 
     static func aspectSentence(_ kind: AspectKind, _ first: Planet, _ second: Planet) -> String {

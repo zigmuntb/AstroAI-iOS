@@ -130,6 +130,39 @@ nonisolated enum Ephemeris {
         obliquityDegrees(at: astroTime(date))
     }
 
+    struct SolarEclipse: Hashable {
+        let date: Date
+        /// "Total", "Annular" or "Partial".
+        let kind: String
+    }
+
+    /// Tropical ecliptic longitude of one body. Cheaper than `positions(at:)` when only one planet is needed.
+    static func tropicalLongitude(of planet: Planet, at date: Date) -> Double {
+        let time = astroTime(date)
+        if planet == .northNode { return meanNode(at: time) }
+        return longitude(of: planet, at: time)
+    }
+
+    /// The next global solar eclipses after `date`, earliest first.
+    static func upcomingSolarEclipses(from date: Date, count: Int) -> [SolarEclipse] {
+        guard count > 0 else { return [] }
+        var eclipse = Astronomy_SearchGlobalSolarEclipse(astroTime(date))
+        var found: [SolarEclipse] = []
+        var previous = Date.distantPast
+        var guardrail = 0
+        while eclipse.status == ASTRO_SUCCESS, found.count < count, guardrail < count + 4 {
+            guardrail += 1
+            let when = dateFromUT(eclipse.peak.ut)
+            guard when > previous else { break }
+            previous = when
+            if when >= date.addingTimeInterval(-3_600) {
+                found.append(SolarEclipse(date: when, kind: solarEclipseKind(eclipse.kind)))
+            }
+            eclipse = Astronomy_NextGlobalSolarEclipse(eclipse.peak)
+        }
+        return found
+    }
+
     /// Smallest signed angle from `b` to `a`, in -180..<180.
     static func signedDifference(_ a: Double, _ b: Double) -> Double {
         var diff = (a - b).truncatingRemainder(dividingBy: 360)
@@ -191,6 +224,17 @@ nonisolated enum Ephemeris {
     private static func normalized(_ degrees: Double) -> Double {
         let value = degrees.truncatingRemainder(dividingBy: 360)
         return value < 0 ? value + 360 : value
+    }
+
+    /// Inverse of `astroTime`: Astronomy Engine counts UT days from 2000-01-01 12:00 UTC.
+    private static func dateFromUT(_ ut: Double) -> Date {
+        Date(timeIntervalSince1970: ut * 86_400 + 946_728_000)
+    }
+
+    private static func solarEclipseKind(_ kind: astro_eclipse_kind_t) -> String {
+        if kind == ECLIPSE_TOTAL { return "Total" }
+        if kind == ECLIPSE_ANNULAR { return "Annular" }
+        return "Partial"
     }
 
     private static func radians(_ degrees: Double) -> Double { degrees * .pi / 180 }

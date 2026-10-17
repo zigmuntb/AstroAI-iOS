@@ -49,4 +49,6 @@ struct AvatarView: View {
 extension EnvironmentValues {
     /// Current user's avatar, provided once by the main coordinator for every top bar.
     @Entry var userAvatar = AvatarContent()
+    /// True after a Sanctuary purchase. The coordinator publishes it so open screens unlock immediately.
+    @Entry var isSanctuaryMember = false
 }

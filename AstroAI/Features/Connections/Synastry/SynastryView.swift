@@ -7,6 +7,7 @@ import SwiftUI
 
 struct SynastryView: View {
     @State private var viewModel: SynastryViewModel
+    @Environment(\.isSanctuaryMember) private var isSanctuaryMember
 
     init(viewModel: SynastryViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -21,6 +22,7 @@ struct SynastryView: View {
                 if let report = viewModel.report {
                     personColumns
                     topology(report)
+                    compositeSection(report)
                     dimensions(report)
                     inquiries(report)
                     artifact(report)
@@ -145,6 +147,59 @@ struct SynastryView: View {
                 .font(AppFont.labelSmall)
                 .tracking(0.4)
                 .foregroundStyle(AppColor.outline)
+        }
+    }
+
+    // MARK: - Composite
+
+    @ViewBuilder
+    private func compositeSection(_ report: SynastryReport) -> some View {
+        if isSanctuaryMember, let composite = report.composite {
+            VStack(alignment: .leading, spacing: Spacing.md) {
+                SectionHeader(title: "Composite Chart", trailing: composite.harmony)
+                Text(composite.summary)
+                    .font(AppFont.bodyMedium)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .lineSpacing(3)
+                VStack(spacing: 0) {
+                    ForEach(Array(composite.points.enumerated()), id: \.element.id) { index, point in
+                        if index > 0 { HairlineDivider() }
+                        HStack(spacing: Spacing.md) {
+                            Text(point.glyph)
+                                .font(.system(size: 16, design: .serif))
+                                .foregroundStyle(AppColor.primary)
+                                .frame(width: 24)
+                            Text(point.name)
+                                .font(AppFont.bodyMedium.weight(.medium))
+                                .foregroundStyle(AppColor.onSurface)
+                            Spacer(minLength: Spacing.sm)
+                            Text(point.placement)
+                                .font(AppFont.bodySmall)
+                                .foregroundStyle(AppColor.onSurfaceVariant)
+                        }
+                        .padding(.vertical, 10)
+                    }
+                }
+            }
+            .card(.elevated)
+        } else if !isSanctuaryMember {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Label("Composite Chart", systemImage: "lock")
+                    .font(AppFont.labelLarge)
+                    .foregroundStyle(AppColor.secondary)
+                Text("Friction and harmony of the bond itself.")
+                    .font(AppFont.headlineSmall)
+                    .foregroundStyle(AppColor.onSurface)
+                Text("Sanctuary builds the midpoint chart of the two of you, separate from either natal chart.")
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                Button(action: viewModel.openPaywall) {
+                    Text("Unlock Composite")
+                }
+                .buttonStyle(.astroPrimary)
+                .padding(.top, Spacing.xs)
+            }
+            .card(.tinted)
         }
     }
 

@@ -7,6 +7,7 @@ import SwiftUI
 
 struct ConnectionsView: View {
     @State private var viewModel: ConnectionsViewModel
+    @Environment(\.isSanctuaryMember) private var isSanctuaryMember
 
     init(viewModel: ConnectionsViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -73,7 +74,7 @@ struct ConnectionsView: View {
     private var list: some View {
         VStack(alignment: .leading, spacing: Spacing.block) {
             VStack(alignment: .leading, spacing: Spacing.sm) {
-                Text("Tap a person to read how your skies interact. Long-press to remove.")
+                Text(viewModel.listNote)
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
             }
@@ -98,7 +99,31 @@ struct ConnectionsView: View {
             }
             .buttonStyle(.astroPrimary)
             .padding(.top, Spacing.sm)
+
+            if !isSanctuaryMember && !viewModel.isEmpty {
+                synastryLock
+            }
         }
+    }
+
+    private var synastryLock: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Label("Multilateral Synastry", systemImage: "lock")
+                .font(AppFont.labelLarge)
+                .foregroundStyle(AppColor.secondary)
+            Text("One chart is included.")
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.onSurface)
+            Text("Sanctuary overlays every partner, family member and friend, and opens the composite of each bond.")
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+            Button(action: viewModel.openPaywall) {
+                Text("Unlock Synastry")
+            }
+            .buttonStyle(.astroPrimary)
+            .padding(.top, Spacing.xs)
+        }
+        .card(.tinted)
     }
 }
 
@@ -142,6 +167,11 @@ private struct ConnectionRow: View {
                 }
                 .font(AppFont.bodySmall)
                 .foregroundStyle(AppColor.onSurfaceVariant)
+                if let harmony = row.harmony {
+                    Text(harmony)
+                        .font(AppFont.labelSmall)
+                        .foregroundStyle(harmony.localizedCaseInsensitiveContains("friction") ? AppColor.dustyRose : AppColor.secondary)
+                }
             }
             Spacer(minLength: 0)
             Image(systemName: "chevron.right")

@@ -21,7 +21,7 @@ protocol AstrologyServicing {
     func synastry(of user: UserProfile, with connection: Connection) async throws -> SynastryReport
     func journalPrompt(for profile: UserProfile?) -> JournalPrompt
     func dailyReading(for profile: UserProfile?) async throws -> DailyReading
-    func library() async throws -> ExploreLibrary
+    func library(for birth: BirthData?) async throws -> ExploreLibrary
 }
 
 /// Charts, transits, daily readings and synastry are computed on-device.
@@ -71,9 +71,16 @@ final class AstrologyService: AstrologyServicing {
         return DailyReadingBuilder.reading(profile: profile, chart: chart, sky: sky(at: .now, natal: chart))
     }
 
-    func library() async throws -> ExploreLibrary {
+    func library(for birth: BirthData?) async throws -> ExploreLibrary {
         let now = Date.now
-        return ExploreLibrary(weekRange: Self.weekRange(around: now), transits: weekSkyEvents(from: now))
+        let cycles: [Transit]
+        if let birth {
+            let chart = NatalChartCalculator.chart(for: birth, options: chartOptions)
+            cycles = LifeCycleForecast.events(for: chart, born: birth.date, options: chartOptions, now: now)
+        } else {
+            cycles = []
+        }
+        return ExploreLibrary(weekRange: Self.weekRange(around: now), transits: weekSkyEvents(from: now), lifeCycles: cycles)
     }
 
     /// Seven civil days starting today, e.g. "Oct 5 — Oct 11".

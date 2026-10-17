@@ -39,8 +39,68 @@ enum SynastryCalculator {
             quote: quote(from: tightest.first, userName: userName, otherName: connection.name),
             summary: summary(user: user, other: other, userName: userName, otherName: connection.name, kinship: connection.kinship, contacts: Array(tightest)),
             dimensions: dimensions(contacts: contacts, userName: userName, otherName: connection.name),
-            questions: questions(kinship: connection.kinship, otherName: connection.name, contact: tightest.first)
+            questions: questions(kinship: connection.kinship, otherName: connection.name, contact: tightest.first),
+            composite: composite(user: user, other: other)
         )
+    }
+
+    /// Midpoint composite: the chart of the relationship, not of either person.
+    private static func composite(user: NatalChart, other: NatalChart) -> CompositeReading {
+        var bodies: [Planet] = [.sun, .moon, .mercury, .venus, .mars, .jupiter, .saturn]
+        if user.placement(.ascendant) != nil, other.placement(.ascendant) != nil {
+            bodies.append(.ascendant)
+        }
+
+        let points: [(planet: Planet, longitude: Double)] = bodies.compactMap { planet in
+            guard let ours = user.placement(planet), let theirs = other.placement(planet) else { return nil }
+            return (planet, midpoint(ours.longitude, theirs.longitude))
+        }
+
+        var aspects: [ChartAspect] = []
+        for i in points.indices {
+            for j in points.indices where j > i {
+                let (a, b) = (points[i], points[j])
+                if let aspect = NatalChartCalculator.aspect(between: a.longitude, and: b.longitude, a.planet, b.planet) {
+                    aspects.append(aspect)
+                }
+            }
+        }
+        aspects.sort { $0.orb < $1.orb }
+
+        let hard = aspects.filter { $0.kind == .square || $0.kind == .opposition }.count
+        let soft = aspects.filter { $0.kind == .trine || $0.kind == .sextile || $0.kind == .conjunction }.count
+        let sunSign = points.first { $0.planet == .sun }.map { ZodiacSign.containing($0.longitude).name } ?? "an unknown"
+        let moonSign = points.first { $0.planet == .moon }.map { ZodiacSign.containing($0.longitude).name } ?? "an unknown"
+
+        var text = "The composite is the chart of the bond itself: Sun in \(sunSign), Moon in \(moonSign). "
+        if let tightest = aspects.first {
+            text += "Its closest contact is \(tightest.first.name) \(tightest.kind.name.lowercased()) \(tightest.second.name) (orb \(NatalChartCalculator.formatDegrees(tightest.orb))). "
+        }
+        text += hard > soft
+            ? "Hard aspects lead, so the relationship grows by working through friction."
+            : "Flowing aspects lead, so the relationship's own weather tends toward harmony."
+
+        return CompositeReading(
+            harmony: hard > soft ? "Composite Friction" : "Composite Harmony",
+            summary: text,
+            points: points.map { point in
+                let sign = ZodiacSign.containing(point.longitude)
+                let degree = NatalChartCalculator.formatDegrees(point.longitude.truncatingRemainder(dividingBy: 30))
+                return CompositePoint(
+                    glyph: point.planet.glyph,
+                    name: point.planet == .ascendant ? "Ascendant" : point.planet.name,
+                    placement: "\(degree) \(sign.name)"
+                )
+            }
+        )
+    }
+
+    /// Shorter-arc midpoint of two ecliptic longitudes.
+    private static func midpoint(_ a: Double, _ b: Double) -> Double {
+        var value = b + Ephemeris.signedDifference(a, b) / 2
+        value.formTruncatingRemainder(dividingBy: 360)
+        if value < 0 { value += 360 }
+        return value
     }
 
     static func placements(from chart: NatalChart) -> [(planet: Planet, label: String, value: String)] {

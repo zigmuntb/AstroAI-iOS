@@ -124,7 +124,21 @@ struct OracleContext {
         if !aspects.isEmpty {
             lines.append("Tightest natal aspects: " + aspects.joined(separator: ", ") + ".")
         }
+        lines.append(cuspsDescription(chart))
         return lines.joined(separator: "\n")
+    }
+
+    /// Exact cusp degrees, so answers can name the house boundary and not only the house number.
+    private func cuspsDescription(_ chart: NatalChart) -> String {
+        guard chart.cusps.count == 12 else {
+            return "House cusps: none. Houses are counted from the Sun sign, so there is no degree on the cusps."
+        }
+        let cusps = chart.cusps.enumerated().map { index, longitude in
+            let sign = ZodiacSign.containing(longitude)
+            let degree = NatalChartCalculator.formatDegrees(longitude.truncatingRemainder(dividingBy: 30))
+            return "\(AstrologyLexicon.roman(index + 1)) \(degree) \(sign.name)"
+        }
+        return "House cusps: " + cusps.joined(separator: "; ") + "."
     }
 
     private var transitsDescription: String? {

@@ -7,6 +7,7 @@ import SwiftUI
 
 struct NatalBlueprintView: View {
     @State private var viewModel: NatalBlueprintViewModel
+    @Environment(\.isSanctuaryMember) private var isSanctuaryMember
 
     init(viewModel: NatalBlueprintViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -24,7 +25,7 @@ struct NatalBlueprintView: View {
                     distribution(chart)
                     placements(chart)
                     if viewModel.mode == .deep {
-                        declinations
+                        deepDive
                             .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                     disclaimer
@@ -324,6 +325,12 @@ struct NatalBlueprintView: View {
                         .font(AppFont.bodyMedium)
                         .foregroundStyle(AppColor.onSurfaceVariant)
                         .lineSpacing(3)
+                    if !placement.detail.isEmpty {
+                        Text(placement.detail)
+                            .font(AppFont.bodySmall)
+                            .foregroundStyle(AppColor.onSurfaceVariant)
+                            .lineSpacing(2)
+                    }
                     if !placement.aspectNote.isEmpty {
                         Label(placement.aspectNote, systemImage: "infinity")
                             .font(AppFont.bodySmall)
@@ -338,6 +345,135 @@ struct NatalBlueprintView: View {
     }
 
     // MARK: - Deep dive
+
+    private var deepDive: some View {
+        VStack(alignment: .leading, spacing: Spacing.block) {
+            if isSanctuaryMember {
+                houseRulerships
+                dignities
+                if let path = viewModel.nodalPath {
+                    nodalPath(path)
+                }
+            } else {
+                blueprintLock
+            }
+            declinations
+        }
+    }
+
+    private var blueprintLock: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Label("Complete Natal Blueprint", systemImage: "lock")
+                .font(AppFont.labelLarge)
+                .foregroundStyle(AppColor.secondary)
+            Text("House rulerships, essential dignities and the nodal path.")
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.onSurface)
+            Text("Sanctuary opens the traditional ruler of every house, where each planet stands in dignity, and the axis from South Node to North Node.")
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+            Button(action: viewModel.openPaywall) {
+                Text("Unlock Blueprint")
+            }
+            .buttonStyle(.astroPrimary)
+            .padding(.top, Spacing.xs)
+        }
+        .card(.tinted)
+    }
+
+    private var houseRulerships: some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            sectionHeader("House Rulerships", trailing: "")
+            Text(viewModel.houseNote)
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+
+            VStack(spacing: 0) {
+                ForEach(viewModel.houseRules) { rule in
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack {
+                            Text(rule.label)
+                                .font(AppFont.bodyMedium.weight(.semibold))
+                                .foregroundStyle(AppColor.onSurface)
+                            Spacer()
+                            Text(rule.cusp)
+                                .font(AppFont.labelMedium)
+                                .foregroundStyle(AppColor.secondary)
+                        }
+                        Text(rule.ruler)
+                            .font(AppFont.bodySmall)
+                            .foregroundStyle(AppColor.onSurfaceVariant)
+                    }
+                    .padding(.vertical, 10)
+                    .overlay(alignment: .bottom) { HairlineDivider() }
+                }
+            }
+            .card(.elevated)
+        }
+    }
+
+    private var dignities: some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            sectionHeader("Essential Dignities", trailing: "")
+            VStack(spacing: 0) {
+                ForEach(viewModel.dignities) { line in
+                    VStack(alignment: .leading, spacing: Spacing.xs) {
+                        HStack(alignment: .firstTextBaseline) {
+                            Text("\(line.planet.glyph) \(line.planet.name)")
+                                .font(AppFont.bodyMedium.weight(.semibold))
+                                .foregroundStyle(AppColor.onSurface)
+                            Spacer(minLength: Spacing.sm)
+                            Text(line.status)
+                                .font(AppFont.labelSmall)
+                                .foregroundStyle(AppColor.secondary)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(AppColor.secondaryContainer, in: .capsule)
+                        }
+                        Text(line.text)
+                            .font(AppFont.bodySmall)
+                            .foregroundStyle(AppColor.onSurfaceVariant)
+                            .lineSpacing(2)
+                    }
+                    .padding(.vertical, 10)
+                    .overlay(alignment: .bottom) { HairlineDivider() }
+                }
+            }
+            .card(.elevated)
+        }
+    }
+
+    private func nodalPath(_ path: NatalBlueprintViewModel.NodalPath) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            sectionHeader("Nodal Path", trailing: path.axis)
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                HStack {
+                    Text("North Node")
+                        .font(AppFont.labelMedium)
+                        .foregroundStyle(AppColor.onSurfaceVariant)
+                    Spacer()
+                    Text(path.north)
+                        .font(AppFont.bodySmall.weight(.medium))
+                        .foregroundStyle(AppColor.onSurface)
+                }
+                HStack {
+                    Text("South Node")
+                        .font(AppFont.labelMedium)
+                        .foregroundStyle(AppColor.onSurfaceVariant)
+                    Spacer()
+                    Text(path.south)
+                        .font(AppFont.bodySmall.weight(.medium))
+                        .foregroundStyle(AppColor.onSurface)
+                }
+                Text(path.text)
+                    .font(AppFont.bodyMedium)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .lineSpacing(3)
+                    .padding(.top, Spacing.xs)
+            }
+            .card(.tinted)
+        }
+    }
 
     private var declinations: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {

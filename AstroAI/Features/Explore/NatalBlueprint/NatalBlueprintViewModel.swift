@@ -29,6 +29,28 @@ final class NatalBlueprintViewModel {
         let caption: String
     }
 
+    struct HouseRule: Identifiable {
+        var id: Int { house }
+        let house: Int
+        let label: String
+        let cusp: String
+        let ruler: String
+    }
+
+    struct DignityLine: Identifiable {
+        var id: Planet { planet }
+        let planet: Planet
+        let status: String
+        let text: String
+    }
+
+    struct NodalPath {
+        let axis: String
+        let north: String
+        let south: String
+        let text: String
+    }
+
     private(set) var chart: NatalChart?
     private(set) var isLoading = false
     private(set) var errorMessage: String?
@@ -79,6 +101,64 @@ final class NatalBlueprintViewModel {
             ))
         }
         return result
+    }
+
+    /// Traditional ruler of each house cusp, and the house that ruler occupies.
+    var houseRules: [HouseRule] {
+        guard let chart else { return [] }
+        return (1...12).map { house in
+            let longitude = cuspLongitude(house, chart: chart)
+            let sign = ZodiacSign.containing(longitude)
+            let ruler = sign.ruler
+            let degree = NatalChartCalculator.formatDegrees(longitude.truncatingRemainder(dividingBy: 30))
+            let sits: String
+            if let placement = chart.placement(ruler) {
+                sits = "\(ruler.name) sits in \(placement.sign.name), \(placement.house)"
+            } else {
+                sits = "Ruled by \(ruler.name)"
+            }
+            return HouseRule(
+                house: house,
+                label: "House \(AstrologyLexicon.roman(house))",
+                cusp: "\(degree) \(sign.glyph) \(sign.name)",
+                ruler: sits
+            )
+        }
+    }
+
+    var houseNote: String {
+        guard let chart else { return "" }
+        if !chart.hasLocation {
+            return "Without a birthplace these are solar houses, counted from your Sun sign."
+        }
+        if !chart.isTimeKnown {
+            return "Your birth time is approximate, so these cusps can shift."
+        }
+        return "Traditional ruler of the sign on each cusp."
+    }
+
+    var dignities: [DignityLine] {
+        let classical: [Planet] = [.sun, .moon, .mercury, .venus, .mars, .jupiter, .saturn]
+        guard let chart else { return [] }
+        return classical.compactMap { planet in
+            guard let placement = chart.placement(planet) else { return nil }
+            let status = AstrologyLexicon.dignityStatus(of: planet, in: placement.sign)
+            return DignityLine(planet: planet, status: status.name, text: status.text)
+        }
+    }
+
+    var nodalPath: NodalPath? {
+        guard let chart, let north = chart.placement(.northNode), let house = north.houseNumber else { return nil }
+        let southSign = north.sign.opposite
+        let southHouse = (house + 5) % 12 + 1
+        let southTheme = AstrologyLexicon.houseTheme(southHouse)
+        let northTheme = AstrologyLexicon.houseTheme(house)
+        return NodalPath(
+            axis: "\(north.sign.name) / \(southSign.name)",
+            north: "\(north.degree) \(north.sign.glyph) · House \(AstrologyLexicon.roman(house))",
+            south: "\(north.degree) \(southSign.glyph) · House \(AstrologyLexicon.roman(southHouse))",
+            text: "The South Node in \(southSign.name) is the familiar skill of \(southTheme). The North Node in \(north.sign.name) asks for \(northTheme). The path is the walk from one house to the other, not a debt to be paid."
+        )
     }
 
     var inspectorNote: String {
@@ -191,6 +271,10 @@ final class NatalBlueprintViewModel {
         selectedPlanet = nil
     }
 
+    func openPaywall() {
+        router?.present(.paywall)
+    }
+
     func toggle(_ planet: Planet) {
         if expanded.contains(planet) {
             expanded.remove(planet)
@@ -207,6 +291,15 @@ final class NatalBlueprintViewModel {
         case .northNode: "North Node"
         default: planet.name
         }
+    }
+
+    private func cuspLongitude(_ house: Int, chart: NatalChart) -> Double {
+        if chart.cusps.count == 12 {
+            return chart.cusps[house - 1]
+        }
+        let sun = chart.placement(.sun)?.longitude ?? 0
+        let origin = Double(Int(sun / 30) * 30)
+        return (origin + Double(house - 1) * 30).truncatingRemainder(dividingBy: 360)
     }
 
     private func opposite(_ sign: ZodiacSign) -> ZodiacSign {

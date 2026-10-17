@@ -74,10 +74,12 @@ struct Transit: Codable, Hashable, Identifiable {
     let detail: String
 }
 
-/// The coming week's sky. Lunar ingresses and lunations only — there is no article library.
+/// The coming week's sky, plus the personal life-cycle forecast Sanctuary unlocks.
 struct ExploreLibrary: Codable, Hashable {
     let weekRange: String
     let transits: [Transit]
+    /// Saturn returns, solar eclipses and nodal sign changes, earliest first.
+    var lifeCycles: [Transit] = []
 }
 
 // MARK: - Oracle
@@ -121,6 +123,22 @@ struct SynastryReport: Codable, Hashable {
     let summary: String
     let dimensions: [SynastryDimension]
     let questions: [String]
+    /// Midpoint chart of the two people. Nil only for older sample data.
+    var composite: CompositeReading? = nil
+}
+
+/// The relationship as its own chart: midpoints, and whether that chart leans to friction or harmony.
+struct CompositeReading: Codable, Hashable {
+    let harmony: String
+    let summary: String
+    let points: [CompositePoint]
+}
+
+struct CompositePoint: Codable, Hashable, Identifiable {
+    var id: String { name }
+    let glyph: String
+    let name: String
+    let placement: String
 }
 
 struct SynastryDimension: Codable, Hashable, Identifiable {

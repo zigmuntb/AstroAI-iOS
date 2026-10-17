@@ -14,6 +14,7 @@ final class ExploreViewModel {
     }
 
     private(set) var library: ExploreLibrary?
+    private(set) var isPremium = false
     /// Placements drawn on the blueprint card. Empty until the user's chart is calculated.
     private(set) var placements: [PlanetPlacement] = []
     /// "Scorpio Sun · Cancer Moon · Leo Rising", from the user's chart.
@@ -45,8 +46,18 @@ final class ExploreViewModel {
         return library.transits.filter { matches($0.title, $0.detail, $0.kind, $0.date) }
     }
 
+    var lifeCycles: [Transit] {
+        guard isPremium, let library else { return [] }
+        return library.lifeCycles.filter { matches($0.title, $0.detail, $0.kind, $0.date) }
+    }
+
+    /// Free accounts see the promise, not the dates. Hidden while a search is active.
+    var showsLockedForecasts: Bool {
+        library != nil && !isPremium && query.isEmpty && !(library?.lifeCycles.isEmpty ?? true)
+    }
+
     var hasNoResults: Bool {
-        library != nil && !query.isEmpty && transits.isEmpty
+        library != nil && !query.isEmpty && transits.isEmpty && lifeCycles.isEmpty
     }
 
     private func matches(_ fields: String...) -> Bool {
@@ -56,11 +67,12 @@ final class ExploreViewModel {
     // MARK: - Actions
 
     func load() async {
+        refreshPremium()
         guard !isLoading else { return }
         isLoading = true
         defer { isLoading = false }
         do {
-            library = try await astrology.library()
+            library = try await astrology.library(for: userService.profile?.birth)
             errorMessage = nil
         } catch {
             if library == nil {
@@ -80,6 +92,14 @@ final class ExploreViewModel {
 
     func openProfile() {
         router?.select(.profile)
+    }
+
+    func openPaywall() {
+        router?.present(.paywall)
+    }
+
+    func refreshPremium() {
+        isPremium = userService.profile?.isPremium ?? false
     }
 
     private func refreshChart() async {

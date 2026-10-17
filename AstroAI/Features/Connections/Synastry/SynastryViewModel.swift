@@ -140,7 +140,11 @@ final class SynastryViewModel {
     }
 
     func addConnection() {
-        router?.present(.addConnection)
+        router?.addConnection()
+    }
+
+    func openPaywall() {
+        router?.present(.paywall)
     }
 
     private static func placements(from chart: NatalChart) -> [Placement] {

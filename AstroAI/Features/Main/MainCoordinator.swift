@@ -49,6 +49,8 @@ protocol MainRouting: AnyObject {
     func pop()
     func present(_ sheet: AppSheet)
     func dismissSheet()
+    /// Opens the add-person sheet, or the paywall once a free account already has someone saved.
+    func addConnection()
     func select(_ tab: AppTab)
     func askOracle(_ question: String)
     func signOut()
@@ -78,7 +80,7 @@ final class MainCoordinator: MainRouting {
         journal: dependencies.journalService, networkMonitor: dependencies.networkMonitor, router: self
     )
     @ObservationIgnored private lazy var connectionsViewModel = ConnectionsViewModel(
-        connections: dependencies.connectionsService, router: self
+        connections: dependencies.connectionsService, userService: dependencies.userService, router: self
     )
     @ObservationIgnored private lazy var profileViewModel = ProfileViewModel(
         userService: dependencies.userService, astrology: dependencies.astrologyService,
@@ -90,6 +92,8 @@ final class MainCoordinator: MainRouting {
     }
 
     /// Read from the observable user service, so every top bar updates after an edit.
+    var isSanctuaryMember: Bool { dependencies.userService.profile?.isPremium ?? false }
+
     var avatar: AvatarContent {
         AvatarContent(
             imageData: dependencies.userService.avatarData,
@@ -123,12 +127,20 @@ final class MainCoordinator: MainRouting {
         sheet = nil
     }
 
+    func addConnection() {
+        let isPremium = dependencies.userService.profile?.isPremium ?? false
+        let saved = dependencies.connectionsService.connections().count
+        present(isPremium || saved < 1 ? .addConnection : .paywall)
+    }
+
     /// Refreshes screens whose data may change inside a sheet (e.g. premium status after the paywall).
     func sheetDismissed() {
         profileViewModel.refresh()
+        exploreViewModel.refreshPremium()
         Task {
             await todayViewModel.reload()
             await oracleViewModel.loadSky()
+            await connectionsViewModel.load()
         }
     }
 
@@ -203,7 +215,7 @@ final class MainCoordinator: MainRouting {
             AddConnectionView(viewModel: AddConnectionViewModel(
                 connections: dependencies.connectionsService, astrology: dependencies.astrologyService,
                 locationService: dependencies.locationService, router: self,
-                onSave: { [weak self] in self?.connectionsViewModel.reload() }
+                onSave: { [weak self] in Task { await self?.connectionsViewModel.load() } }
             ))
         }
     }
@@ -226,6 +238,7 @@ struct MainCoordinatorView: View {
             }
         }
         .environment(\.userAvatar, coordinator.avatar)
+        .environment(\.isSanctuaryMember, coordinator.isSanctuaryMember)
         .onChange(of: coordinator.selectedTab) { _, tab in
             guard tab == .explore else { return }
             Task { await coordinator.reloadExplore() }

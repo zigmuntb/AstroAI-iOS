@@ -44,6 +44,11 @@ struct ExploreView: View {
             if !viewModel.transits.isEmpty {
                 transitsSection(range: library.weekRange)
             }
+            if !viewModel.lifeCycles.isEmpty {
+                cyclesSection
+            } else if viewModel.showsLockedForecasts {
+                lockedForecasts
+            }
             if viewModel.hasNoResults {
                 Text("No sky events match “\(viewModel.searchText)”.")
                     .font(AppFont.bodyMedium)
@@ -140,6 +145,42 @@ struct ExploreView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 12)
         .accessibilityElement(children: .combine)
+    }
+
+    private var cyclesSection: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            sectionTitle("Life Cycles", icon: "clock.arrow.circlepath", trailing: "Your chart", trailingColor: AppColor.secondary)
+
+            VStack(spacing: 0) {
+                ForEach(Array(viewModel.lifeCycles.enumerated()), id: \.element.id) { index, transit in
+                    if index > 0 { HairlineDivider() }
+                    transitRow(transit, tone: TransitTone.allCases[index % TransitTone.allCases.count])
+                }
+            }
+            .padding(.top, Spacing.sm)
+        }
+        .padding(.top, Spacing.xl)
+    }
+
+    private var lockedForecasts: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Label("Ephemeris Transit Forecasts", systemImage: "lock")
+                .font(AppFont.labelLarge)
+                .foregroundStyle(AppColor.secondary)
+            Text("Saturn returns, solar eclipses and nodal shifts, timed to your houses.")
+                .font(AppFont.headlineSmall)
+                .foregroundStyle(AppColor.onSurface)
+            Text("Sanctuary calculates the next exact dates against your natal chart.")
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+            Button(action: viewModel.openPaywall) {
+                Text("Unlock Forecasts")
+            }
+            .buttonStyle(.astroPrimary)
+            .padding(.top, Spacing.xs)
+        }
+        .card(.tinted)
+        .padding(.top, Spacing.xl)
     }
 
     private func sectionTitle(_ title: String, icon: String, trailing: String, trailingColor: Color) -> some View {
