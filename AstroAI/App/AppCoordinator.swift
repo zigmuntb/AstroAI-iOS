@@ -42,14 +42,24 @@ final class AppCoordinator {
 
 struct AppCoordinatorView: View {
     let coordinator: AppCoordinator
+    @State private var showsLaunchAnimation = true
 
     var body: some View {
-        Group {
-            switch coordinator.flow {
-            case .onboarding(let onboarding):
-                OnboardingCoordinatorView(coordinator: onboarding)
-            case .main(let main):
-                MainCoordinatorView(coordinator: main)
+        ZStack {
+            Group {
+                switch coordinator.flow {
+                case .onboarding(let onboarding):
+                    OnboardingCoordinatorView(coordinator: onboarding)
+                case .main(let main):
+                    MainCoordinatorView(coordinator: main)
+                }
+            }
+
+            if showsLaunchAnimation {
+                LaunchAnimationView {
+                    showsLaunchAnimation = false
+                }
+                .zIndex(1)
             }
         }
         .tint(AppColor.primary)
