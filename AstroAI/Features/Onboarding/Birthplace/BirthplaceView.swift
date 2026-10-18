@@ -3,6 +3,7 @@
 //  AstroAI
 //
 
+import MapKit
 import SwiftUI
 
 struct BirthplaceView: View {
@@ -52,7 +53,11 @@ struct BirthplaceView: View {
             .padding(.vertical, Spacing.md)
             .background(AppColor.surface)
         }
-        .screenBackground()
+        .background {
+            BirthplaceMap(place: viewModel.selectedPlace)
+                .ignoresSafeArea()
+        }
+        .preferredColorScheme(.dark)
         .toolbarVisibility(.hidden, for: .navigationBar)
         .animation(.easeInOut(duration: 0.2), value: viewModel.results)
     }
@@ -190,5 +195,78 @@ private struct PlaceRow: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// Dimmed map behind the birthplace form. It rests on a wide view until a city is chosen.
+private struct BirthplaceMap: View {
+    let place: BirthPlace?
+
+    @State private var position: MapCameraPosition
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    init(place: BirthPlace?) {
+        self.place = place
+        _position = State(initialValue: Self.camera(for: place))
+    }
+
+    var body: some View {
+        Map(position: $position, interactionModes: []) {
+            if let place {
+                Marker(place.city, coordinate: Self.coordinate(place))
+                    .tint(Color(hex: 0xE4C992))
+            }
+        }
+        .mapStyle(.standard(elevation: .flat, emphasis: .muted, pointsOfInterest: .excludingAll, showsTraffic: false))
+        .mapControls {}
+        .environment(\.colorScheme, .dark)
+        .safeAreaPadding(.bottom, 150)
+        .overlay(dim)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+        .onChange(of: place) { _, newPlace in
+            let next = Self.camera(for: newPlace)
+            if reduceMotion {
+                position = next
+            } else {
+                withAnimation(.easeInOut(duration: 0.95)) {
+                    position = next
+                }
+            }
+        }
+    }
+
+    /// Keeps the geography visible and pulls the brightness down so the map stays behind the form.
+    private var dim: some View {
+        ZStack {
+            Color.black.opacity(0.46)
+            LinearGradient(
+                stops: [
+                    .init(color: Color.black.opacity(0.42), location: 0),
+                    .init(color: Color.black.opacity(0.12), location: 0.42),
+                    .init(color: Color.black.opacity(0.38), location: 1)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        }
+        .allowsHitTesting(false)
+    }
+
+    private static func camera(for place: BirthPlace?) -> MapCameraPosition {
+        let center: CLLocationCoordinate2D
+        let distance: CLLocationDistance
+        if let place {
+            center = coordinate(place)
+            distance = 34_000
+        } else {
+            center = CLLocationCoordinate2D(latitude: 28, longitude: 8)
+            distance = 14_000_000
+        }
+        return .camera(MapCamera(centerCoordinate: center, distance: distance, heading: 0, pitch: 0))
+    }
+
+    private static func coordinate(_ place: BirthPlace) -> CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude)
     }
 }
