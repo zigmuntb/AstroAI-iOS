@@ -67,7 +67,7 @@ final class ProfileViewModel {
         AvatarContent(imageData: userService.avatarData, name: userService.profile?.name ?? "")
     }
 
-    var folioCountTitle: String { "\(entryCount) Folios" }
+    var folioCountTitle: String { "\(entryCount) notes" }
     var viewAllTitle: String { "View All \(entryCount) Entries" }
 
     @ObservationIgnored private let userService: UserServicing

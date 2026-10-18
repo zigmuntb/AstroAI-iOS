@@ -265,13 +265,13 @@ struct ExploreView: View {
 
     private var lockedForecasts: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Label("Ephemeris Transit Forecasts", systemImage: "lock")
+            Label("Sky forecasts", systemImage: "lock")
                 .font(AppFont.labelLarge)
                 .foregroundStyle(AppColor.secondary)
-            Text("Saturn returns, solar eclipses and nodal shifts, timed to your houses.")
+            Text("Saturn returns, solar eclipses, and node changes, timed to your houses.")
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
-            Text("Sanctuary calculates the next exact dates against your natal chart.")
+            Text("Sanctuary calculates the next exact dates against your birth chart.")
                 .font(AppFont.bodySmall)
                 .foregroundStyle(AppColor.onSurfaceVariant)
             Button(action: viewModel.openPaywall) {

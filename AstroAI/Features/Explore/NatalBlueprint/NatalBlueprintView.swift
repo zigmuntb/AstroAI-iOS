@@ -73,7 +73,7 @@ struct NatalBlueprintView: View {
                     .foregroundStyle(AppColor.outline)
             }
             HStack(alignment: .firstTextBaseline, spacing: Spacing.sm) {
-                Text("Cosmic Blueprint")
+                Text("Birth chart")
                     .font(AppFont.displayMobile)
                     .foregroundStyle(AppColor.onSurface)
                 Spacer(minLength: 0)
@@ -366,10 +366,10 @@ struct NatalBlueprintView: View {
             Label("Complete Natal Blueprint", systemImage: "lock")
                 .font(AppFont.labelLarge)
                 .foregroundStyle(AppColor.secondary)
-            Text("House rulerships, essential dignities and the nodal path.")
+            Text("House rulers, planet strength, and the nodal path.")
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
-            Text("Sanctuary opens the traditional ruler of every house, where each planet stands in dignity, and the axis from South Node to North Node.")
+            Text("Sanctuary shows which planet leads each house, how strong each planet is in its sign, and the path from South Node to North Node.")
                 .font(AppFont.bodySmall)
                 .foregroundStyle(AppColor.onSurfaceVariant)
             Button(action: viewModel.openPaywall) {
@@ -477,7 +477,7 @@ struct NatalBlueprintView: View {
 
     private var declinations: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            Text("Planetary Declinations & Bounds")
+            Text("How far the Moon sits from the equator")
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onPrimary)
 
@@ -576,7 +576,7 @@ private struct CoordinatesInspector: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             HStack {
-                Label("Exact Ephemeris Coordinates", systemImage: "camera.filters")
+                Label("Exact positions", systemImage: "camera.filters")
                     .font(AppFont.headlineSmall)
                     .foregroundStyle(AppColor.onSurface)
                 Spacer()

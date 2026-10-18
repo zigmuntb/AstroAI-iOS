@@ -36,7 +36,7 @@ struct InterestsView: View {
     private var titleBlock: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             HStack {
-                Eyebrow(text: "Attunement")
+                Eyebrow(text: "Focus")
                 Spacer()
                 Pill(text: "Step 4 of \(OnboardingCoordinator.steps.count)")
             }
@@ -51,11 +51,11 @@ struct InterestsView: View {
         HStack(spacing: Spacing.md) {
             IconBadge(systemName: "sparkles", size: 44)
             VStack(alignment: .leading, spacing: 2) {
-                Text("ALGORITHMIC RESONANCE")
+                Text("YOUR FOCUS")
                     .font(AppFont.labelMedium)
                     .tracking(1)
                     .foregroundStyle(AppColor.onSurface)
-                Text("Fine-tuning natal ephemeris & transit priorities")
+                Text("This shapes what the chart emphasizes")
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .lineLimit(1)
@@ -76,7 +76,7 @@ struct InterestsView: View {
     private var options: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             HStack {
-                Text("AREAS OF INQUEST")
+                Text("WHAT MATTERS TO YOU")
                     .font(AppFont.labelMedium)
                     .tracking(1.2)
                     .foregroundStyle(AppColor.onSurfaceVariant)
@@ -100,7 +100,7 @@ struct InterestsView: View {
             Image(systemName: "camera.macro")
                 .foregroundStyle(AppColor.secondary)
                 .padding(.top, 4)
-            Text("“The stars do not compel; they merely incline. Your intent shapes the mirror.”")
+            Text("The chart describes tendencies. It does not make the choices for you.")
                 .font(AppFont.quote)
                 .foregroundStyle(AppColor.secondary)
         }
@@ -111,7 +111,7 @@ struct InterestsView: View {
         VStack(spacing: Spacing.sm) {
             PrimaryButton(title: "Continue", action: viewModel.next)
                 .disabled(!viewModel.canContinue)
-            Text("You can reconfigure your attunement focus at any moment in Settings.")
+            Text("You can change this anytime in Settings.")
                 .font(AppFont.labelMedium)
                 .tracking(0.6)
                 .foregroundStyle(AppColor.onSurfaceVariant)

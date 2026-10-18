@@ -336,7 +336,7 @@ struct TodayView: View {
                     .foregroundStyle(viewModel.isMoodRecorded ? AppColor.secondary : AppColor.outline)
                 Spacer()
             }
-            Text("How is the day finding you?")
+            Text("How are you feeling today?")
                 .font(AppFont.headlineMedium)
                 .foregroundStyle(AppColor.onSurface)
 

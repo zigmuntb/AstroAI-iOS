@@ -188,12 +188,12 @@ struct SettingsView: View {
         SettingsSection(title: "Notifications", icon: "clock", trailing: "") {
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 NotificationToggleRow(
-                    title: "Daily Morning Attunement",
+                    title: "Morning reading",
                     glyph: "☉",
-                    text: "Delivers poetic synthesis and transits at dawn.",
+                    text: "A short reading and today's sky, at 8:00 AM.",
                     isOn: $viewModel.prefs.morningAttunement
                 )
-                Label("Scheduled for 08:00 AM Local", systemImage: "alarm")
+                Label("Set for 8:00 AM", systemImage: "alarm")
                     .font(AppFont.labelSmall)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .padding(.horizontal, Spacing.sm)
@@ -205,9 +205,9 @@ struct SettingsView: View {
             SectionDivider()
 
             NotificationToggleRow(
-                title: "Exact Planetary Aspects",
+                title: "Exact aspects",
                 glyph: "☌ ☍ △",
-                text: "Signals culminating conjunctions, trines, and oppositions within 0°15' orb.",
+                text: "A note when a conjunction, trine, or opposition is within 0°15' of exact.",
                 isOn: $viewModel.prefs.exactAspects
             )
             .padding(Spacing.md)
@@ -215,9 +215,9 @@ struct SettingsView: View {
             SectionDivider()
 
             NotificationToggleRow(
-                title: "Lunar Phase Transitions",
+                title: "Moon phases",
                 glyph: "☽",
-                text: "Notifies ingresses, New Moons, First Quarters, and Full Illumination.",
+                text: "A note for new moons, first quarters, full moons, and when the Moon changes sign.",
                 isOn: $viewModel.prefs.lunarPhases
             )
             .padding(Spacing.md)
@@ -226,10 +226,10 @@ struct SettingsView: View {
 
             HStack(spacing: Spacing.md) {
                 VStack(alignment: .leading, spacing: Spacing.xs) {
-                    Text("Sanctuary Quiet Window")
+                    Text("Quiet hours")
                         .font(AppFont.bodyLarge.weight(.medium))
                         .foregroundStyle(AppColor.onSurface)
-                    Text("Suppresses all cosmic pings during deep rest")
+                    Text("Pauses notifications while you rest")
                         .font(AppFont.bodySmall)
                         .foregroundStyle(AppColor.onSurfaceVariant)
                 }

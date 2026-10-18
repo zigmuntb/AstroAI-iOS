@@ -10,36 +10,36 @@ extension Planet {
     /// What this placement describes in a person, e.g. "emotional needs and inner security".
     var meaning: String {
         switch self {
-        case .sun: "core identity and vitality"
-        case .moon: "emotional needs and inner security"
-        case .ascendant: "first impression and approach to life"
-        case .mercury: "mind and way of communicating"
-        case .venus: "way of loving and sense of beauty"
-        case .mars: "drive, desire and courage"
-        case .jupiter: "faith, growth and good fortune"
-        case .saturn: "discipline, limits and long-term mastery"
-        case .uranus: "need for freedom and originality"
-        case .neptune: "dreams, intuition and longing for transcendence"
-        case .pluto: "power to transform and regenerate"
-        case .northNode: "evolutionary direction"
+        case .sun: "core self and energy"
+        case .moon: "feelings and need for safety"
+        case .ascendant: "first impression"
+        case .mercury: "thinking and talking"
+        case .venus: "love and taste"
+        case .mars: "drive and courage"
+        case .jupiter: "growth and luck"
+        case .saturn: "discipline and long-term goals"
+        case .uranus: "freedom and originality"
+        case .neptune: "dreams and intuition"
+        case .pluto: "deep change"
+        case .northNode: "direction of growth"
         }
     }
 
-    /// Closing words of a placement title, e.g. "at the Core".
+    /// Closing words of a placement title, e.g. "· who you are".
     var titleSuffix: String {
         switch self {
-        case .sun: "at the Core"
-        case .moon: "in the Heart"
-        case .ascendant: "on the Threshold"
-        case .mercury: "in the Mind"
-        case .venus: "in Love"
-        case .mars: "in Action"
-        case .jupiter: "in Growth"
-        case .saturn: "in Mastery"
-        case .uranus: "in Awakening"
-        case .neptune: "in Dreams"
-        case .pluto: "in Rebirth"
-        case .northNode: "as Destiny"
+        case .sun: "· who you are"
+        case .moon: "· your feelings"
+        case .ascendant: "· first impression"
+        case .mercury: "· how you think"
+        case .venus: "· how you love"
+        case .mars: "· how you act"
+        case .jupiter: "· how you grow"
+        case .saturn: "· what you build"
+        case .uranus: "· where you break the pattern"
+        case .neptune: "· dreams"
+        case .pluto: "· deep change"
+        case .northNode: "· where you're headed"
         }
     }
 
@@ -54,35 +54,35 @@ extension ZodiacSign {
 
     var qualities: String {
         switch self {
-        case .aries: "bold, direct and pioneering"
-        case .taurus: "steady, sensual and patient"
-        case .gemini: "curious, quick and versatile"
-        case .cancer: "protective, intuitive and nurturing"
-        case .leo: "warm, expressive and generous"
-        case .virgo: "precise, devoted and discerning"
-        case .libra: "graceful, fair-minded and relational"
-        case .scorpio: "intense, private and transformative"
-        case .sagittarius: "adventurous, candid and philosophical"
-        case .capricorn: "ambitious, disciplined and enduring"
-        case .aquarius: "original, independent and visionary"
-        case .pisces: "empathic, imaginative and fluid"
+        case .aries: "bold, direct, and ready to start"
+        case .taurus: "steady, sensual, and patient"
+        case .gemini: "curious, quick, and changeable"
+        case .cancer: "caring, protective, and intuitive"
+        case .leo: "warm, expressive, and generous"
+        case .virgo: "careful, helpful, and precise"
+        case .libra: "fair, polite, and focused on people"
+        case .scorpio: "intense, private, and hard to fool"
+        case .sagittarius: "honest, adventurous, and big-picture"
+        case .capricorn: "ambitious, disciplined, and patient"
+        case .aquarius: "independent, original, and a bit detached"
+        case .pisces: "sensitive, imaginative, and changeable"
         }
     }
 
     var archetype: String {
         switch self {
-        case .aries: "Courage & Initiative"
-        case .taurus: "Steadiness & Sensual Grounding"
-        case .gemini: "Curiosity & Quicksilver Wit"
-        case .cancer: "Nurture & Emotional Memory"
-        case .leo: "Radiance & Creative Heart"
-        case .virgo: "Precision & Devoted Craft"
-        case .libra: "Harmony & Relational Grace"
-        case .scorpio: "Depth & Transformation"
-        case .sagittarius: "Expansion & Searching Spirit"
-        case .capricorn: "Ambition & Enduring Structure"
-        case .aquarius: "Originality & Collective Vision"
-        case .pisces: "Empathy & Boundless Imagination"
+        case .aries: "Bold and direct"
+        case .taurus: "Steady and sensual"
+        case .gemini: "Curious and quick"
+        case .cancer: "Caring and protective"
+        case .leo: "Warm and expressive"
+        case .virgo: "Careful and useful"
+        case .libra: "Fair and relational"
+        case .scorpio: "Intense and private"
+        case .sagittarius: "Honest and adventurous"
+        case .capricorn: "Ambitious and steady"
+        case .aquarius: "Independent and original"
+        case .pisces: "Sensitive and imaginative"
         }
     }
 
@@ -109,8 +109,8 @@ extension ZodiacSign {
 }
 
 enum AstrologyLexicon {
-    static let elementKeywords = ["Fire": "Vitality", "Earth": "Pragmatism", "Air": "Intellect", "Water": "Intuition"]
-    static let modalityKeywords = ["Cardinal": "Initiating", "Fixed": "Enduring", "Mutable": "Adaptable"]
+    static let elementKeywords = ["Fire": "Energy", "Earth": "Practicality", "Air": "Thinking", "Water": "Feeling"]
+    static let modalityKeywords = ["Cardinal": "Starts things", "Fixed": "Stays steady", "Mutable": "Adapts"]
 
     static func houseTheme(_ house: Int) -> String {
         switch house {
@@ -121,11 +121,11 @@ enum AstrologyLexicon {
         case 5: "creativity, romance and joy"
         case 6: "work, health and daily rituals"
         case 7: "partnership and close relationships"
-        case 8: "intimacy, shared resources and transformation"
-        case 9: "philosophy, travel and higher learning"
-        case 10: "career, reputation and public life"
-        case 11: "friendship, community and future hopes"
-        default: "solitude, the unconscious and spiritual retreat"
+        case 8: "intimacy, shared money, and deep change"
+        case 9: "beliefs, travel, and learning"
+        case 10: "career, reputation, and public life"
+        case 11: "friends, community, and future hopes"
+        default: "time alone, hidden feelings, and rest"
         }
     }
 
@@ -143,12 +143,12 @@ enum AstrologyLexicon {
     }
 
     struct EssentialDignity {
-        /// Domicile, Exalted, Detriment, Fall or Peregrine.
+        /// Home sign, Exalted, Unfamiliar, Fall, or Neutral.
         let name: String
         let text: String
     }
 
-    /// Essential dignity of a classical planet. Peregrine means no special strength or weakness.
+    /// Essential dignity of a classical planet. Neutral means no extra strength or weakness.
     static func dignityStatus(of planet: Planet, in sign: ZodiacSign) -> EssentialDignity {
         let domicile: [Planet: [ZodiacSign]] = [
             .sun: [.leo], .moon: [.cancer], .mercury: [.gemini, .virgo], .venus: [.taurus, .libra],
@@ -159,37 +159,37 @@ enum AstrologyLexicon {
             .mars: .capricorn, .jupiter: .cancer, .saturn: .libra
         ]
         if domicile[planet]?.contains(sign) == true {
-            return EssentialDignity(name: "Domicile", text: "In its own sign, \(planet.name) works with natural ease and authority here.")
+            return EssentialDignity(name: "Home sign", text: "\(planet.name) is in its own sign, so this part of you works easily and with confidence.")
         }
         if exaltation[planet] == sign {
-            return EssentialDignity(name: "Exalted", text: "Exalted in \(sign.name), \(planet.name) expresses its finest qualities.")
+            return EssentialDignity(name: "Exalted", text: "\(planet.name) is exalted in \(sign.name). That means it is at its best here.")
         }
         if domicile[planet]?.contains(sign.opposite) == true {
-            return EssentialDignity(name: "Detriment", text: "In detriment here, \(planet.name) has to work in unfamiliar ways, which builds unusual skill.")
+            return EssentialDignity(name: "Unfamiliar", text: "\(planet.name) is in an unfamiliar sign. It takes more effort, and that effort can become a skill.")
         }
         if exaltation[planet] == sign.opposite {
-            return EssentialDignity(name: "Fall", text: "In fall here, \(planet.name) matures slowly and asks for self-compassion.")
+            return EssentialDignity(name: "Fall", text: "\(planet.name) is in fall in \(sign.name). It develops slowly. Be patient with this part of yourself.")
         }
         return EssentialDignity(
-            name: "Peregrine",
-            text: "Peregrine in \(sign.name), \(planet.name) borrows the sign's manner without the authority of rulership."
+            name: "Neutral",
+            text: "\(planet.name) in \(sign.name) has no extra strength and no extra weakness. It simply uses the sign's style."
         )
     }
 
     /// Essential dignity note, if the planet is in a sign of strength or challenge.
     static func dignity(of planet: Planet, in sign: ZodiacSign) -> String? {
         let status = dignityStatus(of: planet, in: sign)
-        return status.name == "Peregrine" ? nil : status.text
+        return status.name == "Neutral" ? nil : status.text
     }
 
     static func aspectSentence(_ kind: AspectKind, _ first: Planet, _ second: Planet) -> String {
         let pair = "your \(first.meaning) and your \(second.meaning)"
         return switch kind {
-        case .conjunction: "\(pair.capitalizedFirst) are fused into one force."
-        case .sextile: "\(pair.capitalizedFirst) support each other through easy opportunities."
-        case .square: "\(pair.capitalizedFirst) pull against each other, building strength through friction."
-        case .trine: "\(pair.capitalizedFirst) flow together with natural ease."
-        case .opposition: "\(pair.capitalizedFirst) seek balance across a polarity."
+        case .conjunction: "\(pair.capitalizedFirst) act as one."
+        case .sextile: "\(pair.capitalizedFirst) help each other when you take a small step."
+        case .square: "\(pair.capitalizedFirst) pull in different directions. The friction can make you stronger if you don't ignore it."
+        case .trine: "\(pair.capitalizedFirst) work together easily."
+        case .opposition: "\(pair.capitalizedFirst) sit on opposite sides. The task is to use both."
         }
     }
 }

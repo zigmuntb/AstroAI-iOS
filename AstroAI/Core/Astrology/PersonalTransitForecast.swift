@@ -105,17 +105,17 @@ enum PersonalTransitForecast {
             when: peak.when,
             whenLabel: stamp(peak.when),
             title: peak.title,
-            houseLine: "Exact · your \(AstrologyLexicon.ordinal(house)) house of \(AstrologyLexicon.houseTheme(house))",
+            houseLine: "Exact. Your \(AstrologyLexicon.ordinal(house)) house: \(AstrologyLexicon.houseTheme(house)).",
             advice: advice(peak.kind)
         )
     }
 
     private static func advice(_ kind: AspectKind) -> String {
         switch kind {
-        case .conjunction: "Let this theme take the day. Don't split your attention."
-        case .square: "Name the friction before you decide. Don't push through it."
-        case .opposition: "Hold both sides. Don't pick a winner today."
-        case .trine: "Use the ease, and don't spend it all at once."
+        case .conjunction: "Give this theme the day. Don't split your attention."
+        case .square: "Name what feels stuck before you decide. Don't force it."
+        case .opposition: "Both sides matter. Don't pick a winner today."
+        case .trine: "Use the ease. Don't spend it all at once."
         case .sextile: "A small yes is enough. Don't force a bigger one."
         }
     }

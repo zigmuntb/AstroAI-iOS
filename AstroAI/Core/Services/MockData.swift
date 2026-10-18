@@ -32,57 +32,57 @@ enum MockData {
         placements: [
             PlanetPlacement(
                 planet: .sun, sign: .scorpio, degree: "2° 14'", house: "House IV",
-                title: "The Archetype of Inner Depth & Subconscious Alchemy",
-                summary: "Your primary solar drive operates within the private foundations of the psyche. Rather than external applause, you seek total emotional truth, self-governance, and regenerative renewal behind closed doors.",
+                title: "Intense and private · who you are",
+                summary: "Your core self comes out as intense, private, and hard to fool. In the 4th house, this is about home, roots, and family.",
                 longitude: 212
             ),
             PlanetPlacement(
                 planet: .moon, sign: .taurus, degree: "19° 42'", house: "House X",
-                title: "Emotional Grounding & Sensual Stability in the Public Eye",
-                summary: "Exalted in Taurus, your nervous system craves tangible calm, consistency, and tactile beauty. Sitting at your midheaven, your public leadership emanates serene composure and resolute patience.",
+                title: "Steady and sensual · your feelings",
+                summary: "Your feelings come out as steady, sensual, and patient. The Moon is exalted in Taurus, so this part of you is at its best. In the 10th house, this is about career and how you show up in public.",
                 longitude: 49
             ),
             PlanetPlacement(
                 planet: .ascendant, sign: .leo, degree: "27° 08'", house: "Ascendant",
-                title: "Warmth, Magnetism & Unapologetic Creative Radiance",
-                summary: "The interface through which you touch the outer world. While your Scorpio core remains private, your immediate energetic presence is generous, regal, and instinctively warm.",
+                title: "Warm and expressive · first impression",
+                summary: "People first see you as warm, expressive, and generous. Your chart ruler is the Sun.",
                 longitude: 147
             ),
             PlanetPlacement(
                 planet: .venus, sign: .libra, degree: "29° 02'", house: "House III",
-                title: "Essential Dignity",
-                summary: "At the critical 29th degree, Venus in domicile possesses a distilled, masterful intuition for relational equilibrium, aesthetic order, and cadence in speech. You navigate negotiations with disarming elegance.",
-                aspectNote: "Trine Midheaven: Professional grace emerges organically through written or spoken synthesis.",
+                title: "Fair and relational · how you love",
+                summary: "Your love and taste come out as fair, polite, and focused on people. Venus is in its own sign, so this works easily.",
+                aspectNote: "Trine Midheaven: Work and public life flow with how you talk and write.",
                 longitude: 209
             ),
             PlanetPlacement(
                 planet: .mars, sign: .virgo, degree: "7° 44'", house: "House II",
-                title: "Practical Execution",
-                summary: "Action is expressed through precision, deliberate craftsmanship, and rigorous systemic hygiene. You channel raw ambition into meticulously organized routines and material security.",
-                aspectNote: "Sextile Sun: Low emotional friction when executing demanding mental tasks.",
+                title: "Careful and useful · how you act",
+                summary: "Your drive comes out as careful, helpful, and precise. In the 2nd house, this is about money and self-worth.",
+                aspectNote: "Sextile Sun: Hard tasks feel easier when you do them carefully.",
                 longitude: 157
             ),
             PlanetPlacement(
                 planet: .jupiter, sign: .sagittarius, degree: "11° 20'", house: "House V",
-                title: "Expansive Horizon",
-                summary: "Located in its home sign of Sagittarius, Jupiter instills boundless curiosity, joyful risk tolerance in creative pursuits, and philosophical optimism that continually rejuvenates your spirit.",
+                title: "Honest and adventurous · how you grow",
+                summary: "Your growth comes out as honest, adventurous, and big-picture. Jupiter is in its own sign, so this works easily. In the 5th house, this is about creativity, romance, and joy.",
                 longitude: 251
             ),
             PlanetPlacement(
                 planet: .saturn, sign: .pisces, degree: "5° 12' ℞", house: "House VIII",
-                title: "Karmic Boundaries",
-                summary: "Saturn asks you to construct concrete architecture around elusive spiritual, psychological, and shared-asset domains. Maturity arrives through honoring boundaries without turning cynical.",
+                title: "Sensitive and imaginative · what you build",
+                summary: "Your discipline comes out as sensitive and imaginative. In the 8th house, this is about intimacy, shared money, and deep change. Saturn was retrograde, so you review this before you act.",
                 longitude: 335
             ),
             PlanetPlacement(
                 planet: .northNode, sign: .scorpio, degree: "15° 22'", house: "Houses IV • X",
-                title: "Evolution",
-                summary: "Your evolutionary vector asks you to step beyond mere material comfort (South Node in Taurus) toward emotional authenticity, psychological courage, and transformational vulnerability (North Node in Scorpio).",
+                title: "Intense and private · where you're headed",
+                summary: "You grow by leaving the comfort of Taurus and practicing the intense, private side of Scorpio. This shows up most around home, roots, and family.",
                 longitude: 225
             )
         ],
-        synthesis: "Your chart holds a fascinating tension between radical self-reliance and the desire for deep emotional anchoring. The Sun-Moon opposition across your 4th and 10th houses invites you to reconcile quiet private sanctuary with outward public devotion.",
-        tension: "A fascinating tension between radical independence and deep emotional anchorage.",
+        synthesis: "Sun in Scorpio, Moon in Taurus, Leo rising. Your core is intense and private. Your feelings are steady and sensual. Water is the strongest element (40%), so the chart leans toward feeling. The closest important link is Sun opposite Moon. Your core self and your feelings sit on opposite sides. The task is to use both.",
+        tension: "The main tension is between your core self and your feelings.",
         elements: [
             ChartShare(name: "Water", keyword: "Intuition", percent: 40),
             ChartShare(name: "Earth", keyword: "Pragmatism", percent: 30),
@@ -148,8 +148,8 @@ enum MockData {
     static func oracleAnswer(to question: String) -> ChatMessage {
         ChatMessage(
             role: .oracle,
-            text: "Consider this question through the lens of your fourth-house Sun: the answer rarely arrives through force. With Mercury in Libra forming a gentle trine to your natal Venus, the coming days favor slow, honest conversation over decisive action. Notice what you protect, and what you are ready to share.",
-            title: "A Quiet Reading",
+            text: "Your Sun is in the 4th house, the part of the chart about home and private life. The answer is unlikely to come from pushing. Mercury in Libra is flowing with your Venus, so the next few days are better for a slow, honest conversation than for a fast decision. Notice what you want to keep private, and what you are ready to say.",
+            title: "A clear reading",
             transitNote: "Active Transit: ☿ Mercury in Libra (14° 18')"
         )
     }

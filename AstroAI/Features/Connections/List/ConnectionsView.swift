@@ -108,13 +108,13 @@ struct ConnectionsView: View {
 
     private var synastryLock: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Label("Multilateral Synastry", systemImage: "lock")
+            Label("More than one chart", systemImage: "lock")
                 .font(AppFont.labelLarge)
                 .foregroundStyle(AppColor.secondary)
             Text("One chart is included.")
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
-            Text("Sanctuary overlays every partner, family member and friend, and opens the composite of each bond.")
+            Text("Sanctuary compares every partner, family member, and friend, and opens a chart of each relationship.")
                 .font(AppFont.bodySmall)
                 .foregroundStyle(AppColor.onSurfaceVariant)
             Button(action: viewModel.openPaywall) {

@@ -36,7 +36,7 @@ enum AnnualProfection {
         let nextHouse = (house % 12) + 1
         let nextSign = ZodiacSign.allCases[(sign.index + 1) % 12]
         let turning: String? = (1...21).contains(days)
-            ? "On \(stamp(nextBirthday)) the year moves into the \(AstrologyLexicon.ordinal(nextHouse)) house of \(AstrologyLexicon.houseTheme(nextHouse)), carried by \(nextSign.ruler.name)."
+            ? "On \(stamp(nextBirthday)) the year moves to the \(AstrologyLexicon.ordinal(nextHouse)) house: \(AstrologyLexicon.houseTheme(nextHouse)). \(nextSign.ruler.name) leads that next year."
             : nil
 
         let eyebrow: String
@@ -57,7 +57,7 @@ enum AnnualProfection {
             trailing: trailing,
             title: "\(AstrologyLexicon.ordinal(house)) house in \(sign.name)",
             lordLine: lordLine(lord, chart: chart),
-            theme: "This year gathers around \(AstrologyLexicon.houseTheme(house)). \(lord.name) is the time-lord.",
+            theme: "This year is about \(AstrologyLexicon.houseTheme(house)). \(lord.name) sets the pace.",
             refrain: refrain(for: house),
             turningLine: turning,
             basis: root.basis
@@ -86,18 +86,18 @@ enum AnnualProfection {
 
     private static func refrain(for house: Int) -> String {
         switch house {
-        case 1: "Don't perform a self you haven't met yet."
-        case 2: "Don't spend to prove what you are worth."
-        case 3: "Don't fill the quiet with more information."
-        case 4: "Don't decide the family's future from a single hard evening."
-        case 5: "Don't turn pleasure into a project."
-        case 6: "Don't optimize the day until the body has agreed."
-        case 7: "Don't settle the relationship in one conversation."
-        case 8: "Don't force an ending that is still telling you something."
-        case 9: "Don't make a belief do the work of an experience."
-        case 10: "Don't chase a title that isn't the work."
+        case 1: "Don't act like a version of yourself you haven't figured out yet."
+        case 2: "Don't spend money to prove what you're worth."
+        case 3: "Don't fill every quiet moment with more information."
+        case 4: "Don't decide the family's future after one hard evening."
+        case 5: "Don't turn fun into a project."
+        case 6: "Don't plan the whole day before your body agrees."
+        case 7: "Don't try to settle the relationship in one talk."
+        case 8: "Don't force an ending that is still teaching you something."
+        case 9: "Don't treat a belief as if it were lived experience."
+        case 10: "Don't chase a title that isn't the actual work."
         case 11: "Don't confuse a crowd with the people who are actually yours."
-        default: "Don't explain the retreat while you are still inside it."
+        default: "Don't explain the time alone while you are still in it."
         }
     }
 

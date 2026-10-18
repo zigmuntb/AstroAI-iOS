@@ -72,16 +72,16 @@ enum SynastryCalculator {
         let sunSign = points.first { $0.planet == .sun }.map { ZodiacSign.containing($0.longitude).name } ?? "an unknown"
         let moonSign = points.first { $0.planet == .moon }.map { ZodiacSign.containing($0.longitude).name } ?? "an unknown"
 
-        var text = "The composite is the chart of the bond itself: Sun in \(sunSign), Moon in \(moonSign). "
+        var text = "This is the chart of the relationship itself. Its Sun is in \(sunSign) and its Moon is in \(moonSign). "
         if let tightest = aspects.first {
-            text += "Its closest contact is \(tightest.first.name) \(tightest.kind.name.lowercased()) \(tightest.second.name) (orb \(NatalChartCalculator.formatDegrees(tightest.orb))). "
+            text += "The closest link is \(tightest.first.name) \(tightest.kind.name.lowercased()) \(tightest.second.name) (orb \(NatalChartCalculator.formatDegrees(tightest.orb))). "
         }
         text += hard > soft
-            ? "Hard aspects lead, so the relationship grows by working through friction."
-            : "Flowing aspects lead, so the relationship's own weather tends toward harmony."
+            ? "There are more hard aspects, so the relationship grows by working through friction."
+            : "There are more easy aspects, so the relationship tends to feel smooth."
 
         return CompositeReading(
-            harmony: hard > soft ? "Composite Friction" : "Composite Harmony",
+            harmony: hard > soft ? "More friction" : "More ease",
             summary: text,
             points: points.map { point in
                 let sign = ZodiacSign.containing(point.longitude)
@@ -155,28 +155,28 @@ enum SynastryCalculator {
 
     private static func quote(from contact: Contact?, userName: String, otherName: String) -> String {
         guard let contact else {
-            return "Two charts meeting without a loud aspect still have a weather of their own."
+            return "There is no loud clash between these charts. The relationship still has its own feel."
         }
         switch contact.kind {
         case .conjunction:
-            return "Where \(otherName)'s \(contact.from.name.lowercased()) sits on your \(contact.to.name.lowercased()), the two of you speak one language."
+            return "Where \(otherName)'s \(contact.from.name) sits on your \(contact.to.name), you understand each other quickly."
         case .trine, .sextile:
-            return "An easy current runs between \(otherName)'s \(contact.from.meaning) and your \(contact.to.meaning)."
+            return "Things flow between \(otherName)'s \(contact.from.meaning) and your \(contact.to.meaning)."
         case .square:
-            return "The spark between you is also the work: \(otherName) presses on your \(contact.to.meaning)."
+            return "\(otherName) pushes on your \(contact.to.meaning). That spark is also the work."
         case .opposition:
-            return "You see in \(otherName) what you are learning to hold in yourself."
+            return "\(otherName) shows you a side of yourself you are still learning to hold."
         }
     }
 
     private static func summary(user: NatalChart, other: NatalChart, userName: String, otherName: String, kinship: Kinship, contacts: [Contact]) -> String {
         let userSun = user.placement(.sun)?.sign.name ?? "your"
         let otherSun = other.placement(.sun)?.sign.name ?? otherName
-        var text = "\(userName)'s \(userSun) Sun meets \(otherName)'s \(otherSun) Sun in a \(kinship.title.lowercased()) bond. "
+        var text = "\(userName)'s \(userSun) Sun and \(otherName)'s \(otherSun) Sun meet in a \(kinship.title.lowercased()) bond. "
         if let first = contacts.first {
-            text += "The tightest contact is \(first.title) (orb \(NatalChartCalculator.formatDegrees(first.orb))). "
+            text += "The closest link is \(first.title) (orb \(NatalChartCalculator.formatDegrees(first.orb))). "
         }
-        text += "Read the geometry as a conversation, not a verdict: each of you remains the author of how it is lived."
+        text += "This describes the pattern. It does not decide how you live it."
         return text
     }
 
@@ -189,45 +189,45 @@ enum SynastryCalculator {
         return [
             SynastryDimension(
                 icon: "drop",
-                title: "Emotional Resonance",
+                title: "Feelings",
                 badge: emotional.map { $0.kind.name } ?? "Quiet",
-                text: emotional.map { "\($0.title.capitalizingFirstLetter()) colors how safe you feel together." }
-                    ?? "The Moons do not speak loudly here. Comfort will be built in practice, not assumed from the chart."
+                text: emotional.map { "\($0.title.capitalizingFirstLetter()) shapes how safe you feel together." }
+                    ?? "The Moons don't connect strongly. Comfort will come from what you do together, not from the chart alone."
             ),
             SynastryDimension(
                 icon: "bubble.left.and.bubble.right",
-                title: "Dialectic & Dialogue",
-                badge: dialogue.map { $0.kind.name } ?? "Uncharted",
-                text: dialogue.map { "Conversation is shaped by \($0.title): listen for the tone as much as the words." }
-                    ?? "Mercury is quiet between you. Shared language may take longer, and that slowness can be a kindness."
+                title: "How you talk",
+                badge: dialogue.map { $0.kind.name } ?? "Quiet",
+                text: dialogue.map { "How you talk is shaped by \($0.title). Listen to the tone, not only the words." }
+                    ?? "Mercury is quiet between you. It may take longer to find a shared way of talking, and that is fine."
             ),
             SynastryDimension(
                 icon: "camera.macro",
-                title: "Creative & Sensual Chemistry",
+                title: "Attraction",
                 badge: chemistry.map { "\($0.from.glyph) \($0.kind.glyph) \($0.to.glyph)" } ?? "Subtle",
-                text: chemistry.map { "Attraction gathers where \($0.title)." }
-                    ?? "Desire may arrive through friendship, work or shared taste rather than an obvious spark."
+                text: chemistry.map { "Attraction shows up where \($0.title)." }
+                    ?? "Attraction may come through friendship, work, or shared taste, not a sudden spark."
             ),
             SynastryDimension(
                 icon: "exclamationmark.circle",
-                title: "Growth & Friction Points",
+                title: "Friction",
                 badge: friction.map { $0.kind.name } ?? "Gentle",
-                text: friction.map { "The growth edge is \($0.title). Name the tension early so it does not harden into a story about the other person." }
-                    ?? "Few hard aspects. Watch for the quieter risk: assuming ease means nothing needs to be said."
+                text: friction.map { "The hard part is \($0.title). Name the tension early, before it becomes a story about the other person." }
+                    ?? "There are few hard aspects. The risk is assuming that easy means nothing needs to be said."
             )
         ]
     }
 
     private static func questions(kinship: Kinship, otherName: String, contact: Contact?) -> [String] {
         var result = [
-            "Where do I feel most responsible for \(otherName)'s peace?",
-            "How do we signal when we need solitude before irritation speaks?"
+            "Where do I take too much responsibility for \(otherName)'s mood?",
+            "How do we say we need space before we get irritated?"
         ]
         if let contact {
-            result.insert("How does \(otherName)'s \(contact.from.name) touch my \(contact.to.meaning)?", at: 0)
+            result.insert("How does \(otherName)'s \(contact.from.name) affect my \(contact.to.meaning)?", at: 0)
         }
         if kinship == .romantic {
-            result.append("What does this bond ask me to grow, not just to receive?")
+            result.append("What does this relationship ask me to grow, not only to receive?")
         }
         return Array(result.prefix(3))
     }

@@ -60,7 +60,7 @@ final class NatalBlueprintViewModel {
     var isInspectorPresented = false
     private(set) var expanded: Set<Planet> = []
 
-    let eyebrow = "Natal Synthesis • On-device Ephemeris"
+    let eyebrow = "Birth chart · calculated on this phone"
     var houseSystem: String { chart?.houseSystem ?? "Whole Sign Houses" }
 
     var outOfBounds: Declination {
@@ -72,13 +72,13 @@ final class NatalBlueprintViewModel {
             return Declination(
                 label: "Lunar Declination",
                 value: value,
-                caption: "Your Moon moves within the Sun's declination limits (±\(NatalChartCalculator.formatDegrees(chart.obliquity))). Your emotional instincts follow familiar, shared rhythms and are easily understood by those close to you."
+                caption: "Your Moon stays inside the Sun's range (±\(NatalChartCalculator.formatDegrees(chart.obliquity))). Your feelings tend to follow rhythms other people recognize."
             )
         }
         return Declination(
             label: "Out-of-Bounds Status",
             value: value + " (OOB)",
-            caption: "Your Moon operates beyond the Sun's declination limit (±\(NatalChartCalculator.formatDegrees(chart.obliquity))). Out-of-Bounds placements signify an innate independence in subjective experience: you intuitively craft your own rules regarding emotional sovereignty."
+            caption: "Your Moon goes outside the Sun's range (±\(NatalChartCalculator.formatDegrees(chart.obliquity))). Your feelings often follow your own rules, and that can look unusual to other people."
         )
     }
 
@@ -134,7 +134,7 @@ final class NatalBlueprintViewModel {
         if !chart.isTimeKnown {
             return "Your birth time is approximate, so these cusps can shift."
         }
-        return "Traditional ruler of the sign on each cusp."
+        return "Each house is led by the planet that rules the sign on its edge."
     }
 
     var dignities: [DignityLine] {
@@ -157,12 +157,12 @@ final class NatalBlueprintViewModel {
             axis: "\(north.sign.name) / \(southSign.name)",
             north: "\(north.degree) \(north.sign.glyph) · House \(AstrologyLexicon.roman(house))",
             south: "\(north.degree) \(southSign.glyph) · House \(AstrologyLexicon.roman(southHouse))",
-            text: "The South Node in \(southSign.name) is the familiar skill of \(southTheme). The North Node in \(north.sign.name) asks for \(northTheme). The path is the walk from one house to the other, not a debt to be paid."
+            text: "The South Node in \(southSign.name) is what already feels familiar: \(southTheme). The North Node in \(north.sign.name) is where you grow: \(northTheme). This is a direction, not a debt."
         )
     }
 
     var inspectorNote: String {
-        var note = "Positions are computed on-device with Astronomy Engine (accurate to about 1′). House system: \(houseSystem)."
+        var note = "Positions are calculated on this phone (accurate to about 1′). House system: \(houseSystem)."
         if let chart, !chart.hasLocation {
             note += " No birthplace was given, so houses are counted from your Sun sign and there is no Ascendant."
         } else if let chart, !chart.isTimeKnown {
@@ -171,7 +171,7 @@ final class NatalBlueprintViewModel {
         return note
     }
 
-    let disclaimer = "AstroAI treats your natal chart not as an unalterable fate or deterministic script, but as a symbolic mirror and reflective language. It highlights psychological predispositions, archetypal tensions, and seasonal cycles. Your consciousness, deliberate choices, and lived agency remain sovereign in determining who you become."
+    let disclaimer = "Your chart is a mirror, not a fate. It shows tendencies and timing. You still choose what you do."
 
     @ObservationIgnored private let astrology: AstrologyServicing
     @ObservationIgnored private let userService: UserServicing

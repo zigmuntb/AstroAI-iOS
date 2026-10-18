@@ -167,7 +167,7 @@ private struct PlaceRow: View {
                     if isSelected {
                         HStack(spacing: Spacing.xs) {
                             Circle().fill(AppColor.secondary).frame(width: 5, height: 5)
-                            Text("TOPOCENTRIC PARALLAX ACTIVE")
+                            Text("LOCATION USED FOR THE HOUSES")
                                 .font(AppFont.labelSmall)
                                 .tracking(1)
                                 .foregroundStyle(AppColor.onSurfaceVariant)

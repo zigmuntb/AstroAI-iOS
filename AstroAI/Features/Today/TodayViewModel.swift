@@ -70,7 +70,7 @@ final class TodayViewModel {
 
     var shareText: String {
         guard let reading else { return "" }
-        return "“\(reading.synthesisTitle)” \(reading.synthesisText) — AstroAI Daily Synthesis, \(dateLine.capitalized)"
+        return "“\(reading.synthesisTitle)” \(reading.synthesisText) — AstroAI, \(dateLine.capitalized)"
     }
 
     // MARK: - Actions

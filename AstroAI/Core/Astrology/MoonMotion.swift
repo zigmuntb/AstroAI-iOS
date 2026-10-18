@@ -28,9 +28,9 @@ struct MoonMotion: Hashable {
             return "Moon enters \(nextSign.name) at \(Self.clock(ingress))"
         }
         if voidBegins <= Date() {
-            return "Void of course until \(enters)"
+            return "No major aspects until \(enters)"
         }
-        return "Void of course after \(Self.clock(voidBegins)), until \(enters)"
+        return "No major aspects after \(Self.clock(voidBegins)), until \(enters)"
     }
 
     private static func clock(_ date: Date) -> String {

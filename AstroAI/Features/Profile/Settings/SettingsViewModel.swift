@@ -28,16 +28,16 @@ final class SettingsViewModel {
 
     let houseSystems = HouseSystem.allCases.map(\.rawValue)
     let zodiacOptions = [
-        Option(value: "Tropical", caption: "Western Solstitial"),
+        Option(value: "Tropical", caption: "Western"),
         Option(value: "Sidereal", caption: "Fagan / Bradley")
     ]
     let nodeOptions = [Option(value: "True"), Option(value: "Mean")]
 
     var houseDescription: String {
         switch prefs.houseSystem {
-        case "Whole Sign": "Whole Sign assigns each 30° zodiac constellation to an entire house starting at the Ascendant degree."
-        case "Equal House": "Equal House divides the chart into exactly twelve 30° segments originating from the exact Ascendant degree."
-        default: "Placidus divides semi-diurnal arcs proportionately. Standard for western modern synthesis and psychological transits."
+        case "Whole Sign": "Whole Sign gives each sign one whole house, starting from the rising sign."
+        case "Equal House": "Equal House splits the chart into twelve equal 30° houses, starting from the rising sign."
+        default: "Placidus sizes the houses by the time it takes the sky to turn. This is the usual system in modern Western astrology."
         }
     }
 
@@ -47,8 +47,8 @@ final class SettingsViewModel {
     var membershipBadge: String { isPremium ? (subscriptions.renewalDescription ?? "Sanctuary") : "Free Tier" }
     var membershipText: String {
         isPremium
-            ? "Full on-device ephemeris, unlimited synastry overlays, and sovereign offline natal synthesis."
-            : "Core natal synthesis and daily transits. Upgrade for unlimited synastry overlays and chart-aware AI dialogue."
+            ? "The full chart, unlimited comparisons, and readings that stay on this phone."
+            : "Your birth chart and today's sky. Upgrade for more people and unlimited Oracle chats."
     }
     var membershipAction: String { isPremium ? "Manage Subscription" : "Explore Sanctuary" }
 

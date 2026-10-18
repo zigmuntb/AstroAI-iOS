@@ -15,11 +15,11 @@ enum OracleError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .limitReached: "You've used all free inquiries for today."
-        case .modelUnavailable: "The Oracle is resting right now. Make sure Apple Intelligence is enabled and try again."
-        case .unsupportedLanguage: "The Oracle doesn't speak this language yet. Try asking in English."
-        case .busy: "The Oracle is still contemplating. Please try again in a moment."
-        case .generationFailed: "The connection to the stars was lost. Please try again."
+        case .limitReached: "You've used today's free questions."
+        case .modelUnavailable: "The Oracle isn't available right now. Turn on Apple Intelligence and try again."
+        case .unsupportedLanguage: "This language isn't supported yet. Try asking in English."
+        case .busy: "The Oracle is still answering. Try again in a moment."
+        case .generationFailed: "The answer didn't come through. Please try again."
         case .installFailed: "The on-device Oracle couldn't be installed. Check your connection and try again."
         }
     }

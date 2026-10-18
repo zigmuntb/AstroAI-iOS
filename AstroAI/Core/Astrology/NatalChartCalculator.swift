@@ -132,17 +132,17 @@ enum NatalChartCalculator {
         let summary: String
         switch planet {
         case .ascendant:
-            summary = "You meet the world in a \(sign.qualities) way. People first sense your \(sign.archetype.lowercased()), and life keeps inviting you to grow into it. Your chart ruler is \(sign.ruler.name)."
+            summary = "People first see you as \(sign.qualities). Your chart ruler is \(sign.ruler.name)."
         case .northNode:
-            summary = "Your growth asks you to move from the familiar comfort of \(sign.opposite.name) (South Node) toward the \(sign.qualities) qualities of \(sign.name), especially in matters of \(AstrologyLexicon.houseTheme(house))."
+            summary = "You grow by leaving the comfort of \(sign.opposite.name) and practicing the \(sign.qualities) side of \(sign.name). This shows up most around \(AstrologyLexicon.houseTheme(house))."
         default:
-            summary = "Your \(planet.meaning) expresses itself in a \(sign.qualities) way. In the \(AstrologyLexicon.ordinal(house)) house, this energy focuses on \(AstrologyLexicon.houseTheme(house))."
+            summary = "Your \(planet.meaning) comes out as \(sign.qualities). In the \(AstrologyLexicon.ordinal(house)) house, this is about \(AstrologyLexicon.houseTheme(house))."
         }
 
         var details: [String] = []
         if let dignity = AstrologyLexicon.dignity(of: planet, in: sign) { details.append(dignity) }
         if isRetrograde, planet != .northNode {
-            details.append("Retrograde at your birth, \(planet.name) turns its themes inward first: you revisit, reflect and refine before acting.")
+            details.append("\(planet.name) was retrograde when you were born, so you tend to review and rethink this before you act.")
         }
 
         let strongest = aspects.first { $0.first == planet || $0.second == planet }
@@ -199,16 +199,16 @@ enum NatalChartCalculator {
         let find = { (planet: Planet) in placements.first { $0.planet == planet } }
         guard let sun = find(.sun), let moon = find(.moon) else { return "" }
 
-        var text = "With your Sun in \(sun.sign.name) and Moon in \(moon.sign.name)"
+        var text = "Sun in \(sun.sign.name), Moon in \(moon.sign.name)"
         if let rising = find(.ascendant) {
             text += ", \(rising.sign.name) rising"
         }
-        text += ", you combine a \(sun.sign.qualities) core with \(moon.sign.qualities) emotional needs."
+        text += ". Your core is \(sun.sign.qualities). Your feelings are \(moon.sign.qualities)."
         if let element = elements.first {
-            text += " \(element.name) leads your chart (\(element.percent)%), lending it \(element.keyword.lowercased())."
+            text += " \(element.name) is the strongest element (\(element.percent)%), so the chart leans toward \(element.keyword.lowercased())."
         }
         if let key = aspects.first(where: { $0.first.isLuminaryOrAngle || $0.second.isLuminaryOrAngle }) {
-            text += " Your closest key aspect is \(key.first.name) \(key.kind.name.lowercased()) \(key.second.name). "
+            text += " The closest important link is \(key.first.name) \(key.kind.name.lowercased()) \(key.second.name). "
             text += AstrologyLexicon.aspectSentence(key.kind, key.first, key.second)
         }
         return text
@@ -216,10 +216,10 @@ enum NatalChartCalculator {
 
     private static func tension(aspects: [ChartAspect], elements: [ChartShare]) -> String {
         if let hard = aspects.first(where: { [.square, .opposition].contains($0.kind) && !isOuterPair($0) }) {
-            return "A creative tension between your \(hard.first.meaning) and your \(hard.second.meaning)."
+            return "The main tension is between your \(hard.first.meaning) and your \(hard.second.meaning)."
         }
-        let leading = elements.first?.name.lowercased() ?? "inner"
-        return "A rare coherence: your \(leading) nature flows with few inner contradictions."
+        let leading = elements.first?.keyword.lowercased() ?? "inner life"
+        return "The chart is fairly smooth. It leans toward \(leading), with few hard clashes."
     }
 
     private static func isOuterPair(_ aspect: ChartAspect) -> Bool {

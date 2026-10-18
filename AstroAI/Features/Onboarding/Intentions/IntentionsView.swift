@@ -60,7 +60,7 @@ struct IntentionsView: View {
             }
             ScreenTitle(
                 title: "What are you looking for right now?",
-                subtitle: "A single focus or several paths to guide your daily synthesis."
+                subtitle: "Pick one focus, or several. This guides the daily reading."
             )
         }
     }
@@ -69,7 +69,7 @@ struct IntentionsView: View {
         HStack(spacing: Spacing.sm) {
             Image(systemName: "sparkles")
                 .foregroundStyle(AppColor.primaryContainer)
-            Text("AI Calibration Active")
+            Text("Used in your reading")
                 .font(AppFont.bodySmall.weight(.medium))
                 .tracking(0.4)
                 .foregroundStyle(AppColor.onSurface)
@@ -89,7 +89,7 @@ struct IntentionsView: View {
         HStack(spacing: Spacing.md) {
             Image(systemName: "checkmark.seal")
                 .foregroundStyle(AppColor.secondary)
-            Text("Your intentions shape the focus of your daily briefing and can be revisited at any moment.")
+            Text("This shapes the daily reading. You can change it later.")
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onSurfaceVariant)
         }

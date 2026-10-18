@@ -16,9 +16,9 @@ enum OracleSuggestions {
             }
             if let sun = chart.placement(.sun), let moon = chart.placement(.moon) {
                 if let moonSign = sky?.position(of: .moon)?.sign {
-                    questions.append("What should my \(label(sun)) and \(label(moon)) notice under a \(moonSign.name) Moon?")
+                    questions.append("What should my \(label(sun)) and \(label(moon)) pay attention to with the Moon in \(moonSign.name)?")
                 } else {
-                    questions.append("How do my \(label(sun)) and \(label(moon)) want to work together right now?")
+                    questions.append("How do my \(label(sun)) and \(label(moon)) work together right now?")
                 }
             }
             if let aspect = bestAspect(in: chart) {
@@ -31,16 +31,16 @@ enum OracleSuggestions {
                 let ruler = rising.sign.ruler
                 if let placement = chart.placement(ruler) {
                     let house = placement.houseNumber.map { " in the \(AstrologyLexicon.ordinal($0)) house" } ?? ""
-                    questions.append("With \(rising.sign.name) rising, how is \(ruler.name) in \(placement.sign.name)\(house) steering me?")
+                    questions.append("With \(rising.sign.name) rising, how is \(ruler.name) in \(placement.sign.name)\(house) guiding me?")
                 }
             }
             questions.append(contentsOf: interestQuestions(chart: chart, interests: interests))
             if let node = chart.placement(.northNode) {
-                questions.append("How can I move toward my North Node in \(node.sign.name)?")
+                questions.append("What would help me grow toward my North Node in \(node.sign.name)?")
             }
         } else if let sky, let moon = sky.position(of: .moon) {
-            questions.append("How can I meet this \(moon.sign.name) Moon honestly?")
-            questions.append("What is the \(sky.moonPhase.name) asking me to feel before I decide?")
+            questions.append("How should I handle a \(moon.sign.name) Moon today?")
+            questions.append("What should I notice during this \(sky.moonPhase.name) before I decide?")
         }
 
         var seen = Set<String>()
@@ -64,7 +64,7 @@ enum OracleSuggestions {
     private static func interestQuestions(chart: NatalChart, interests: Set<Interest>) -> [String] {
         var result: [String] = []
         if interests.contains(.love), let venus = chart.placement(.venus) {
-            result.append("How does my \(label(venus)) want to love right now?")
+            result.append("How does my \(label(venus)) love right now?")
         }
         if interests.contains(.career), let saturn = chart.placement(.saturn) {
             result.append("What does my \(label(saturn)) say about my work right now?")
@@ -73,13 +73,13 @@ enum OracleSuggestions {
             result.append("Why does my \(label(moon)) feel so much lately?")
         }
         if interests.contains(.selfDiscovery), let sun = chart.placement(.sun) {
-            result.append("Where does my \(label(sun)) already know its strength?")
+            result.append("Where is my \(label(sun)) already strong?")
         }
         if interests.contains(.growth), let jupiter = chart.placement(.jupiter) {
-            result.append("What is my \(label(jupiter)) opening up for me?")
+            result.append("What is my \(label(jupiter)) opening up right now?")
         }
         if interests.contains(.friendship), let mercury = chart.placement(.mercury) {
-            result.append("Which people does my \(label(mercury)) actually thrive with?")
+            result.append("Which people does my \(label(mercury)) get along with?")
         }
         if interests.contains(.dailyGuidance), let mars = chart.placement(.mars) {
             result.append("Where should my \(label(mars)) spend its energy today?")

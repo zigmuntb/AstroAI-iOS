@@ -84,9 +84,9 @@ enum AnswerTone: String, CaseIterable, Codable, Identifiable {
     /// Instruction for the Oracle model.
     var instruction: String {
         switch self {
-        case .gentle: "Be gentle, reassuring and nurturing."
-        case .balanced: "Be warm but honest."
-        case .direct: "Be direct and candid; name difficult patterns plainly, without sugar-coating."
+        case .gentle: "Be kind and reassuring. Keep the words simple."
+        case .balanced: "Be warm and honest. Keep the words simple."
+        case .direct: "Be direct. Name hard patterns clearly, without dressing them up."
         }
     }
 }
@@ -104,8 +104,8 @@ enum AnswerLength: String, CaseIterable, Codable, Identifiable {
 
     var instruction: String {
         switch self {
-        case .brief: "Answer in 1–2 short paragraphs."
-        case .detailed: "Answer in 3–5 paragraphs with concrete astrological reasoning."
+        case .brief: "Answer in 1–2 short paragraphs, in plain language."
+        case .detailed: "Answer in 3–5 short paragraphs. Explain the astrology in plain words, then say what it means for their life."
         }
     }
 }

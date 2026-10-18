@@ -9,16 +9,16 @@ extension NatalTransit {
     var verb: String {
         switch kind {
         case .conjunction: "meets"
-        case .sextile: "gently supports"
+        case .sextile: "supports"
         case .square: "challenges"
-        case .trine: "harmonizes with"
-        case .opposition: "faces"
+        case .trine: "flows with"
+        case .opposition: "opposes"
         }
     }
 
-    /// "Transiting Venus meets your natal Neptune, touching your dreams, intuition and longing for transcendence."
+    /// "Venus in the sky meets your natal Neptune. This is about your dreams and intuition."
     var sentence: String {
-        "Transiting \(transiting.name) \(verb) your natal \(natal.name), touching your \(natal.meaning)."
+        "\(transiting.name) in the sky \(verb) your natal \(natal.name). This is about your \(natal.meaning)."
     }
 
     /// "Transit ♀ Venus ☌ Natal ♆ Neptune • 0° 06' orb"
@@ -27,8 +27,8 @@ extension NatalTransit {
     }
 
     var orbBadge: String {
-        if orb < 1 { return "Exacting Orb" }
-        return isApplying ? "Applying" : "Separating"
+        if orb < 1 { return "Exact" }
+        return isApplying ? "Getting closer" : "Moving apart"
     }
 }
 

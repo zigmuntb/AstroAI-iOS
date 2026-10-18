@@ -176,7 +176,7 @@ struct ProfileView: View {
     private var sanctuaryCard: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             HStack {
-                Eyebrow(text: "Cosmic Invitation", color: AppColor.onPrimary.opacity(0.7))
+                Eyebrow(text: "Membership", color: AppColor.onPrimary.opacity(0.7))
                 Spacer()
                 Image(systemName: "sparkles")
                     .foregroundStyle(AppColor.onPrimary)
@@ -184,7 +184,7 @@ struct ProfileView: View {
             Text("Unlock AstroAI Sanctuary")
                 .font(AppFont.headlineMedium)
                 .foregroundStyle(AppColor.onPrimary)
-            Text("Unlimited chart-aware AI dialogue, transits synthesis, and multi-person synastry folios.")
+            Text("Unlimited Oracle chats, today's sky on your chart, and charts with more than one person.")
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onPrimary.opacity(0.75))
             Button(action: viewModel.exploreMembership) {
@@ -214,8 +214,8 @@ struct ProfileView: View {
     private var journalSection: some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
             SectionHeader(
-                title: "Personal Journal & Reflections",
-                subtitle: "Private meditations aligned to planetary cycles",
+                title: "Journal",
+                subtitle: "Private notes tied to today's sky",
                 trailing: viewModel.folioCountTitle.uppercased()
             )
 
@@ -248,7 +248,7 @@ struct ProfileView: View {
                 .foregroundStyle(AppColor.onSurface)
             Button(action: viewModel.openJournal) {
                 HStack {
-                    Text("Reflecting on today's transit... Tap to record thoughts")
+                    Text("Tap to write what this brings up")
                         .multilineTextAlignment(.leading)
                     Spacer(minLength: Spacing.sm)
                     Image(systemName: "plus.circle")
@@ -266,7 +266,7 @@ struct ProfileView: View {
 
     private var preferencesSection: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            SectionHeader(title: "Cosmic Preferences", subtitle: "Calculation mechanics & ritual notifications")
+            SectionHeader(title: "Chart settings", subtitle: "How the chart is calculated, and reminders")
 
             VStack(spacing: 0) {
                 ForEach(Array(viewModel.preferenceRows.enumerated()), id: \.element.id) { index, row in

@@ -26,7 +26,7 @@ enum LifeCycleForecast {
         let horizon = calendar.date(byAdding: .year, value: 32, to: now) ?? now.addingTimeInterval(32 * 365.25 * 86_400)
         let hits = conjunctions(of: .saturn, with: target, from: now, until: horizon, options: options, clusterDays: 400, limit: 3)
         let house = chart.house(for: target)
-        let place = "your natal Saturn at \(natal.degree) \(natal.sign.glyph), in your \(AstrologyLexicon.ordinal(house)) house of \(AstrologyLexicon.houseTheme(house))"
+        let place = "your natal Saturn at \(natal.degree) \(natal.sign.glyph), in your \(AstrologyLexicon.ordinal(house)) house: \(AstrologyLexicon.houseTheme(house))"
 
         return hits.enumerated().map { index, date in
             let retrograde = isRetrograde(.saturn, at: date, options: options)
@@ -44,7 +44,7 @@ enum LifeCycleForecast {
                     kind: "Saturn Return",
                     date: stamp(date),
                     title: "\(exact) at \(natal.degree) \(natal.sign.name)",
-                    detail: "Transiting Saturn meets \(place).\(motion)\(agePhrase(born: born, on: date))"
+                    detail: "Saturn in the sky meets \(place).\(motion)\(agePhrase(born: born, on: date))"
                 )
             )
         }
@@ -65,7 +65,7 @@ enum LifeCycleForecast {
                     kind: "Solar Eclipse",
                     date: stamp(eclipse.date),
                     title: "\(eclipse.kind) in \(sign.name)",
-                    detail: "\(degree) \(sign.glyph) · your \(AstrologyLexicon.ordinal(house)) house of \(AstrologyLexicon.houseTheme(house)).\(agePhrase(born: born, on: eclipse.date))"
+                    detail: "\(degree) \(sign.glyph). It falls in your \(AstrologyLexicon.ordinal(house)) house: \(AstrologyLexicon.houseTheme(house)).\(agePhrase(born: born, on: eclipse.date))"
                 )
             )
         }
@@ -88,7 +88,7 @@ enum LifeCycleForecast {
                     kind: "Nodal Shift",
                     date: stamp(ingress.date),
                     title: "North Node enters \(ingress.sign.name)",
-                    detail: "Leaves \(leaving.name) and crosses your \(AstrologyLexicon.ordinal(house)) house of \(AstrologyLexicon.houseTheme(house)). The node stays in a sign for about eighteen months.\(agePhrase(born: born, on: ingress.date))"
+                    detail: "It leaves \(leaving.name) and enters your \(AstrologyLexicon.ordinal(house)) house: \(AstrologyLexicon.houseTheme(house)). The node stays in one sign for about 18 months.\(agePhrase(born: born, on: ingress.date))"
                 )
             ))
             cursor = ingress.date.addingTimeInterval(86_400)

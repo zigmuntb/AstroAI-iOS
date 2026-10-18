@@ -88,19 +88,19 @@ final class SynastryViewModel {
     var cardSubtitle: String {
         guard let userSign else { return relationLabel }
         return hidesDegrees
-            ? "\(userSign.element) & \(partnerSign.element) Resonance"
+            ? "\(userSign.element) and \(partnerSign.element)"
             : "\(userSign.name) Sun • \(partnerSign.name) Sun"
     }
 
     var questions: [Question] {
         (report?.questions ?? []).enumerated().map { index, text in
-            Question(number: index + 1, text: text, prompt: "Prompted by the synastry of \(userName) and \(partnerName)")
+            Question(number: index + 1, text: text, prompt: "From the chart of \(userName) and \(partnerName)")
         }
     }
 
     var shareText: String {
         let quote = report?.quote ?? ""
-        return "\(title) — Celestial Synastry\n“\(quote)”\nExplore our cosmic architecture on AstroAI."
+        return "\(title) — relationship chart\n“\(quote)”\nFrom AstroAI."
     }
 
     func load() async {

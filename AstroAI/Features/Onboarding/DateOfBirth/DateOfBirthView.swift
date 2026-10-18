@@ -86,7 +86,7 @@ struct DateOfBirthView: View {
 
             HStack {
                 Circle().fill(AppColor.champagne).frame(width: 6, height: 6)
-                Text("Solar Alignment")
+                Text("Sun sign")
                     .font(AppFont.bodySmall)
                     .tracking(0.6)
                     .foregroundStyle(AppColor.onSurfaceVariant)

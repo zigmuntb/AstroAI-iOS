@@ -104,10 +104,10 @@ struct PaywallView: View {
                     .foregroundStyle(gold)
                 Circle().fill(gold).frame(width: 5, height: 5)
             }
-            Text("Your chart has deeper truths to tell you.")
+            Text("More of your chart, when you want it.")
                 .font(AppFont.headlineLarge)
                 .foregroundStyle(ivory)
-            Text("Go beyond daily horoscopes. Unlock chart-aware conversational intelligence, precise transit timelines, and unbounded synastry.")
+            Text("Unlimited Oracle chats, the full birth chart, forecasts, and charts with other people.")
                 .font(AppFont.bodySmall)
                 .foregroundStyle(ivory.opacity(0.7))
                 .lineSpacing(3)

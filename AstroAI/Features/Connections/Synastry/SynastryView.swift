@@ -223,10 +223,10 @@ struct SynastryView: View {
                 Label("Composite Chart", systemImage: "lock")
                     .font(AppFont.labelLarge)
                     .foregroundStyle(AppColor.secondary)
-                Text("Friction and harmony of the bond itself.")
+                Text("The chart of the relationship itself.")
                     .font(AppFont.headlineSmall)
                     .foregroundStyle(AppColor.onSurface)
-                Text("Sanctuary builds the midpoint chart of the two of you, separate from either natal chart.")
+                Text("Sanctuary builds a chart of the two of you together, separate from either birth chart.")
                     .font(AppFont.bodySmall)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                 Button(action: viewModel.openPaywall) {

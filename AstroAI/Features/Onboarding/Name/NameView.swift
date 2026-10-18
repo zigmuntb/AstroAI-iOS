@@ -21,7 +21,7 @@ struct NameView: View {
                 ScreenTitle(
                     eyebrow: "Personal Signature",
                     title: "What should we call you?",
-                    subtitle: "Your name personalizes your daily synthesis and conversations with the AI Oracle."
+                    subtitle: "Your name is used in the daily reading and in chats with the Oracle."
                 )
 
                 nameField

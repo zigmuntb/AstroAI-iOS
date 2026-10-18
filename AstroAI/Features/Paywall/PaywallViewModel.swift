@@ -22,14 +22,14 @@ final class PaywallViewModel {
     }
 
     let features = [
-        Feature(icon: "brain.head.profile", title: "Unlimited AI Dialogue",
-                text: "Converse freely with an astrologer tuned directly to your exact natal degrees and house cusps."),
-        Feature(icon: "square.on.square", title: "Complete Natal Blueprint",
-                text: "Unravel deep house rulerships, planetary essential dignities, and karmic lunar nodal paths."),
-        Feature(icon: "circle.circle", title: "Multilateral Synastry",
-                text: "Overlay boundless partner, family, and friend charts to inspect composite friction and harmony."),
-        Feature(icon: "clock.arrow.circlepath", title: "Ephemeris Transit Forecasts",
-                text: "Chronological map of major life cycles: calculate upcoming Saturn returns, solar eclipses, and nodal shifts.")
+        Feature(icon: "brain.head.profile", title: "Unlimited Oracle",
+                text: "Ask as much as you want. Answers use your exact degrees and houses."),
+        Feature(icon: "square.on.square", title: "Full birth chart",
+                text: "House rulers, how strong each planet is, and the path from South Node to North Node."),
+        Feature(icon: "circle.circle", title: "Charts with other people",
+                text: "Compare partners, family, and friends, including a chart of the relationship itself."),
+        Feature(icon: "clock.arrow.circlepath", title: "Sky forecasts",
+                text: "Upcoming Saturn returns, solar eclipses, and node changes, timed to your chart.")
     ]
 
     private(set) var plans: [SubscriptionPlan] = []

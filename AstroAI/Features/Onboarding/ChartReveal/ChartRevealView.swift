@@ -44,7 +44,7 @@ struct ChartRevealView: View {
         VStack(spacing: Spacing.sm + 4) {
             HStack(spacing: 6) {
                 Image(systemName: "sparkles")
-                Text("YOUR NATAL ARCHITECTURE")
+                Text("YOUR CHART")
                     .tracking(1)
             }
             .font(AppFont.labelMedium)
@@ -53,7 +53,7 @@ struct ChartRevealView: View {
             .padding(.vertical, 6)
             .background(AppColor.surfaceContainerHigh, in: .capsule)
 
-            Text("A first glimpse of your cosmic blueprint.")
+            Text("A first look at your chart.")
                 .font(AppFont.displayMobile)
                 .foregroundStyle(AppColor.onSurface)
                 .multilineTextAlignment(.center)
@@ -75,7 +75,7 @@ struct ChartRevealView: View {
             ) { viewModel.select($0) }
             HStack(spacing: 6) {
                 Circle().fill(AppColor.secondary).frame(width: 5, height: 5)
-                Text("TAP TRINITY GLYPHS TO INSPECT")
+                Text("TAP A PLANET TO READ IT")
                     .tracking(0.8)
             }
             .font(AppFont.labelMedium)
@@ -89,7 +89,7 @@ struct ChartRevealView: View {
 
     private var synthesisCard: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            Eyebrow(text: "AI Synthesis & Primary Tension", icon: "brain.head.profile")
+            Eyebrow(text: "Your chart in brief", icon: "brain.head.profile")
             Text(viewModel.synthesis)
                 .font(.system(size: 22, design: .serif).italic())
                 .lineSpacing(6)
@@ -111,7 +111,7 @@ struct ChartRevealView: View {
         BannerImage(name: "ExploreArchway", height: 160)
             .overlay(alignment: .bottomLeading) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("ATMOSPHERIC ARCHETYPE")
+                    Text("OVERALL FEEL")
                         .font(AppFont.labelSmall)
                         .tracking(1.2)
                         .foregroundStyle(AppColor.onPrimary.opacity(0.75))
@@ -142,7 +142,7 @@ struct ChartRevealView: View {
             .buttonStyle(.astroGhost)
 
             if viewModel.showsExplanation {
-                Text("Your chart is computed from the exact positions of the planets at your birth moment and place. The Sun, Moon and Ascendant form your Big Three; AstroAI then synthesizes how they interact into a personal reading.")
+                Text("Your chart uses the planet positions at the time and place you were born. Sun, Moon, and rising sign are your Big Three. The reading says how they work together.")
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .multilineTextAlignment(.center)

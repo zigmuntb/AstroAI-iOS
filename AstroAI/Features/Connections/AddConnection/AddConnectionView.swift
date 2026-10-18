@@ -116,7 +116,7 @@ struct AddConnectionView: View {
                 HStack {
                     FieldLabel(text: "Solar Date of Birth")
                     Spacer()
-                    Caption(text: "Gregorian Ephemeris")
+                    Caption(text: "Birth date")
                 }
                 HStack {
                     DatePicker("Date of birth", selection: $viewModel.birthDate, in: ...Date.now, displayedComponents: .date)

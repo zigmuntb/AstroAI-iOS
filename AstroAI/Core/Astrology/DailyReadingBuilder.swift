@@ -39,16 +39,16 @@ enum DailyReadingBuilder {
     static func journalPrompt(chart: NatalChart?, sky: SkySnapshot) -> JournalPrompt {
         if let transit = sky.keyTransit {
             return JournalPrompt(
-                context: "Ephemeris Prompt · \(transit.transiting.glyph) \(transit.kind.glyph) \(transit.natal.glyph)",
-                question: "Where is \(transit.transiting.name) asking you to notice your \(transit.natal.meaning) today?",
+                context: "Today · \(transit.transiting.glyph) \(transit.kind.glyph) \(transit.natal.glyph)",
+                question: "Where do you notice your \(transit.natal.meaning) today, with \(transit.transiting.name) in the sky?",
                 note: transit.sentence
             )
         }
-        let moon = sky.position(of: .moon)?.sign.name ?? "the current"
+        let moon = sky.position(of: .moon)?.sign.name ?? "today's"
         return JournalPrompt(
-            context: "Ephemeris Prompt · \(sky.moonPhase.name)",
-            question: "What does the \(moon) Moon want you to feel, rather than solve?",
-            note: "The Moon is \(sky.moonPhase.illumination)% illuminated. Let the day's emotional weather speak before you interpret it."
+            context: "Today · \(sky.moonPhase.name)",
+            question: "What is the \(moon) Moon bringing up that you don't need to fix right now?",
+            note: "The Moon is \(sky.moonPhase.illumination)% lit. Notice the mood before you try to explain it."
         )
     }
 
@@ -56,9 +56,9 @@ enum DailyReadingBuilder {
 
     private static func atmosphere(phase: MoonPhase, moonSign: ZodiacSign, transit: NatalTransit?) -> String {
         if let transit, transit.orb < 1 {
-            return "\(transit.kind.name) in the air"
+            return "A strong \(transit.kind.name.lowercased()) today"
         }
-        return "\(phase.name.replacingOccurrences(of: " Moon", with: "")) & \(moonSign.element)"
+        return "\(phase.name.replacingOccurrences(of: " Moon", with: "")) · \(moonSign.element)"
     }
 
     private static func ephemerisText(sky: SkySnapshot, chart: NatalChart?, transit: NatalTransit?) -> String {
@@ -66,25 +66,25 @@ enum DailyReadingBuilder {
         if let transit {
             parts.append(transit.sentence)
             if let house = sky.houses[transit.transiting] {
-                parts.append("This is moving through your \(AstrologyLexicon.ordinal(house)) house of \(AstrologyLexicon.houseTheme(house)).")
+                parts.append("It is passing through your \(AstrologyLexicon.ordinal(house)) house: \(AstrologyLexicon.houseTheme(house)).")
             }
         } else if let moon = sky.position(of: .moon) {
-            parts.append("The Moon travels through \(moon.sign.name), coloring the day with a \(moon.sign.qualities) mood.")
+            parts.append("The Moon is in \(moon.sign.name) today, so the mood is \(moon.sign.qualities).")
         }
         if let retro = sky.retrogrades.first {
-            parts.append("\(retro.name) is retrograde: its usual themes of \(retro.meaning) turn inward for review.")
+            parts.append("\(retro.name) is retrograde. Themes of \(retro.meaning) turn inward: review them instead of starting something new.")
         }
         return parts.joined(separator: " ")
     }
 
     private static func synthesisTitle(moonSign: ZodiacSign, transit: NatalTransit?, focus: String?) -> String {
         if focus?.isEmpty == false {
-            return "Hold today's sky against what is already on your mind."
+            return "Today, next to what's on your mind"
         }
         if let transit {
-            return "Let \(transit.transiting.name) speak to your \(transit.natal.meaning.split(separator: " ").first ?? "path")."
+            return "\(transit.transiting.name) meets your \(transit.natal.name)"
         }
-        return "Move at the pace of a \(moonSign.name) Moon."
+        return "A \(moonSign.name) Moon day"
     }
 
     private static func synthesisText(profile: UserProfile?, chart: NatalChart?, moonSign: ZodiacSign, transit: NatalTransit?, focus: String?) -> String {
@@ -93,19 +93,19 @@ enum DailyReadingBuilder {
             text += "\(name), "
         }
         if let sun = chart?.placement(.sun), let moon = chart?.placement(.moon) {
-            text += "your \(sun.sign.name) Sun and \(moon.sign.name) Moon meet a \(moonSign.name) Moon in the sky. "
+            text += "your Sun is in \(sun.sign.name) and your Moon is in \(moon.sign.name). Today's Moon is in \(moonSign.name). "
         } else {
-            text += "today's \(moonSign.name) Moon sets the emotional weather. "
+            text += "today's Moon is in \(moonSign.name), and that sets the mood. "
         }
         if let transit {
             text += transit.sentence + " "
         }
         if let focus, !focus.isEmpty {
-            text += "You named this as being on your mind: \"\(focus)\". Read the day through that lens, not as a verdict."
+            text += "You said this is on your mind: \"\(focus)\". Read today through that. It is a reflection, not a verdict."
         } else if let intention = profile?.intentions.first {
-            text += "Keep your aim in view: \(intention.title.lowercased())."
+            text += "Keep this aim in view: \(intention.title.lowercased())."
         } else {
-            text += "Notice what wants attention without forcing a conclusion."
+            text += "Notice what asks for attention. You don't have to decide anything yet."
         }
         return text
     }
@@ -118,28 +118,28 @@ enum DailyReadingBuilder {
         return [
             LifeArea(
                 icon: "heart",
-                title: "Love & Rapport",
-                text: areaText(theme: loveHouse.map(AstrologyLexicon.houseTheme), transit: transit, fallback: "Offer presence before interpretation. Warmth lands better than analysis today.")
+                title: "Love",
+                text: areaText(theme: loveHouse.map(AstrologyLexicon.houseTheme), transit: transit, fallback: "Show up before you analyze. Warmth works better than advice today.")
             ),
             LifeArea(
                 icon: "pencil.and.scribble",
-                title: "Work & Vocation",
-                text: areaText(theme: workHouse.map(AstrologyLexicon.houseTheme), transit: transit, fallback: "Choose one task that can be finished well. Breadth scatters; depth accumulates.")
+                title: "Work",
+                text: areaText(theme: workHouse.map(AstrologyLexicon.houseTheme), transit: transit, fallback: "Finish one task well. Doing too many things at once will scatter you.")
             ),
             LifeArea(
                 icon: "leaf",
-                title: "Inner World",
-                text: areaText(theme: innerHouse.map(AstrologyLexicon.houseTheme), transit: transit, fallback: "Track the body first: jaw, breath, shoulders. The chart speaks through sensation before it speaks through thought.")
+                title: "How you feel",
+                text: areaText(theme: innerHouse.map(AstrologyLexicon.houseTheme), transit: transit, fallback: "Check your body first: jaw, breath, shoulders. Feelings show up there before thoughts do.")
             )
         ]
     }
 
     private static func areaText(theme: String?, transit: NatalTransit?, fallback: String) -> String {
         if let transit, let theme {
-            return "Today's \(transit.transiting.name) \(transit.verb) your \(transit.natal.meaning), especially around \(theme)."
+            return "Today \(transit.transiting.name) \(transit.verb) your \(transit.natal.meaning), especially around \(theme)."
         }
         if let theme {
-            return "Attention gathers around \(theme). Move gently there."
+            return "Pay attention to \(theme). Go slowly there."
         }
         return fallback
     }
@@ -149,8 +149,8 @@ enum DailyReadingBuilder {
         let water = Double(chart?.elements.first { $0.name == "Water" }?.percent ?? 25) / 100
         let transitBoost = transit.map { $0.kind == .square || $0.kind == .opposition ? 0.15 : 0.05 } ?? 0
         return [
-            Tendency(title: "Focus", value: moonSign.element == "Earth" ? "Steady" : "Fluid", level: min(0.95, 0.45 + fire * 0.4 + transitBoost)),
-            Tendency(title: "Connection", value: moonSign.element == "Water" ? "Tender" : "Curious", level: min(0.95, 0.4 + water * 0.45)),
+            Tendency(title: "Focus", value: moonSign.element == "Earth" ? "Steady" : "Changeable", level: min(0.95, 0.45 + fire * 0.4 + transitBoost)),
+            Tendency(title: "Connection", value: moonSign.element == "Water" ? "Close" : "Curious", level: min(0.95, 0.4 + water * 0.45)),
             Tendency(title: "Reflection", value: skyReflection(transit), level: min(0.95, 0.55 + ((transit?.orb ?? 2) < 1 ? 0.25 : 0.1)))
         ]
     }
@@ -158,30 +158,31 @@ enum DailyReadingBuilder {
     private static func skyReflection(_ transit: NatalTransit?) -> String {
         guard let transit else { return "Open" }
         switch transit.kind {
-        case .square, .opposition: return "Activated"
-        case .trine, .sextile: return "Easeful"
-        case .conjunction: return "Concentrated"
+        case .square, .opposition: return "Tense"
+        case .trine, .sextile: return "Easy"
+        case .conjunction: return "Focused"
         }
     }
 
     private static func moods(moonSign: ZodiacSign, transit: NatalTransit?) -> [String] {
-        var result = ["Quietly Attuned", moonSign.archetype.components(separatedBy: " & ").first ?? moonSign.name]
+        let mood = moonSign.archetype.components(separatedBy: " and ").first ?? moonSign.name
+        var result = ["Calm", mood]
         if let transit {
-            result.append(transit.kind == .square || transit.kind == .opposition ? "Restless" : "Receptive")
+            result.append(transit.kind == .square || transit.kind == .opposition ? "Restless" : "Open")
         } else {
             result.append("Content")
         }
-        result.append("Seeking Grounding")
+        result.append("Needs rest")
         return Array(result.prefix(4))
     }
 
     private static func questions(profile: UserProfile?, chart: NatalChart?, moonSign: ZodiacSign, transit: NatalTransit?) -> [String] {
         var result: [String] = []
         if let transit {
-            result.append("How does \(transit.transiting.name) \(transit.kind.name.lowercased()) my natal \(transit.natal.name) play out today?")
+            result.append("How does \(transit.transiting.name) \(transit.kind.name.lowercased()) my natal \(transit.natal.name) show up today?")
         }
         if let sun = chart?.placement(.sun) {
-            result.append("What should my \(sun.sign.name) Sun remember under a \(moonSign.name) Moon?")
+            result.append("What should my \(sun.sign.name) Sun keep in mind with the Moon in \(moonSign.name)?")
         }
         if profile?.interests.contains(.love) == true {
             result.append("What does today ask of me in love?")

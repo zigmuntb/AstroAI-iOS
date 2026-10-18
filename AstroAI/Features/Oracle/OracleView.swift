@@ -237,7 +237,7 @@ struct OracleView: View {
             oracleHeader
             HStack(spacing: Spacing.sm) {
                 ProgressView().tint(AppColor.primaryContainer)
-                Text("Consulting the ephemeris…")
+                Text("Reading your chart…")
                     .font(AppFont.quote)
                     .foregroundStyle(AppColor.onSurfaceVariant)
             }

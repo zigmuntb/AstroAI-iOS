@@ -69,7 +69,7 @@ struct BirthTimeView: View {
         VStack(spacing: Spacing.md) {
             HStack {
                 Circle().fill(AppColor.secondary).frame(width: 6, height: 6)
-                Text("SELECTED MERIDIAN TIME")
+                Text("BIRTH TIME")
                     .font(AppFont.labelMedium)
                     .tracking(1)
                     .foregroundStyle(AppColor.onSurfaceVariant)

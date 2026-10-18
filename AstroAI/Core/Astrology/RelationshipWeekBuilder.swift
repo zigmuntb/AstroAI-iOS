@@ -66,10 +66,10 @@ enum RelationshipWeekBuilder {
                     id: "quiet",
                     glyph: "☽",
                     title: "A quiet week",
-                    detail: "No exact aspect falls on \(name) or the composite before the week ends. The portrait is the whole story.",
+                    detail: "Nothing exact hits \(name) or the relationship chart this week. Use the reading you already have.",
                     when: "This week"
                 )],
-                question: "Ask \(name) what feels easy between you, and what you have been leaving unsaid."
+                question: "Ask \(name) what feels easy, and what you have been leaving unsaid."
             )
         }
         return RelationshipWeek(
@@ -93,11 +93,11 @@ enum RelationshipWeekBuilder {
     private static func beat(for peak: SkyPeak) -> RelationshipBeat {
         let detail = switch peak.kind {
         case .square, .opposition:
-            "The contact is exact. Leave room for both of you to want different things."
+            "This is exact. Leave room for the two of you to want different things."
         case .conjunction:
-            "The contact is exact. Let it be felt before you turn it into a plan."
+            "This is exact. Feel it before you turn it into a plan."
         case .trine, .sextile:
-            "The contact is exact. A small honesty is enough."
+            "This is exact. One honest sentence is enough."
         }
         return RelationshipBeat(
             id: peak.id,
@@ -115,7 +115,7 @@ enum RelationshipWeekBuilder {
         case .conjunction:
             "Ask \(name) what they want from this week, before you assume you already know."
         default:
-            "Ask \(name) what feels easy between you, and what you want to protect."
+            "Ask \(name) what feels easy, and what you want to protect."
         }
     }
 

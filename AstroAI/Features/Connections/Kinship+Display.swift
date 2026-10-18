@@ -10,18 +10,18 @@ extension Kinship {
     var title: String {
         switch self {
         case .romantic: "Romantic"
-        case .creative: "Creative Kin"
+        case .creative: "Creative"
         case .friendship: "Deep Friendship"
-        case .family: "Family & Ancestry"
+        case .family: "Family"
         }
     }
 
     var caption: String {
         switch self {
-        case .romantic: "Venusian & Mars chords"
-        case .creative: "Mercurial synergy"
-        case .friendship: "11th House resonance"
-        case .family: "4th House roots"
+        case .romantic: "Love and desire"
+        case .creative: "How you think together"
+        case .friendship: "Friends and shared plans"
+        case .family: "Home and family"
         }
     }
 
@@ -31,7 +31,7 @@ extension Kinship {
         case .romantic: "Romantic Partnership"
         case .creative: "Creative Collaboration"
         case .friendship: "Deep Friendship"
-        case .family: "Family & Ancestry"
+        case .family: "Family"
         }
     }
 

@@ -96,14 +96,14 @@ final class ChartPreparationViewModel {
 
     private func resetSteps() {
         let place = draft.birthPlace
-        let placeDetail = place.map { "\($0.title) · \($0.coordinates)" } ?? "Birthplace unknown · solar horizon applied"
-        let timeDetail = draft.birthTime.map { "Resolving horizon for \($0.formatted(date: .omitted, time: .shortened))" }
-            ?? "Resolving horizon for solar noon"
+        let placeDetail = place.map { "\($0.title) · \($0.coordinates)" } ?? "No birthplace, so houses start from the Sun"
+        let timeDetail = draft.birthTime.map { "Using \($0.formatted(date: .omitted, time: .shortened))" }
+            ?? "No birth time, so using noon"
 
         steps = [
-            Step(id: 0, title: "Mapping topocentric coordinates", detail: placeDetail),
-            Step(id: 1, title: "Calculating house cusps", detail: timeDetail),
-            Step(id: 2, title: "Personalizing core synthesis", detail: "Weaving archetypal natal chords & transits...")
+            Step(id: 0, title: "Finding the birthplace", detail: placeDetail),
+            Step(id: 1, title: "Calculating the houses", detail: timeDetail),
+            Step(id: 2, title: "Writing your reading", detail: "Putting the planets into plain language...")
         ]
 
         let sun = astrology.sunSign(for: draft.birthDate)
@@ -112,7 +112,7 @@ final class ChartPreparationViewModel {
 
     private func applyChart(_ chart: NatalChart) {
         if let ascendant = chart.placement(.ascendant) {
-            steps[1].detail = "Ascendant locked at \(ascendant.degree) \(ascendant.sign.name)"
+            steps[1].detail = "Rising sign set at \(ascendant.degree) \(ascendant.sign.name)"
         }
         nodes = [Planet.sun, .moon, .mercury].compactMap { planet in
             chart.placement(planet).map { OrbitNode(glyph: planet.glyph, label: "\($0.degree.prefix { $0 != " " }) \($0.sign.glyph)") }
