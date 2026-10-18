@@ -268,36 +268,17 @@ struct TodayView: View {
     }
 
     private func balances(_ reading: DailyReading) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.lg) {
+        VStack(alignment: .leading, spacing: Spacing.md) {
             VStack(alignment: .leading, spacing: Spacing.xs) {
                 Text("Today's balance")
                     .font(AppFont.headlineSmall)
                     .foregroundStyle(AppColor.onSurface)
-                Text("Each pair shares one scale, from 0 to 100.")
+                Text("Swipe the deck. Each card is one place to put the day.")
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .fixedSize(horizontal: false, vertical: true)
             }
-
-            VStack(alignment: .leading, spacing: Spacing.lg) {
-                ForEach(Array(reading.dials.enumerated()), id: \.element.id) { index, dial in
-                    if index > 0 {
-                        HairlineDivider()
-                    }
-                    let tints = dialTints(dial)
-                    LifeDialMeter(dial: dial, leftTint: tints.0, rightTint: tints.1)
-                }
-            }
-        }
-        .card(.elevated, padding: Spacing.lg)
-    }
-
-    private func dialTints(_ dial: LifeDial) -> (Color, Color) {
-        switch dial.id {
-        case "bonds": (AppColor.dustyRose, AppColor.secondary)
-        case "circle": (AppColor.sage, AppColor.primaryContainer)
-        case "tempo": (AppColor.secondary, AppColor.primary)
-        default: (AppColor.primaryContainer, AppColor.dustyRose)
+            BalanceDeck(dials: reading.dials)
         }
     }
 
@@ -452,137 +433,6 @@ struct TodayView: View {
             .buttonStyle(.astroSecondary)
         }
         .frame(maxWidth: .infinity, minHeight: 300)
-    }
-}
-
-/// A single 0...100 axis. The knob sits on today's lean: left score is the remainder.
-private struct LifeDialMeter: View {
-    let dial: LifeDial
-    let leftTint: Color
-    let rightTint: Color
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var progress: CGFloat = 0.5
-
-    private var shown: Int { Int((progress * 100).rounded()) }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
-            HStack(alignment: .center, spacing: Spacing.sm) {
-                pole(
-                    icon: dial.leftIcon,
-                    title: dial.left,
-                    score: 100 - shown,
-                    tint: leftTint,
-                    emphasized: dial.value < 50
-                )
-                Spacer(minLength: Spacing.sm)
-                pole(
-                    icon: dial.rightIcon,
-                    title: dial.right,
-                    score: shown,
-                    tint: rightTint,
-                    emphasized: dial.value > 50,
-                    leading: false
-                )
-            }
-
-            meter
-
-            Text(dial.note)
-                .font(AppFont.bodySmall)
-                .foregroundStyle(AppColor.onSurfaceVariant)
-                .fixedSize(horizontal: false, vertical: true)
-                .lineSpacing(2)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(dial.left) \(100 - dial.value) out of 100. \(dial.right) \(dial.value) out of 100. \(dial.note)")
-        .onAppear {
-            guard progress != lean else { return }
-            if reduceMotion {
-                progress = lean
-            } else {
-                withAnimation(.spring(response: 0.7, dampingFraction: 0.82)) {
-                    progress = lean
-                }
-            }
-        }
-    }
-
-    private var lean: CGFloat { CGFloat(dial.value) / 100 }
-
-    private var meter: some View {
-        GeometryReader { geo in
-            let knob: CGFloat = 14
-            let width = geo.size.width
-            let travel = max(width - knob, 0)
-            let split = travel * progress + knob / 2
-            ZStack(alignment: .leading) {
-                Capsule()
-                    .fill(rightTint.opacity(0.72))
-                    .frame(height: 6)
-                    .overlay(alignment: .leading) {
-                        Rectangle()
-                            .fill(leftTint.opacity(0.9))
-                            .frame(width: max(split, 0))
-                    }
-                    .clipShape(Capsule())
-                Circle()
-                    .fill(AppColor.surfaceContainerLowest)
-                    .overlay {
-                        Circle().stroke(emphasizedTint, lineWidth: 1.5)
-                    }
-                    .shadow(color: AppColor.primary.opacity(0.14), radius: 2, y: 1)
-                    .frame(width: knob, height: knob)
-                    .offset(x: travel * progress)
-            }
-            .frame(width: width, height: knob, alignment: .leading)
-        }
-        .frame(height: 14)
-    }
-
-    private var emphasizedTint: Color {
-        if dial.value < 50 { return leftTint }
-        if dial.value > 50 { return rightTint }
-        return AppColor.primaryContainer
-    }
-
-    private func pole(icon: String, title: String, score: Int, tint: Color, emphasized: Bool, leading: Bool = true) -> some View {
-        HStack(spacing: 6) {
-            if leading {
-                iconView(icon, tint: tint, emphasized: emphasized)
-                titleView(title, emphasized: emphasized)
-                scoreView(score, tint: tint, emphasized: emphasized)
-            } else {
-                scoreView(score, tint: tint, emphasized: emphasized)
-                titleView(title, emphasized: emphasized)
-                iconView(icon, tint: tint, emphasized: emphasized)
-            }
-        }
-    }
-
-    private func iconView(_ name: String, tint: Color, emphasized: Bool) -> some View {
-        Image(systemName: name)
-            .font(.system(size: 12, weight: .semibold))
-            .foregroundStyle(emphasized ? tint : AppColor.outline)
-            .frame(width: 16, height: 16)
-    }
-
-    private func titleView(_ title: String, emphasized: Bool) -> some View {
-        Text(title)
-            .font(AppFont.labelLarge)
-            .foregroundStyle(emphasized ? AppColor.onSurface : AppColor.onSurfaceVariant)
-            .lineLimit(1)
-            .minimumScaleFactor(0.75)
-    }
-
-    private func scoreView(_ score: Int, tint: Color, emphasized: Bool) -> some View {
-        Text("\(score)")
-            .font(AppFont.headlineMedium)
-            .foregroundStyle(emphasized ? tint : AppColor.outline)
-            .monospacedDigit()
-            .contentTransition(.numericText())
-            .layoutPriority(1)
     }
 }
 
