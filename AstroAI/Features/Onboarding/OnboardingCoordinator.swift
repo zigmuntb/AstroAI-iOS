@@ -103,7 +103,7 @@ final class OnboardingCoordinator: OnboardingRouting {
     func build(_ route: OnboardingRoute) -> some View {
         switch route {
         case .dateOfBirth:
-            DateOfBirthView(viewModel: DateOfBirthViewModel(draft: draft, astrology: dependencies.astrologyService, router: self))
+            AnimatedDateOfBirthView(viewModel: DateOfBirthViewModel(draft: draft, astrology: dependencies.astrologyService, router: self))
         case .birthTime:
             BirthTimeView(viewModel: BirthTimeViewModel(draft: draft, router: self))
         case .birthplace:

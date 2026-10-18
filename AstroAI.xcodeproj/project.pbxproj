@@ -50,7 +50,6 @@
 		85B1E0062F00000000000006 /* Exceptions for "AstroAIWidget" folder in "AstroAIWidget" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				AstroAIWidget.entitlements,
 				Info.plist,
 			);
 			target = 85B1E0042F00000000000004 /* AstroAIWidget */;
