@@ -28,6 +28,7 @@ final class SynastryViewModel {
     }
 
     private(set) var report: SynastryReport?
+    private(set) var guide: PairGuide?
     private(set) var week: RelationshipWeek?
     private(set) var isLoading = false
     private(set) var errorMessage: String?
@@ -119,6 +120,16 @@ final class SynastryViewModel {
             aspects = SynastryCalculator.aspects(between: userChart, and: partnerChart)
             user = Person(name: userName, placements: Self.placements(from: userChart))
             partner = Person(name: partnerName, placements: Self.placements(from: partnerChart))
+            let skyOnThem = astrology.sky(at: .now, natal: partnerChart)
+            let skyOnYou = astrology.sky(at: .now, natal: userChart)
+            guide = PairDayBuilder.guide(
+                user: userChart,
+                other: partnerChart,
+                userName: userName,
+                otherName: partnerName,
+                skyOnThem: skyOnThem,
+                skyOnYou: skyOnYou
+            )
             week = RelationshipWeekBuilder.week(
                 user: userChart,
                 other: partnerChart,

@@ -20,6 +20,10 @@ struct SynastryView: View {
                 pairHeader
 
                 if let report = viewModel.report {
+                    if let guide = viewModel.guide {
+                        compatibilitySection(guide.compatibility)
+                        todaySection(guide.today)
+                    }
                     if let week = viewModel.week {
                         weekSection(week)
                     }
@@ -89,6 +93,85 @@ struct SynastryView: View {
             Spacer(minLength: 0)
         }
         .card(.tinted, padding: 12)
+    }
+
+    private func compatibilitySection(_ compatibility: PairCompatibility) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            SectionHeader(title: "Compatibility")
+            HStack(alignment: .top, spacing: Spacing.sm) {
+                ForEach(compatibility.counts) { count in
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(count.value)")
+                            .font(AppFont.headlineMedium)
+                            .foregroundStyle(AppColor.onSurface)
+                        Text(count.title)
+                            .font(AppFont.labelSmall)
+                            .foregroundStyle(AppColor.outline)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            ForEach(compatibility.facts) { fact in
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(fact.title.uppercased())
+                        .font(AppFont.labelSmall)
+                        .tracking(0.6)
+                        .foregroundStyle(AppColor.outline)
+                    Text(fact.value)
+                        .font(AppFont.bodyMedium)
+                        .foregroundStyle(AppColor.onSurface)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let detail = fact.detail {
+                        Text(detail)
+                            .font(AppFont.bodySmall)
+                            .foregroundStyle(AppColor.onSurfaceVariant)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .padding(.top, Spacing.xs)
+            }
+        }
+        .card(.tinted)
+    }
+
+    private func todaySection(_ today: PairToday) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            SectionHeader(title: "Today", trailing: today.dateLabel)
+            Text(today.skyLine)
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+                .fixedSize(horizontal: false, vertical: true)
+            if let moonLine = today.moonLine {
+                Text(moonLine)
+                    .font(AppFont.bodyMedium)
+                    .foregroundStyle(AppColor.onSurface)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            if !today.items.isEmpty {
+                HairlineDivider()
+                ForEach(today.items) { item in
+                    HStack(alignment: .top, spacing: Spacing.md) {
+                        GlyphBadge(glyph: item.glyph, size: 40)
+                        VStack(alignment: .leading, spacing: Spacing.xs) {
+                            Text(item.title)
+                                .font(AppFont.bodyMedium.weight(.medium))
+                                .foregroundStyle(AppColor.onSurface)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text(item.basis)
+                                .font(AppFont.labelMedium)
+                                .foregroundStyle(AppColor.outline)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text(item.text)
+                                .font(AppFont.bodySmall)
+                                .foregroundStyle(AppColor.onSurfaceVariant)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+            }
+        }
+        .card(.tinted)
     }
 
     private func weekSection(_ week: RelationshipWeek) -> some View {
