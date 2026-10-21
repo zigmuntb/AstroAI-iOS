@@ -220,30 +220,33 @@ struct ExploreView: View {
     }
 
     private func transitRow(_ transit: Transit, tone: TransitTone) -> some View {
-        HStack(spacing: Spacing.md) {
+        HStack(alignment: .top, spacing: Spacing.md) {
             GlyphBadge(glyph: transit.glyph, size: 40, foreground: tone.foreground, background: tone.background)
 
             VStack(alignment: .leading, spacing: 2) {
-                HStack {
+                HStack(alignment: .firstTextBaseline, spacing: Spacing.sm) {
                     Text(transit.kind)
                         .font(AppFont.labelLarge)
                         .foregroundStyle(tone.foreground)
-                    Spacer()
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: Spacing.sm)
                     Text(transit.date)
                         .font(AppFont.labelMedium)
                         .foregroundStyle(AppColor.outline)
+                        .multilineTextAlignment(.trailing)
+                        .layoutPriority(1)
                 }
                 Text(transit.title)
                     .font(AppFont.bodyMedium.weight(.medium))
                     .foregroundStyle(AppColor.onSurface)
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text(transit.detail)
                     .font(AppFont.bodySmall)
                     .foregroundStyle(AppColor.onSurfaceVariant)
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 12)
         .accessibilityElement(children: .combine)
     }
