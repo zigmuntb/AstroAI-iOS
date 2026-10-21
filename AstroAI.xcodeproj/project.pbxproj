@@ -43,6 +43,7 @@
 
 /* Begin PBXFileReference section */
 		852E3727306FE3F000A73D80 /* AstroAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AstroAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		85617A6930890168000FBDB1 /* AstroAI.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; name = AstroAI.storekit; path = Configuration/AstroAI.storekit; sourceTree = "<group>"; };
 		85B1E0022F00000000000002 /* AstroAIWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AstroAIWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -100,6 +101,7 @@
 		852E371E306FE3F000A73D80 = {
 			isa = PBXGroup;
 			children = (
+				85617A6930890168000FBDB1 /* AstroAI.storekit */,
 				852E3729306FE3F000A73D80 /* AstroAI */,
 				85B1E0072F00000000000007 /* AstroAIWidget */,
 				852E3728306FE3F000A73D80 /* Products */,
