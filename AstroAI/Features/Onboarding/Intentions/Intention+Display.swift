@@ -19,12 +19,12 @@ extension Intention {
 
     var subtitle: String {
         switch self {
-        case .understandMyself: "Explore psychological roots and unconscious patterns."
-        case .navigateRelationship: "Understand relational geometry and communication styles."
-        case .clarityDuringChange: "Ground during major planetary transits and transitions."
-        case .exploreStrengths: "Unpack vocational dignities and natural creative channels."
-        case .dailyHabits: "Align somatic rhythm with diurnal lunar cycles."
-        case .discoverChart: "Learn foundational astrology at your own pace."
+        case .understandMyself: "See your patterns in plain language."
+        case .navigateRelationship: "Get a calmer read on a relationship."
+        case .clarityDuringChange: "A steadier view when life is shifting."
+        case .exploreStrengths: "Notice what you already do well."
+        case .dailyHabits: "Small, practical ideas for the day."
+        case .discoverChart: "Look at the astrology when you are curious."
         }
     }
 

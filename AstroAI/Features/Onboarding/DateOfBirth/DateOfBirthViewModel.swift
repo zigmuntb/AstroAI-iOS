@@ -83,7 +83,7 @@ final class DateOfBirthViewModel {
     }
 
     var illuminationText: String {
-        "\(moonPhase.illumination)% Illumination"
+        "\(moonPhase.illumination)% lit"
     }
 
     func continueTapped() {

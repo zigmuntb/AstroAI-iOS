@@ -78,10 +78,11 @@ enum AnnualProfection {
 
     private static func lordLine(_ lord: Planet, chart: NatalChart) -> String {
         guard let placement = chart.placement(lord) else { return lord.name }
-        if let house = placement.houseNumber {
-            return "\(lord.name) in \(placement.sign.name), your \(AstrologyLexicon.ordinal(house)) house"
+        var line = "This year leans on \(lord.meaning), in a \(placement.sign.qualities) style."
+        if chart.hasLocation, chart.isTimeKnown, let house = placement.houseNumber {
+            line += " That shows up around \(AstrologyLexicon.houseTheme(house))."
         }
-        return "\(lord.name) in \(placement.sign.name)"
+        return line
     }
 
     private static func refrain(for house: Int) -> String {

@@ -59,29 +59,30 @@ final class OracleViewModel {
     var isOffline: Bool { oracle.requiresNetwork && (didFailOffline || !networkMonitor.isConnected) }
 
     var syncLine: String {
-        guard let sun = chart?.placement(.sun), let moon = chart?.placement(.moon) else {
-            return "Synced with today's sky"
-        }
-        return "Synced with \(sun.sign.name) Sun ☉, \(moon.sign.name) Moon ☽"
+        "Ask about your day, a relationship, work, or a decision."
     }
 
     var transitLine: String {
-        if let transit = sky?.keyTransit {
-            return "Active Transit: \(transit.glyphLine) \(transit.title) (\(NatalChartCalculator.formatDegrees(transit.orb)))"
-        }
-        guard let moon = sky?.position(of: .moon) else { return "Reading the sky…" }
-        return "Current Sky: ☽ Moon in \(moon.sign.name) (\(NatalChartCalculator.formatDegrees(moon.degreeInSign)))"
+        guard let sky else { return "Today's reading is on its way." }
+        let copy = EverydayVoice.day(profile: userService.profile, chart: chart, sky: sky)
+        return copy.atmosphere
+    }
+
+    /// Explained astrology for the collapsed detail under the introduction.
+    var astrologyDetail: String {
+        guard let sky else { return "" }
+        return EverydayVoice.day(profile: userService.profile, chart: chart, sky: sky).astrologyText
     }
 
     var transitBadge: String {
-        sky?.keyTransit?.orbBadge ?? sky?.moonPhase.name ?? ""
+        ""
     }
 
     var suggestions: [String] {
         OracleSuggestions.make(chart: chart, sky: sky, interests: userService.profile?.interests ?? [])
     }
 
-    var quotaText: String { "\(quota.used) of \(quota.limit) daily free inquiries used" }
+    var quotaText: String { "\(quota.used) of \(quota.limit) free questions used today" }
 
     var isPremium: Bool { userService.profile?.isPremium ?? false }
 
@@ -258,29 +259,30 @@ final class OracleViewModel {
     }
 
     private static func greeting(name: String?, chart: NatalChart?, sky: SkySnapshot?) -> ChatMessage {
-        let welcome = name.map { "Welcome, \($0)." } ?? "Welcome."
-        guard let chart, let sun = chart.placement(.sun), let moon = chart.placement(.moon) else {
-            return ChatMessage(
-                role: .oracle,
-                text: "\(welcome) Ask me anything about love, work, or the path you're on, and I'll read it through your chart and today's sky.",
-                title: "The Oracle is listening"
-            )
+        let trimmed = name?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let welcome = trimmed.isEmpty ? "You can ask in ordinary words." : "\(trimmed), you can ask in ordinary words."
+        var detail = ""
+        if let chart, let sun = chart.placement(.sun) {
+            detail = "Your Sun is in \(sun.sign.name). The Sun is associated with how you go after things. \(sun.sign.name) is often described as \(sun.sign.qualities)."
+            if chart.isTimeKnown, let moon = chart.placement(.moon) {
+                detail += " Your Moon is in \(moon.sign.name). The Moon is associated with what helps you feel safe. \(moon.sign.name) is often described as \(moon.sign.qualities)."
+            } else {
+                detail += " The Moon sign needs an exact birth time, so it is left out."
+            }
+            if chart.hasLocation, chart.isTimeKnown, let rising = chart.placement(.ascendant) {
+                detail += " Your rising sign is \(rising.sign.name), which describes a first impression."
+            } else if !chart.hasLocation || !chart.isTimeKnown {
+                detail += " Birth time or birthplace is not exact enough for a rising sign, so that part is left out."
+            }
+            if let sky, let transit = EverydayVoice.supportedTransit(chart: chart, sky: sky) {
+                detail += " \(transit.sentence) That is an interpretation of today's sky, not a fact about what will happen."
+            }
         }
-
-        var text = "\(welcome) Your \(sun.sign.name) Sun gives you a \(sun.sign.qualities) core, while your \(moon.sign.name) Moon needs \(moon.sign.archetype.lowercased()) to feel safe."
-        if let rising = chart.placement(.ascendant) {
-            text += " With \(rising.sign.name) rising, others first meet your \(rising.sign.qualities) side."
-        }
-        if let transit = sky?.keyTransit {
-            text += "\n\nRight now: \(transit.sentence)"
-        }
-        text += "\n\nWhat would you like to explore?"
-
         return ChatMessage(
             role: .oracle,
-            text: text,
-            title: "\(sun.sign.name) Sun, \(moon.sign.name) Moon",
-            transitNote: sky?.keyTransit?.note
+            text: "\(welcome) Try a relationship, work, a mood, or a decision. I'll answer that first. The astrology, when there is any, stays optional.",
+            title: "What's on your mind?",
+            transitNote: detail.isEmpty ? nil : detail
         )
     }
 }

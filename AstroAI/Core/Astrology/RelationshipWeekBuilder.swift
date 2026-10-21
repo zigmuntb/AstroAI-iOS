@@ -66,7 +66,7 @@ enum RelationshipWeekBuilder {
                     id: "quiet",
                     glyph: "☽",
                     title: "A quiet week",
-                    detail: "Nothing exact hits \(name) or the relationship chart this week. Use the reading you already have.",
+                    detail: "Nothing exact lines up with \(name) this week. Use the reading you already have.",
                     when: "This week"
                 )],
                 question: "Ask \(name) what feels easy, and what you have been leaving unsaid."
@@ -99,11 +99,17 @@ enum RelationshipWeekBuilder {
         case .trine, .sextile:
             "This is exact. One honest sentence is enough."
         }
+        let about = peak.target.planet.meaning
+        let title = switch peak.kind {
+        case .square, .opposition: "Extra patience around \(about)"
+        case .conjunction: "Something about \(about) may stand out"
+        case .trine, .sextile: "A small opening around \(about)"
+        }
         return RelationshipBeat(
             id: peak.id,
             glyph: peak.transiting.glyph,
-            title: peak.title,
-            detail: detail,
+            title: title,
+            detail: "\(detail) \(peak.transiting.name) is associated with \(peak.transiting.meaning). This lines up with \(peak.target.phrase).",
             when: peak.when.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day().hour().minute())
         )
     }

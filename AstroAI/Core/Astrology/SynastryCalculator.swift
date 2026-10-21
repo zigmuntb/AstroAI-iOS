@@ -159,7 +159,7 @@ enum SynastryCalculator {
         }
         switch contact.kind {
         case .conjunction:
-            return "Where \(otherName)'s \(contact.from.name) sits on your \(contact.to.name), you understand each other quickly."
+            return "You may understand each other quickly around \(otherName)'s \(contact.from.meaning) and your \(contact.to.meaning)."
         case .trine, .sextile:
             return "Things flow between \(otherName)'s \(contact.from.meaning) and your \(contact.to.meaning)."
         case .square:
@@ -170,13 +170,17 @@ enum SynastryCalculator {
     }
 
     private static func summary(user: NatalChart, other: NatalChart, userName: String, otherName: String, kinship: Kinship, contacts: [Contact]) -> String {
-        let userSun = user.placement(.sun)?.sign.name ?? "your"
-        let otherSun = other.placement(.sun)?.sign.name ?? otherName
-        var text = "\(userName)'s \(userSun) Sun and \(otherName)'s \(otherSun) Sun meet in a \(kinship.title.lowercased()) bond. "
-        if let first = contacts.first {
-            text += "The closest link is \(first.title) (orb \(NatalChartCalculator.formatDegrees(first.orb))). "
+        var text = "\(userName) and \(otherName) are connected as \(kinship.title.lowercased()). "
+        if let sun = user.placement(.sun)?.sign {
+            text += "\(userName) tends to go after things in a \(sun.qualities) way. "
         }
-        text += "This describes the pattern. It does not decide how you live it."
+        if let sun = other.placement(.sun)?.sign {
+            text += "\(otherName) tends to be \(sun.qualities). "
+        }
+        if let first = contacts.first {
+            text += "The closest pattern is between \(otherName)'s \(first.from.meaning) and your \(first.to.meaning). "
+        }
+        text += "This describes a pattern in the charts. It does not decide the relationship, and it does not reveal what either of you is thinking."
         return text
     }
 

@@ -190,7 +190,7 @@ struct SettingsView: View {
                 NotificationToggleRow(
                     title: "Morning reading",
                     glyph: "☉",
-                    text: "A short reading and today's sky, at 8:00 AM.",
+                    text: "A short reminder for your day, at 8:00 AM.",
                     isOn: $viewModel.prefs.morningAttunement
                 )
                 Label("Set for 8:00 AM", systemImage: "alarm")
@@ -205,9 +205,9 @@ struct SettingsView: View {
             SectionDivider()
 
             NotificationToggleRow(
-                title: "Exact aspects",
-                glyph: "☌ ☍ △",
-                text: "A note when a conjunction, trine, or opposition is within 0°15' of exact.",
+                title: "Close moments",
+                glyph: "☉",
+                text: "A short note when something in your chart is especially exact.",
                 isOn: $viewModel.prefs.exactAspects
             )
             .padding(Spacing.md)
@@ -215,9 +215,9 @@ struct SettingsView: View {
             SectionDivider()
 
             NotificationToggleRow(
-                title: "Moon phases",
+                title: "Shifts in mood",
                 glyph: "☽",
-                text: "A note for new moons, first quarters, full moons, and when the Moon changes sign.",
+                text: "A note when the month's mood changes, and when the tone of the day shifts.",
                 isOn: $viewModel.prefs.lunarPhases
             )
             .padding(Spacing.md)

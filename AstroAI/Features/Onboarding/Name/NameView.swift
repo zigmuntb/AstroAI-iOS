@@ -19,9 +19,9 @@ struct NameView: View {
                 stepRow
 
                 ScreenTitle(
-                    eyebrow: "Personal Signature",
+                    eyebrow: "Your name",
                     title: "What should we call you?",
-                    subtitle: "Your name is used in the daily reading and in chats with the Oracle."
+                    subtitle: "We'll use it in your daily reading and when you talk with Oracle."
                 )
 
                 nameField

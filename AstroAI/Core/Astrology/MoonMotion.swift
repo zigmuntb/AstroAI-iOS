@@ -21,16 +21,25 @@ struct MoonMotion: Hashable {
         return voidBegins <= Date()
     }
 
-    /// One line for Today: the sign change, and the void when the gap is long enough to matter.
+    /// Everyday line for Today.
     var line: String {
-        let enters = "the Moon enters \(nextSign.name) at \(Self.clock(ingress))"
+        let when = Self.clock(ingress)
+        if isVoid {
+            return "The mood pauses until about \(when), when it shifts toward \(nextSign.qualities)."
+        }
+        return "Around \(when), the mood shifts toward \(nextSign.qualities)."
+    }
+
+    /// The calculated timing, for people who want the astronomy.
+    var detail: String {
+        let enters = "The Moon enters \(nextSign.name) at \(Self.clock(ingress)). In astrology the Moon describes mood, so a sign change is read as a shift in tone, not as an event that must happen."
         guard let voidBegins, ingress.timeIntervalSince(voidBegins) > 45 * 60 else {
-            return "Moon enters \(nextSign.name) at \(Self.clock(ingress))"
+            return enters
         }
         if voidBegins <= Date() {
-            return "No major aspects until \(enters)"
+            return "Until that change, the Moon is not making another major connection. Traditionally that is a pause for new plans. \(enters)"
         }
-        return "No major aspects after \(Self.clock(voidBegins)), until \(enters)"
+        return "After \(Self.clock(voidBegins)) the Moon makes no further major connection until it changes sign. \(enters)"
     }
 
     private static func clock(_ date: Date) -> String {

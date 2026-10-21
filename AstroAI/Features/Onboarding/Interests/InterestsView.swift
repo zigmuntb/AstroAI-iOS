@@ -55,7 +55,7 @@ struct InterestsView: View {
                     .font(AppFont.labelMedium)
                     .tracking(1)
                     .foregroundStyle(AppColor.onSurface)
-                Text("This shapes what the chart emphasizes")
+                Text("This shapes what your reading emphasizes")
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .lineLimit(1)

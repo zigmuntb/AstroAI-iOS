@@ -32,13 +32,13 @@ private struct AttunementEntry: TimelineEntry {
     static let placeholder = AttunementEntry(
         date: .now,
         moonGlyph: "☽",
-        moonLine: "Moon in Scorpio",
-        transitLine: "Venus △ natal Moon"
+        moonLine: "Listen first today",
+        transitLine: "A quiet mood is not a problem you have to fix."
     )
 
     static func current() -> AttunementEntry {
         guard let snapshot = SnapshotStore.load() else {
-            return AttunementEntry(date: .now, moonGlyph: "☽", moonLine: "AstroAI", transitLine: "Open the app to attune")
+            return AttunementEntry(date: .now, moonGlyph: "☽", moonLine: "Your focus today", transitLine: "Open AstroAI for today's reading.")
         }
         return AttunementEntry(
             date: snapshot.updated,
@@ -94,8 +94,8 @@ struct AttunementWidget: Widget {
             AttunementWidgetView(entry: entry)
                 .containerBackground(.clear, for: .widget)
         }
-        .configurationDisplayName("Morning attunement")
-        .description("The Moon sign and the tightest transit to your chart.")
+        .configurationDisplayName("Today")
+        .description("A short reminder for your day.")
         .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline])
     }
 }

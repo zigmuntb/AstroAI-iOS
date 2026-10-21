@@ -29,7 +29,7 @@ struct ConnectionsView: View {
         }
         .scrollIndicators(.hidden)
         .screenBackground()
-        .navigationTitle("Synastry")
+        .navigationTitle("People")
         .navigationBarTitleDisplayMode(.large)
         .task { await viewModel.load() }
     }
@@ -43,10 +43,10 @@ struct ConnectionsView: View {
                 .padding(.top, Spacing.lg)
 
             VStack(spacing: Spacing.sm) {
-                Text("No charts in orbit yet.")
+                Text("No one here yet.")
                     .font(AppFont.displayMobile)
                     .foregroundStyle(AppColor.onSurface)
-                Text("Add someone to see how your charts interact.")
+                Text("Add someone to see how you get along, in plain language.")
                     .font(AppFont.bodyLarge)
                     .lineSpacing(4)
                     .foregroundStyle(AppColor.onSurfaceVariant)
@@ -111,14 +111,14 @@ struct ConnectionsView: View {
             Label("More than one chart", systemImage: "lock")
                 .font(AppFont.labelLarge)
                 .foregroundStyle(AppColor.secondary)
-            Text("One chart is included.")
+            Text("One person is included.")
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
-            Text("Sanctuary compares every partner, family member, and friend, and opens a chart of each relationship.")
+            Text("Membership adds more people, and a reading of each relationship.")
                 .font(AppFont.bodySmall)
                 .foregroundStyle(AppColor.onSurfaceVariant)
             Button(action: viewModel.openPaywall) {
-                Text("Unlock Synastry")
+                Text("Add more people")
             }
             .buttonStyle(.astroPrimary)
             .padding(.top, Spacing.xs)

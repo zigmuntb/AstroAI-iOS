@@ -157,7 +157,7 @@ struct AddConnectionView: View {
                 .opacity(viewModel.isTimeApproximate ? 0.4 : 1)
 
                 if viewModel.isTimeApproximate {
-                    Label("Without recorded minute, lunar positions will approximate around 12:00 Solar Noon default. House cusps and exact Rising axis will remain uncalculated.", systemImage: "info.circle")
+                    Label("Without an exact time, this person's rising sign and house areas stay out. Their Sun sign still works.", systemImage: "info.circle")
                         .font(AppFont.bodySmall)
                         .foregroundStyle(AppColor.onSurfaceVariant)
                         .transition(.opacity)
@@ -172,10 +172,10 @@ struct AddConnectionView: View {
     private var placeField: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             HStack {
-                FieldLabel(text: "Natal Horizon (Place of Birth)")
+                FieldLabel(text: "Birthplace")
                 Spacer(minLength: Spacing.xs)
                 if viewModel.selectedPlace != nil {
-                    Caption(text: "Verified Observatory")
+                    Caption(text: "Saved")
                 }
             }
             HStack {

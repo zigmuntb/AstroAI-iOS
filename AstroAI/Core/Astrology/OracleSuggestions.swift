@@ -5,92 +5,37 @@
 
 import Foundation
 
-/// Three ready questions for the Oracle, built from this person's chart and today's sky.
+/// A few everyday questions. The chart chooses which situations to offer, not the wording.
 enum OracleSuggestions {
     static func make(chart: NatalChart?, sky: SkySnapshot?, interests: Set<Interest>) -> [String] {
         var questions: [String] = []
+        let transit = sky.map { EverydayVoice.supportedTransit(chart: chart, sky: $0) } ?? nil
 
-        if let chart {
-            if let transit = sky?.keyTransit {
-                questions.append(transitQuestion(transit, house: sky?.houses[transit.transiting]))
-            }
-            if let sun = chart.placement(.sun), let moon = chart.placement(.moon) {
-                if let moonSign = sky?.position(of: .moon)?.sign {
-                    questions.append("What should my \(label(sun)) and \(label(moon)) pay attention to with the Moon in \(moonSign.name)?")
-                } else {
-                    questions.append("How do my \(label(sun)) and \(label(moon)) work together right now?")
-                }
-            }
-            if let aspect = bestAspect(in: chart) {
-                questions.append("How does the \(aspect.kind.name.lowercased()) between my \(aspect.first.name) and \(aspect.second.name) show up in my life?")
-            }
-            if let moon = chart.placement(.moon), let house = moon.houseNumber {
-                questions.append("What does my \(moon.sign.name) Moon in the \(AstrologyLexicon.ordinal(house)) house need from me?")
-            }
-            if let rising = chart.placement(.ascendant) {
-                let ruler = rising.sign.ruler
-                if let placement = chart.placement(ruler) {
-                    let house = placement.houseNumber.map { " in the \(AstrologyLexicon.ordinal($0)) house" } ?? ""
-                    questions.append("With \(rising.sign.name) rising, how is \(ruler.name) in \(placement.sign.name)\(house) guiding me?")
-                }
-            }
-            questions.append(contentsOf: interestQuestions(chart: chart, interests: interests))
-            if let node = chart.placement(.northNode) {
-                questions.append("What would help me grow toward my North Node in \(node.sign.name)?")
-            }
-        } else if let sky, let moon = sky.position(of: .moon) {
-            questions.append("How should I handle a \(moon.sign.name) Moon today?")
-            questions.append("What should I notice during this \(sky.moonPhase.name) before I decide?")
+        if interests.contains(.love) || transit?.natal == .venus || transit?.natal == .moon {
+            questions.append("Why might someone close to me seem distant today?")
         }
+        if interests.contains(.career) || transit?.natal == .saturn || transit?.natal == .sun || transit?.natal == .mars {
+            questions.append("What should I focus on at work today?")
+        }
+        if interests.contains(.emotions) || transit?.natal == .moon {
+            questions.append("Why am I feeling this way today?")
+        }
+        if interests.contains(.friendship) {
+            questions.append("Should I reach out to a friend I've been meaning to talk to?")
+        }
+        if interests.contains(.dailyGuidance) || interests.contains(.growth) || interests.contains(.selfDiscovery) {
+            questions.append("What can I do to feel more confident today?")
+        }
+
+        questions.append(contentsOf: [
+            "Is today a good day to talk about something important?",
+            "How should I approach a difficult conversation?",
+            "Is this a good day to make an important decision?",
+            "What should I focus on today?",
+            "Why do I keep overthinking this?"
+        ])
 
         var seen = Set<String>()
         return Array(questions.filter { seen.insert($0).inserted }.prefix(3))
-    }
-
-    private static func transitQuestion(_ transit: NatalTransit, house: Int?) -> String {
-        if let house {
-            return "What happens when \(transit.transiting.name) in my \(AstrologyLexicon.ordinal(house)) house \(transit.verb) my natal \(transit.natal.name)?"
-        }
-        return "What happens when \(transit.transiting.name) \(transit.verb) my natal \(transit.natal.name)?"
-    }
-
-    /// Tightest aspect that touches a personal point, so the question is about the chart's live tension.
-    private static func bestAspect(in chart: NatalChart) -> ChartAspect? {
-        let personal: Set<Planet> = [.sun, .moon, .mercury, .venus, .mars, .ascendant]
-        let ranked = chart.aspects.sorted { $0.orb < $1.orb }
-        return ranked.first { personal.contains($0.first) || personal.contains($0.second) } ?? ranked.first
-    }
-
-    private static func interestQuestions(chart: NatalChart, interests: Set<Interest>) -> [String] {
-        var result: [String] = []
-        if interests.contains(.love), let venus = chart.placement(.venus) {
-            result.append("How does my \(label(venus)) love right now?")
-        }
-        if interests.contains(.career), let saturn = chart.placement(.saturn) {
-            result.append("What does my \(label(saturn)) say about my work right now?")
-        }
-        if interests.contains(.emotions), let moon = chart.placement(.moon) {
-            result.append("Why does my \(label(moon)) feel so much lately?")
-        }
-        if interests.contains(.selfDiscovery), let sun = chart.placement(.sun) {
-            result.append("Where is my \(label(sun)) already strong?")
-        }
-        if interests.contains(.growth), let jupiter = chart.placement(.jupiter) {
-            result.append("What is my \(label(jupiter)) opening up right now?")
-        }
-        if interests.contains(.friendship), let mercury = chart.placement(.mercury) {
-            result.append("Which people does my \(label(mercury)) get along with?")
-        }
-        if interests.contains(.dailyGuidance), let mars = chart.placement(.mars) {
-            result.append("Where should my \(label(mars)) spend its energy today?")
-        }
-        return result
-    }
-
-    private static func label(_ placement: PlanetPlacement) -> String {
-        guard let house = placement.houseNumber else {
-            return "\(placement.sign.name) \(placement.planet.name)"
-        }
-        return "\(placement.sign.name) \(placement.planet.name) in the \(AstrologyLexicon.ordinal(house)) house"
     }
 }

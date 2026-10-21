@@ -56,7 +56,7 @@ struct SynastryView: View {
     private var recordHeader: some View {
         HStack {
             HStack(spacing: Spacing.xs) {
-                Eyebrow(text: "Synastry")
+                Eyebrow(text: "The two of you")
             }
             Spacer()
             Button(action: viewModel.addConnection) {
@@ -158,14 +158,11 @@ struct SynastryView: View {
                                 .font(AppFont.bodyMedium.weight(.medium))
                                 .foregroundStyle(AppColor.onSurface)
                                 .fixedSize(horizontal: false, vertical: true)
-                            Text(item.basis)
-                                .font(AppFont.labelMedium)
-                                .foregroundStyle(AppColor.outline)
-                                .fixedSize(horizontal: false, vertical: true)
                             Text(item.text)
                                 .font(AppFont.bodySmall)
                                 .foregroundStyle(AppColor.onSurfaceVariant)
                                 .fixedSize(horizontal: false, vertical: true)
+                            AstrologyDisclosure(title: "Why this shows up", text: item.basis)
                         }
                     }
                 }
@@ -306,14 +303,14 @@ struct SynastryView: View {
                 Label("Composite Chart", systemImage: "lock")
                     .font(AppFont.labelLarge)
                     .foregroundStyle(AppColor.secondary)
-                Text("The chart of the relationship itself.")
+                Text("A reading of the relationship itself.")
                     .font(AppFont.headlineSmall)
                     .foregroundStyle(AppColor.onSurface)
-                Text("Sanctuary builds a chart of the two of you together, separate from either birth chart.")
+                Text("Membership adds a combined view of the two of you, separate from either person's chart.")
                     .font(AppFont.bodySmall)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                 Button(action: viewModel.openPaywall) {
-                    Text("Unlock Composite")
+                    Text("See the relationship")
                 }
                 .buttonStyle(.astroPrimary)
                 .padding(.top, Spacing.xs)
@@ -326,7 +323,7 @@ struct SynastryView: View {
 
     private func dimensions(_ report: SynastryReport) -> some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
-            SectionHeader(title: "Dimensional Architecture", trailing: "\(report.dimensions.count) Dimensions")
+            SectionHeader(title: "How you get along", trailing: "\(report.dimensions.count)")
                 .padding(.top, Spacing.sm)
             ForEach(Array(report.dimensions.enumerated()), id: \.element.id) { index, dimension in
                 DimensionCard(dimension: dimension, badgeColor: badgeColor(at: index))
@@ -349,7 +346,7 @@ struct SynastryView: View {
             HStack(spacing: Spacing.sm) {
                 Image(systemName: "brain.head.profile")
                     .foregroundStyle(AppColor.secondary)
-                Text("Introspective Inquiries")
+                Text("Questions to sit with")
                     .font(AppFont.headlineMedium)
                     .foregroundStyle(AppColor.onSurface)
             }
@@ -381,7 +378,7 @@ struct SynastryView: View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             HStack(alignment: .center) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Relational Artifact")
+                    Text("Share this reading")
                         .font(AppFont.headlineMedium)
                         .foregroundStyle(AppColor.onSurface)
                 }
@@ -413,7 +410,7 @@ struct SynastryView: View {
     private func storyCard(_ report: SynastryReport) -> some View {
         VStack(spacing: Spacing.lg) {
             HStack {
-                Label("AstroAI Synastry", systemImage: "sparkles")
+                Label("AstroAI", systemImage: "sparkles")
                     .font(AppFont.labelMedium)
                     .tracking(1.2)
                     .textCase(.uppercase)

@@ -167,7 +167,7 @@ struct NatalBlueprintView: View {
 
     private func bigThree(_ chart: NatalChart) -> some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
-            sectionHeader("The Big Three", trailing: "")
+            sectionHeader("Sun, Moon, and rising", trailing: "")
 
             ForEach(chart.bigThree) { placement in
                 let isMoon = placement.planet == .moon
@@ -363,17 +363,17 @@ struct NatalBlueprintView: View {
 
     private var blueprintLock: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Label("Complete Natal Blueprint", systemImage: "lock")
+            Label("More of your chart", systemImage: "lock")
                 .font(AppFont.labelLarge)
                 .foregroundStyle(AppColor.secondary)
-            Text("House rulers, planet strength, and the nodal path.")
+            Text("The details behind each part of you.")
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
-            Text("Sanctuary shows which planet leads each house, how strong each planet is in its sign, and the path from South Node to North Node.")
+            Text("Membership explains which themes lead, how strongly they show up, and a direction of growth. It still needs an exact birth time for house areas.")
                 .font(AppFont.bodySmall)
                 .foregroundStyle(AppColor.onSurfaceVariant)
             Button(action: viewModel.openPaywall) {
-                Text("Unlock Blueprint")
+                Text("See the details")
             }
             .buttonStyle(.astroPrimary)
             .padding(.top, Spacing.xs)

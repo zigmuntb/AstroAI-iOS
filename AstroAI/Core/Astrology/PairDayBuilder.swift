@@ -272,12 +272,12 @@ enum PairDayBuilder {
 
     private static func skyLine(_ sky: SkySnapshot) -> String {
         let sign = sky.position(of: .moon)?.sign.name ?? "an unknown sign"
-        return "\(sky.moonPhase.name). The Moon is in \(sign), \(sky.moonPhase.illumination)% lit."
+        return "Today's mood follows a \(sign) style. This is a \(sky.moonPhase.name)."
     }
 
     private static func moonLine(sky: SkySnapshot, other: NatalChart, name: String) -> String? {
         guard let today = sky.position(of: .moon)?.sign, let natal = other.placement(.moon)?.sign else { return nil }
-        return "Today's Moon is in \(today.name). \(name)'s Moon is in \(natal.name). \(elementSentence(today, natal)). \(signLink(today, natal))."
+        return "Today may feel \(today.qualities). \(name) tends to feel things in a \(natal.qualities) way. \(elementSentence(today, natal)). \(signLink(today, natal))."
     }
 
     // MARK: - Wording
@@ -285,11 +285,11 @@ enum PairDayBuilder {
     /// Plain reading of the aspect. It names the planet's area and does not add a scene.
     private static func todayReading(_ kind: AspectKind, meaning: String) -> String {
         switch kind {
-        case .conjunction: "Today matches \(meaning)."
-        case .sextile: "Today gives a small lift to \(meaning)."
-        case .square: "Today pulls against \(meaning)."
-        case .trine: "Today goes easily with \(meaning)."
-        case .opposition: "Today stands across from \(meaning)."
+        case .conjunction: "Today brings \(meaning) forward. Notice it before you turn it into a plan."
+        case .sextile: "A small step could help with \(meaning)."
+        case .square: "Something about \(meaning) may feel slightly off. Don't force a conclusion."
+        case .trine: "\(meaning.prefix(1).uppercased())\(meaning.dropFirst()) may feel a little easier today."
+        case .opposition: "You and this situation may want different things around \(meaning). Both can be heard."
         }
     }
 

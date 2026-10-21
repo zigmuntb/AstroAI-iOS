@@ -184,7 +184,7 @@ struct ProfileView: View {
             Text("Unlock AstroAI Sanctuary")
                 .font(AppFont.headlineMedium)
                 .foregroundStyle(AppColor.onPrimary)
-            Text("Unlimited Oracle chats, today's sky on your chart, and charts with more than one person.")
+            Text("Unlimited questions, a fuller reading of your chart, and more than one person.")
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onPrimary.opacity(0.75))
             Button(action: viewModel.exploreMembership) {

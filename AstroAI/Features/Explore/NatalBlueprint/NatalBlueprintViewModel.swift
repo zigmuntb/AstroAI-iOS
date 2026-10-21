@@ -9,8 +9,8 @@ import Observation
 @Observable
 final class NatalBlueprintViewModel {
     enum Mode: String, CaseIterable, Identifiable {
-        case quick = "Quick Overview"
-        case deep = "Explore Deeply"
+        case quick = "In short"
+        case deep = "The details"
 
         var id: String { rawValue }
     }
@@ -86,18 +86,26 @@ final class NatalBlueprintViewModel {
         guard let chart else { return [] }
         var result: [Declination] = []
         if let rising = chart.placement(.ascendant) ?? chart.placement(.sun),
-           let ruler = chart.placement(rising.sign.ruler), let house = ruler.houseNumber {
-            result.append(Declination(
-                label: chart.hasLocation ? "Ascendant Ruler" : "Sun Sign Ruler",
-                value: "\(ruler.planet.name) in \(AstrologyLexicon.roman(house))",
-                caption: "Life directed toward \(AstrologyLexicon.houseTheme(house).components(separatedBy: ",").first ?? "")"
-            ))
+           let ruler = chart.placement(rising.sign.ruler) {
+            if chart.hasLocation, chart.isTimeKnown, let house = ruler.houseNumber {
+                result.append(Declination(
+                    label: "A guiding planet",
+                    value: "\(ruler.planet.name) in \(ruler.sign.name)",
+                    caption: "This part of the chart points toward \(AstrologyLexicon.houseTheme(house)). Astrologers call the planet that leads it the chart ruler."
+                ))
+            } else {
+                result.append(Declination(
+                    label: "A guiding planet",
+                    value: "\(ruler.planet.name) in \(ruler.sign.name)",
+                    caption: "\(ruler.planet.name) is associated with \(ruler.planet.meaning). An exact birth time and place are needed before this can name a house."
+                ))
+            }
         }
         if let aspect = chart.aspects.first {
             result.append(Declination(
                 label: "Closest Aspect",
                 value: "\(aspect.first.glyph) \(aspect.kind.glyph) \(aspect.second.glyph) \(NatalChartCalculator.formatDegrees(aspect.orb))",
-                caption: "\(aspect.first.name) \(aspect.kind.name.lowercased()) \(aspect.second.name)"
+                caption: "Your \(aspect.first.meaning) and your \(aspect.second.meaning). \(AstrologyLexicon.aspectSentence(aspect.kind, aspect.first, aspect.second))"
             ))
         }
         return result
@@ -129,12 +137,12 @@ final class NatalBlueprintViewModel {
     var houseNote: String {
         guard let chart else { return "" }
         if !chart.hasLocation {
-            return "Without a birthplace these are solar houses, counted from your Sun sign."
+            return "These areas are estimated from your Sun sign. They are not exact houses, because a birthplace is needed for that. The daily reading does not treat them as certain."
         }
         if !chart.isTimeKnown {
-            return "Your birth time is approximate, so these cusps can shift."
+            return "These areas can shift until the birth time is exact. The daily reading does not treat them as certain."
         }
-        return "Each house is led by the planet that rules the sign on its edge."
+        return "Each area of life is led by the planet associated with the sign on its edge. Astrologers call these areas houses."
     }
 
     var dignities: [DignityLine] {
@@ -148,30 +156,38 @@ final class NatalBlueprintViewModel {
     }
 
     var nodalPath: NodalPath? {
-        guard let chart, let north = chart.placement(.northNode), let house = north.houseNumber else { return nil }
+        guard let chart, let north = chart.placement(.northNode) else { return nil }
         let southSign = north.sign.opposite
+        guard chart.hasLocation, chart.isTimeKnown, let house = north.houseNumber else {
+            return NodalPath(
+                axis: "\(north.sign.name) / \(southSign.name)",
+                north: "\(north.degree) \(north.sign.glyph) \(north.sign.name)",
+                south: "\(north.degree) \(southSign.glyph) \(southSign.name)",
+                text: "What already feels familiar is a \(southSign.qualities) style. A direction of growth is the \(north.sign.qualities) side of \(north.sign.name). Houses need an exact birth time and place, so they are left out. This is a direction, not a prediction."
+            )
+        }
         let southHouse = (house + 5) % 12 + 1
         let southTheme = AstrologyLexicon.houseTheme(southHouse)
         let northTheme = AstrologyLexicon.houseTheme(house)
         return NodalPath(
             axis: "\(north.sign.name) / \(southSign.name)",
-            north: "\(north.degree) \(north.sign.glyph) · House \(AstrologyLexicon.roman(house))",
-            south: "\(north.degree) \(southSign.glyph) · House \(AstrologyLexicon.roman(southHouse))",
-            text: "The South Node in \(southSign.name) is what already feels familiar: \(southTheme). The North Node in \(north.sign.name) is where you grow: \(northTheme). This is a direction, not a debt."
+            north: "\(north.degree) \(north.sign.glyph) · \(northTheme)",
+            south: "\(north.degree) \(southSign.glyph) · \(southTheme)",
+            text: "What already feels familiar is \(southTheme). A direction of growth is \(northTheme). Astrologers call these the South Node and the North Node. This is a direction, not a prediction."
         )
     }
 
     var inspectorNote: String {
-        var note = "Positions are calculated on this phone (accurate to about 1′). House system: \(houseSystem)."
+        var note = "Positions are calculated on this phone. The house system in settings is \(houseSystem)."
         if let chart, !chart.hasLocation {
-            note += " No birthplace was given, so houses are counted from your Sun sign and there is no Ascendant."
+            note += " No birthplace was given, so there is no rising sign, and house areas are not treated as exact."
         } else if let chart, !chart.isTimeKnown {
-            note += " Your birth time is approximate, so the Ascendant and houses may shift."
+            note += " The birth time is approximate, so the rising sign and house areas may shift."
         }
         return note
     }
 
-    let disclaimer = "Your chart is a mirror, not a fate. It shows tendencies and timing. You still choose what you do."
+    let disclaimer = "This is a way of reading patterns. It is not a forecast, and it does not decide what you do."
 
     @ObservationIgnored private let astrology: AstrologyServicing
     @ObservationIgnored private let userService: UserServicing

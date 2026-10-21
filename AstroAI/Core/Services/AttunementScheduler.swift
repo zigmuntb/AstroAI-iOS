@@ -115,11 +115,11 @@ final class AttunementScheduler: AttunementScheduling {
     private func snapshot(chart: NatalChart?, options: ChartOptions) -> AttunementSnapshot {
         let sky = TransitCalculator.sky(at: .now, natal: chart, options: options)
         let sign = sky.position(of: .moon)?.sign
-        let transit = sky.keyTransit.map { "\($0.transiting.name) \($0.kind.glyph) natal \($0.natal.name)" } ?? sky.moonPhase.name
+        let lines = EverydayVoice.widgetLines(chart: chart, sky: sky)
         return AttunementSnapshot(
             moonGlyph: sign?.glyph ?? "☽",
-            moonLine: sign.map { "Moon in \($0.name)" } ?? "Moon",
-            transitLine: chart == nil ? sky.moonPhase.name : transit,
+            moonLine: lines.headline,
+            transitLine: lines.detail,
             updated: .now
         )
     }
@@ -143,17 +143,10 @@ final class AttunementScheduler: AttunementScheduling {
             guard let date = calendar.date(byAdding: .day, value: offset, to: day),
                   let morning = calendar.date(bySettingHour: 8, minute: 0, second: 0, of: date) else { continue }
             let sky = TransitCalculator.sky(at: morning, natal: chart, options: options)
-            let moon = sky.position(of: .moon)?.sign.name ?? "the sky"
-            let body: String
-            if let transit = sky.keyTransit {
-                body = "Moon in \(moon). \(transit.transiting.name) \(SkyPeaks.word(transit.kind)) your \(transit.natal.name)."
-            } else {
-                body = "Moon in \(moon). \(sky.moonPhase.name)."
-            }
             await add(
                 id: "morning-\(Self.dayKey(morning))",
-                title: "Morning attunement",
-                body: body,
+                title: "Your daily outlook is ready.",
+                body: EverydayVoice.morningBody(chart: chart, sky: sky),
                 at: morning,
                 prefs: prefs,
                 center: center,
@@ -182,8 +175,8 @@ final class AttunementScheduler: AttunementScheduling {
             guard current == ticket else { return }
             let added = await add(
                 id: "exact-\(peak.id)",
-                title: peak.title,
-                body: "\(peak.houseLine). \(peak.advice)",
+                title: "A small reminder for your day.",
+                body: peak.advice,
                 at: peak.when,
                 prefs: prefs,
                 center: center,
@@ -208,13 +201,10 @@ final class AttunementScheduler: AttunementScheduling {
             guard current == ticket, cursor < horizon else { return }
             let motion = MoonMotionCalculator.make(at: cursor, options: options)
             guard motion.ingress < horizon else { return }
-            let void = motion.voidBegins != nil
-            let body = void
-                ? "Void of course ends as the Moon enters \(motion.nextSign.name)."
-                : "The mood shifts toward \(motion.nextSign.qualities) themes."
+            let body = "The mood shifts toward \(motion.nextSign.qualities). You do not have to match the pace."
             await add(
                 id: "ingress-\(Int(motion.ingress.timeIntervalSince1970))",
-                title: "Moon enters \(motion.nextSign.name)",
+                title: "The mood of the day is shifting.",
                 body: body,
                 at: motion.ingress,
                 prefs: prefs,
@@ -222,11 +212,10 @@ final class AttunementScheduler: AttunementScheduling {
                 current: current
             )
             if !announcedPhase, let phase = motion.nextPhase, let name = motion.nextPhaseName, phase < horizon {
-                let sign = ZodiacSign.containing(SkyPeaks.longitude(of: .moon, at: phase, options: options))
                 await add(
                     id: "phase-\(Int(phase.timeIntervalSince1970))",
-                    title: "\(name) in \(sign.name)",
-                    body: "The Moon reaches \(name.lowercased()) in \(sign.name).",
+                    title: "A change in the month's mood.",
+                    body: "This is a \(name.lowercased()). Feelings may be easier to notice. Nothing here is a prediction.",
                     at: phase,
                     prefs: prefs,
                     center: center,

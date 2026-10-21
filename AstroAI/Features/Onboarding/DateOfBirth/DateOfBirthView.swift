@@ -20,7 +20,7 @@ struct DateOfBirthView: View {
                 ScreenTitle(
                     eyebrow: "Celestial Anchor",
                     title: "When did your story begin?",
-                    subtitle: "Your birth date helps us build the foundation of your personal chart."
+                    subtitle: "Your birth date is enough for a personal daily reading. Time and place can come later."
                 )
 
                 pickerCard
@@ -119,15 +119,15 @@ struct DateOfBirthView: View {
         HStack(spacing: Spacing.sm) {
             insightCard(
                 icon: "moon",
-                label: "Moon Phase",
+                label: "The Moon",
                 title: viewModel.moonPhase.name,
                 caption: viewModel.illuminationText
             )
             insightCard(
                 icon: "safari",
-                label: "Solar House",
-                title: viewModel.sunSign.solarHouseName,
-                caption: viewModel.sunSign.solarHouseTheme
+                label: "This sign",
+                title: viewModel.sunSign.name,
+                caption: viewModel.sunSign.archetype
             )
         }
     }

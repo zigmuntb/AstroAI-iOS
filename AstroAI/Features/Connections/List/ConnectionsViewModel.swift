@@ -28,9 +28,9 @@ final class ConnectionsViewModel {
     }
 
     let suggestions = [
-        Suggestion(icon: "heart", title: "Add a romantic partner", text: "See how you relate in love."),
-        Suggestion(icon: "brain.head.profile", title: "Add a creative collaborator", text: "See how you work and create together."),
-        Suggestion(icon: "infinity", title: "Add a close friend or family member", text: "See where you feel easy, and where you don't.")
+        Suggestion(icon: "heart", title: "Add a partner", text: "See how you get along in a relationship."),
+        Suggestion(icon: "brain.head.profile", title: "Add someone you work with", text: "See how you focus and create together."),
+        Suggestion(icon: "infinity", title: "Add a friend or family member", text: "See where things feel easy, and where they don't.")
     ]
 
     private(set) var rows: [Row] = []

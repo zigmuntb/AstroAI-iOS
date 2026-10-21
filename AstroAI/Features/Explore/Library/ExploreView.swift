@@ -90,7 +90,7 @@ struct ExploreView: View {
                     Text("Your chart")
                         .font(AppFont.headlineSmall)
                         .foregroundStyle(AppColor.onSurface)
-                    Text(viewModel.blueprintLine ?? "Big Three, elemental balance and every placement.")
+                    Text(viewModel.blueprintLine ?? "What your birth details suggest, in plain language.")
                         .font(AppFont.bodySmall)
                         .foregroundStyle(AppColor.onSurfaceVariant)
                         .multilineTextAlignment(.leading)
@@ -158,7 +158,7 @@ struct ExploreView: View {
                 trailingColor: AppColor.outline
             )
             if viewModel.monthEvents.isEmpty {
-                Text("No exact transit falls on your chart in this stretch.")
+                Text("Nothing exact lines up with your chart in this stretch.")
                     .font(AppFont.bodySmall)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .padding(.top, Spacing.sm)
@@ -268,14 +268,14 @@ struct ExploreView: View {
             Label("Sky forecasts", systemImage: "lock")
                 .font(AppFont.labelLarge)
                 .foregroundStyle(AppColor.secondary)
-            Text("Saturn returns, solar eclipses, and node changes, timed to your houses.")
+            Text("Longer cycles, in plain language.")
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
-            Text("Sanctuary calculates the next exact dates against your birth chart.")
+            Text("Membership shows upcoming dates that may matter, including eclipses and longer cycles. It does not predict what will happen.")
                 .font(AppFont.bodySmall)
                 .foregroundStyle(AppColor.onSurfaceVariant)
             Button(action: viewModel.openPaywall) {
-                Text("Unlock Forecasts")
+                Text("See longer forecasts")
             }
             .buttonStyle(.astroPrimary)
             .padding(.top, Spacing.xs)

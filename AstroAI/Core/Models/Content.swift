@@ -27,6 +27,12 @@ struct DailyReading: Codable, Hashable {
     let luckyNumbers: LuckyNumbers
     let moods: [String]
     let oracleQuestions: [String]
+    /// One small thing worth doing. Empty when the reading has nothing specific to add.
+    var focus: String = ""
+    /// One thing to approach carefully.
+    var caution: String = ""
+    /// One question to sit with.
+    var reflection: String = ""
 }
 
 struct LifeArea: Codable, Hashable, Identifiable {
@@ -34,6 +40,8 @@ struct LifeArea: Codable, Hashable, Identifiable {
     let icon: String
     let title: String
     let text: String
+    /// Plain-language astrology for this area. Nil when there is nothing reliable to add.
+    var detail: String? = nil
 }
 
 struct Tendency: Codable, Hashable, Identifiable {
@@ -158,10 +166,8 @@ struct JournalSky: Codable, Hashable {
     var transit: String?
 
     var caption: String {
-        var parts = [moonPhase]
-        if !moonSign.isEmpty { parts.append("Moon in \(moonSign)") }
-        if let transit, !transit.isEmpty { parts.append(transit) }
-        return parts.joined(separator: " · ")
+        if moonSign.isEmpty { return moonPhase }
+        return "\(moonPhase) · a \(moonSign) mood"
     }
 }
 

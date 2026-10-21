@@ -60,7 +60,7 @@ struct BirthTimeView: View {
                 .background(AppColor.secondaryContainer, in: .capsule)
             ScreenTitle(
                 title: "What time were you born?",
-                subtitle: "Birth time sets your Rising sign and the houses of your chart. Without it, those stay approximate."
+                subtitle: "An exact time makes the reading more personal. Without it, you still get a daily outlook. The parts that need a time stay hidden until you add one."
             )
         }
     }
@@ -104,7 +104,7 @@ struct BirthTimeView: View {
                     Label("I don't know my exact birth time", systemImage: "questionmark.circle")
                         .font(AppFont.bodyLarge.weight(.medium))
                         .foregroundStyle(AppColor.onSurface)
-                    Text("If the time is unknown, Rising sign and houses are estimated. Sun and most planet signs stay exact.")
+                    Text("If you skip the time, the daily reading still works. It will not guess a rising sign or house areas.")
                         .font(AppFont.bodyMedium)
                         .foregroundStyle(AppColor.onSurfaceVariant)
                 }

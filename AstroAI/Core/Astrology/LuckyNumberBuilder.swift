@@ -124,8 +124,8 @@ enum LuckyNumberBuilder {
 
     private static func note(moon: ZodiacSign, hasBirth: Bool) -> String {
         if hasBirth {
-            return "Read from your birth date and today's \(moon.name) Moon."
+            return "From your birth date and today's mood."
         }
-        return "Read from today's \(moon.name) Moon."
+        return "From today's date. Add a birth date for a personal number."
     }
 }

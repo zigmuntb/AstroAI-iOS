@@ -20,13 +20,13 @@ extension Interest {
 
     var subtitle: String {
         switch self {
-        case .love: "Synastry chords & 7th house alignments"
-        case .career: "Midheaven vocation & Saturnian cycles"
-        case .selfDiscovery: "Primal solar identity & rising mask"
-        case .emotions: "Lunar rhythms & sub-conscious tides"
-        case .growth: "Jupiterian expansion & nodal destiny"
-        case .dailyGuidance: "Hour-by-hour aspect micro-transits"
-        case .friendship: "11th house community & collective bonds"
+        case .love: "Conversations, closeness, and what a relationship needs."
+        case .career: "Focus, priorities, and decisions about work."
+        case .selfDiscovery: "How you tend to show up, in ordinary language."
+        case .emotions: "Mood, patience, and what helps you feel steady."
+        case .growth: "What you might be ready to practice next."
+        case .dailyGuidance: "A short take on the day, and one thing to do."
+        case .friendship: "Friends, family, and how you get along."
         }
     }
 

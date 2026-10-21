@@ -50,7 +50,7 @@ struct JournalView: View {
         HStack(spacing: Spacing.sm) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(AppColor.outline)
-            TextField("Search reflections by keyword, planet, or transit...", text: $viewModel.searchText)
+            TextField("Search your notes", text: $viewModel.searchText)
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onSurface)
                 .submitLabel(.search)
@@ -161,7 +161,7 @@ struct JournalView: View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             Eyebrow(text: "Patterns", color: AppColor.onSurfaceVariant)
             if viewModel.patterns.isEmpty {
-                Text("The next reflections keep the Moon and the transit. After a few under the same Moon, a pattern shows up here.")
+                Text("After a few notes on similar days, a pattern can show up here.")
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .fixedSize(horizontal: false, vertical: true)

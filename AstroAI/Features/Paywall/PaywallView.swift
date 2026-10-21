@@ -104,10 +104,10 @@ struct PaywallView: View {
                     .foregroundStyle(gold)
                 Circle().fill(gold).frame(width: 5, height: 5)
             }
-            Text("More of your chart, when you want it.")
+            Text("More of your day, when you want it.")
                 .font(AppFont.headlineLarge)
                 .foregroundStyle(ivory)
-            Text("Unlimited Oracle chats, the full birth chart, forecasts, and charts with other people.")
+            Text("Unlimited questions, a fuller chart, longer forecasts, and readings with the people close to you.")
                 .font(AppFont.bodySmall)
                 .foregroundStyle(ivory.opacity(0.7))
                 .lineSpacing(3)

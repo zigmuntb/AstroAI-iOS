@@ -80,7 +80,7 @@ final class JournalService: JournalServicing {
         return JournalSky(
             moonPhase: sky.moonPhase.name,
             moonSign: sky.position(of: .moon)?.sign.name ?? "",
-            transit: sky.keyTransit?.title
+            transit: EverydayVoice.supportedTransit(chart: chart, sky: sky)?.title
         )
     }
 

@@ -24,6 +24,8 @@ struct TodayView: View {
                         moonMotionCard(motion)
                     }
                     synthesis(reading)
+                    forToday(reading)
+                    areas(reading)
                     balances(reading)
                     luckyNumbers(reading)
                     attunement(reading)
@@ -114,7 +116,7 @@ struct TodayView: View {
             Text(viewModel.greeting)
                 .font(AppFont.displayMobile)
                 .foregroundStyle(AppColor.onSurface)
-            Text("\(reading.moonPhase) in \(reading.moonSign.name) · \(reading.atmosphere)")
+            Text(reading.atmosphere)
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onSurfaceVariant)
                 .fixedSize(horizontal: false, vertical: true)
@@ -122,24 +124,25 @@ struct TodayView: View {
     }
 
     private func moonMotionCard(_ motion: MoonMotion) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.xs) {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
             Text(motion.line)
                 .font(AppFont.bodyMedium.weight(.medium))
                 .foregroundStyle(AppColor.onSurface)
                 .fixedSize(horizontal: false, vertical: true)
             if motion.isVoid {
-                Text("Nothing new needs a decision until the Moon changes sign.")
+                Text("New plans can wait. This is a pause, not a problem to solve.")
                     .font(AppFont.bodySmall)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            AstrologyDisclosure(text: motion.detail)
         }
         .card(.tinted)
     }
 
     private var tarot: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            Text("Tarot")
+            Text("A card to reflect on")
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
 
@@ -162,11 +165,27 @@ struct TodayView: View {
                         .foregroundStyle(AppColor.onSurface)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+                Text("Look at the picture and notice what it reminds you of in your actual day. It is a prompt for reflection, not a prediction about what will happen.")
+                    .font(AppFont.bodyMedium)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("Try this: take a minute away from your phone and name the one feeling the image brings up.")
+                    .font(AppFont.bodyMedium)
+                    .foregroundStyle(AppColor.onSurface)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("A question: what in this picture feels most like the situation you are in?")
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.onSurfaceVariant)
+                    .fixedSize(horizontal: false, vertical: true)
+                AstrologyDisclosure(
+                    title: "About this picture",
+                    text: "Image Playground drew this from your description. It is an illustration, not a traditional tarot deck, and it does not know another person's intentions or what will happen."
+                )
             } else {
-                Text("Draw a card from a description")
+                Text("Draw a picture to think with")
                     .font(AppFont.headlineMedium)
                     .foregroundStyle(AppColor.onSurface)
-                Text("Name a feeling, a question, or a scene. Image Playground illustrates it as a tarot card, and the picture stays here.")
+                Text("Describe a feeling, a question, or a situation. Image Playground illustrates it. The picture stays here as something to reflect on, not as a forecast.")
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .fixedSize(horizontal: false, vertical: true)
@@ -202,16 +221,16 @@ struct TodayView: View {
         )
         return NavigationStack {
             VStack(alignment: .leading, spacing: Spacing.lg) {
-                Text("What should the card show?")
+                Text("What are you thinking about?")
                     .font(AppFont.headlineMedium)
                     .foregroundStyle(AppColor.onSurface)
-                Text("A mood, a question, or a scene. The picture is an illustration, not a prediction.")
+                Text("A mood, a question, or a situation. The picture is for reflection, not a prediction.")
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .fixedSize(horizontal: false, vertical: true)
 
                 VStack(alignment: .trailing, spacing: Spacing.xs) {
-                    TextField("A moonlit path between two towers", text: draft, axis: .vertical)
+                    TextField("A conversation I keep putting off", text: draft, axis: .vertical)
                         .font(AppFont.bodyMedium)
                         .foregroundStyle(AppColor.onSurface)
                         .lineLimit(3...6)
@@ -272,8 +291,58 @@ struct TodayView: View {
                 .font(AppFont.bodySmall)
                 .foregroundStyle(AppColor.onSurfaceVariant)
                 .fixedSize(horizontal: false, vertical: true)
+            Text("A prompt for the day, not a promise.")
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.outline)
         }
         .accessibilityElement(children: .combine)
+    }
+
+    private func forToday(_ reading: DailyReading) -> some View {
+        let rows: [(String, String)] = [
+            ("Worth doing", reading.focus),
+            ("Go carefully", reading.caution),
+            ("A question", reading.reflection)
+        ].filter { !$0.1.isEmpty }
+        return Group {
+            if !rows.isEmpty {
+                VStack(alignment: .leading, spacing: Spacing.sm) {
+                    Text("For today")
+                        .font(AppFont.headlineSmall)
+                        .foregroundStyle(AppColor.onSurface)
+                    ForEach(rows, id: \.0) { row in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(row.0)
+                                .font(AppFont.labelLarge)
+                                .foregroundStyle(AppColor.secondary)
+                            Text(row.1)
+                                .font(AppFont.bodyMedium)
+                                .foregroundStyle(AppColor.onSurface)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func areas(_ reading: DailyReading) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            ForEach(reading.areas) { area in
+                VStack(alignment: .leading, spacing: Spacing.xs) {
+                    Label(area.title, systemImage: area.icon)
+                        .font(AppFont.headlineSmall)
+                        .foregroundStyle(AppColor.onSurface)
+                    Text(area.text)
+                        .font(AppFont.bodyMedium)
+                        .foregroundStyle(AppColor.onSurfaceVariant)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let detail = area.detail {
+                        AstrologyDisclosure(text: detail)
+                    }
+                }
+            }
+        }
     }
 
     private func balances(_ reading: DailyReading) -> some View {
@@ -303,6 +372,7 @@ struct TodayView: View {
                     .foregroundStyle(AppColor.onSurfaceVariant)
             }
             .fixedSize(horizontal: false, vertical: true)
+            AstrologyDisclosure(text: reading.ephemerisText)
 
             BannerImage(name: "TodayContemplation", height: 200)
                 .overlay(alignment: .bottomLeading) {
@@ -355,10 +425,10 @@ struct TodayView: View {
     private func oracle(_ reading: DailyReading) -> some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             VStack(alignment: .leading, spacing: Spacing.xs) {
-                Text("Ask the Oracle")
+                Text("Ask in your own words")
                     .font(AppFont.headlineSmall)
                     .foregroundStyle(AppColor.onSurface)
-                Text("\(reading.moonSign.name) is the focus")
+                Text("A relationship, work, a mood, or a decision.")
                     .font(AppFont.bodySmall)
                     .foregroundStyle(AppColor.secondary)
             }
@@ -386,7 +456,7 @@ struct TodayView: View {
             }
             .buttonStyle(.plain)
             actionDivider
-            actionButton(title: "Transit Map", icon: "calendar", action: viewModel.openTransitMap)
+            actionButton(title: "This week", icon: "calendar", action: viewModel.openTransitMap)
         }
         .padding(.vertical, Spacing.sm)
     }

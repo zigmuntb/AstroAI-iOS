@@ -22,14 +22,14 @@ final class PaywallViewModel {
     }
 
     let features = [
-        Feature(icon: "brain.head.profile", title: "Unlimited Oracle",
-                text: "Ask as much as you want. Answers use your exact degrees and houses."),
-        Feature(icon: "square.on.square", title: "Full birth chart",
-                text: "House rulers, how strong each planet is, and the path from South Node to North Node."),
-        Feature(icon: "circle.circle", title: "Charts with other people",
-                text: "Compare partners, family, and friends, including a chart of the relationship itself."),
-        Feature(icon: "clock.arrow.circlepath", title: "Sky forecasts",
-                text: "Upcoming Saturn returns, solar eclipses, and node changes, timed to your chart.")
+        Feature(icon: "brain.head.profile", title: "Unlimited questions",
+                text: "Ask Oracle as often as you want, in your own words, about relationships, work, and decisions."),
+        Feature(icon: "square.on.square", title: "The full birth chart",
+                text: "Go further into what your chart suggests about you, including the details behind each insight."),
+        Feature(icon: "circle.circle", title: "People close to you",
+                text: "See how you get along with more than one partner, family member, or friend."),
+        Feature(icon: "clock.arrow.circlepath", title: "Longer forecasts",
+                text: "Look ahead at dates that may matter, including eclipses and longer cycles in your chart.")
     ]
 
     private(set) var plans: [SubscriptionPlan] = []

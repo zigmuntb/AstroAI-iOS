@@ -13,7 +13,7 @@ enum AppTab: Hashable, CaseIterable {
         case .today: "Today"
         case .explore: "Explore"
         case .oracle: "Oracle"
-        case .synastry: "Synastry"
+        case .synastry: "People"
         case .profile: "Profile"
         }
     }

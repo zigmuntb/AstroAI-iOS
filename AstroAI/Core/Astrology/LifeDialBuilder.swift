@@ -22,19 +22,19 @@ enum LifeDialBuilder {
 
     private static func bonds(profile: UserProfile?, chart: NatalChart?, sky: SkySnapshot, moon: Ephemeris.Position?) -> LifeDial {
         var axis = Axis()
-        if let house = sky.houses[.moon] {
+        if EverydayVoice.housesAreReliable(chart), let house = sky.houses[.moon] {
             if [5, 7, 8].contains(house) {
-                axis.addSky(-14, because: "The Moon is in your \(AstrologyLexicon.ordinal(house)) house, the part about closeness.")
+                axis.addSky(-14, because: "Closeness may matter more than tasks today.")
             } else if [6, 10].contains(house) {
-                axis.addSky(14, because: "The Moon is in your \(AstrologyLexicon.ordinal(house)) house, the part about work and responsibility.")
+                axis.addSky(14, because: "Work and responsibility may take more of the day.")
             }
         }
         if let moon {
             switch moon.sign {
             case .libra, .cancer, .taurus, .pisces:
-                axis.addSky(-8, because: "A \(moon.sign.name) Moon pulls the day toward people, not tasks.")
+                axis.addSky(-8, because: "The day pulls toward people, not tasks.")
             case .capricorn, .virgo, .aries:
-                axis.addSky(8, because: "A \(moon.sign.name) Moon favors work you can finish.")
+                axis.addSky(8, because: "The day favors work you can finish.")
             case .leo, .scorpio:
                 axis.addSky(-3)
             default:
@@ -44,14 +44,14 @@ enum LifeDialBuilder {
         }
         let venus = aspectPull(sky, transiting: [.venus, .moon], natal: [.venus, .moon, .sun])
         if venus > 0 {
-            axis.addSky(-venus, because: "Venus is touching your chart, so connection matters more than output today.")
+            axis.addSky(-venus, because: "Connection may matter more than output today.")
         }
         let duty = aspectPull(sky, transiting: [.saturn, .sun], natal: [.saturn, .sun, .mars])
         if duty > 0 {
-            axis.addSky(duty, because: "A serious transit asks you to do the work that is already yours.")
+            axis.addSky(duty, because: "The day asks you to do the work that is already yours.")
         }
-        axis.addSky(visiting([.saturn, .sun], houses: [6, 10], sky: sky, each: 4, cap: 6))
-        axis.addSky(-visiting([.venus], houses: [5, 7], sky: sky, each: 5, cap: 6))
+        axis.addSky(visiting([.saturn, .sun], houses: [6, 10], sky: sky, chart: chart, each: 4, cap: 6))
+        axis.addSky(-visiting([.venus], houses: [5, 7], sky: sky, chart: chart, each: 5, cap: 6))
         axis.addSky(Double(50 - sky.moonPhase.illumination) * 0.05)
 
         if let house = natalHouse(chart, .venus) {
@@ -119,19 +119,19 @@ enum LifeDialBuilder {
 
     private static func circle(profile: UserProfile?, chart: NatalChart?, sky: SkySnapshot, moon: Ephemeris.Position?) -> LifeDial {
         var axis = Axis()
-        if let house = sky.houses[.moon] {
+        if EverydayVoice.housesAreReliable(chart), let house = sky.houses[.moon] {
             if [11, 3].contains(house) {
-                axis.addSky(-14, because: "The Moon is in your \(AstrologyLexicon.ordinal(house)) house, the part about friends and messages.")
+                axis.addSky(-14, because: "Friends and messages may take more of the day.")
             } else if house == 4 {
-                axis.addSky(16, because: "The Moon is in the house of home and family.")
+                axis.addSky(16, because: "Home and family may have the clearer claim.")
             }
         }
         if let moon {
             switch moon.sign {
             case .aquarius, .gemini, .sagittarius:
-                axis.addSky(-7, because: "This Moon points toward the people you choose to spend time with.")
+                axis.addSky(-7, because: "The people you choose to spend time with may matter more.")
             case .cancer, .taurus, .capricorn:
-                axis.addSky(8, because: "This Moon turns toward home and the people who feel like family.")
+                axis.addSky(8, because: "Home and the people who feel like family may matter more.")
             default:
                 break
             }
@@ -139,14 +139,14 @@ enum LifeDialBuilder {
         }
         let friendsSky = aspectPull(sky, transiting: [.jupiter, .uranus, .venus], natal: [.mercury, .uranus, .jupiter])
         if friendsSky > 0 {
-            axis.addSky(-friendsSky, because: "Today's sky is stirring the part of you that belongs with friends.")
+            axis.addSky(-friendsSky, because: "The people you choose to spend time with may matter more today.")
         }
         let familySky = aspectPull(sky, transiting: [.moon, .saturn, .venus], natal: [.moon, .saturn])
         if familySky > 0 {
-            axis.addSky(familySky, because: "A transit is pressing on home and the need to belong.")
+            axis.addSky(familySky, because: "Home and the need to belong may ask for more attention.")
         }
-        axis.addSky(-visiting([.jupiter, .venus, .uranus], houses: [11, 3], sky: sky, each: 3, cap: 6))
-        axis.addSky(visiting([.moon, .saturn, .venus], houses: [4], sky: sky, each: 4, cap: 6))
+        axis.addSky(-visiting([.jupiter, .venus, .uranus], houses: [11, 3], sky: sky, chart: chart, each: 3, cap: 6))
+        axis.addSky(visiting([.moon, .saturn, .venus], houses: [4], sky: sky, chart: chart, each: 4, cap: 6))
 
         if let house = natalHouse(chart, .moon) {
             if house == 4 { axis.addPerson(6) }
@@ -159,7 +159,7 @@ enum LifeDialBuilder {
             axis.addPerson(10, because: "You said raising a family is the center, so the day can lean that way.")
         }
         if profile?.interests.contains(.friendship) == true {
-            axis.addPerson(-6, because: "You asked the chart to pay attention to friendship.")
+            axis.addPerson(-6, because: "You asked for help with friendship, so that can shape the day.")
         }
         if focus(profile, contains: ["friend", "друз", "подруг"]) {
             axis.addPerson(-8, because: "This follows what you said is on your mind right now.")
@@ -196,41 +196,41 @@ enum LifeDialBuilder {
 
     private static func tempo(profile: UserProfile?, chart: NatalChart?, sky: SkySnapshot, moon: Ephemeris.Position?) -> LifeDial {
         var axis = Axis()
-        if let house = sky.houses[.moon] {
+        if EverydayVoice.housesAreReliable(chart), let house = sky.houses[.moon] {
             if [9, 5, 1].contains(house) {
-                axis.addSky(-12, because: "The Moon is in a house of beginnings, so one new step fits today.")
+                axis.addSky(-12, because: "One new step fits today better than a full overhaul.")
             } else if [6, 2].contains(house) {
-                axis.addSky(12, because: "The Moon is in a house of routine, where sticking with what you know works better.")
+                axis.addSky(12, because: "Sticking with what you already know works better today.")
             }
         }
         if let moon {
             switch moon.sign.modality {
             case "Mutable":
-                axis.addSky(-7, because: "A changeable Moon leaves room for one small experiment.")
+                axis.addSky(-7, because: "There is room for one small experiment.")
             case "Fixed":
-                axis.addSky(8, because: "A steady Moon favors the habits that already work.")
+                axis.addSky(8, because: "The habits that already work are the better bet.")
             default:
                 axis.addSky(-2)
             }
             axis.addSky((15 - moon.degreeInSign) * 0.2)
         }
         if sky.moonPhase.name == "New Moon" || sky.moonPhase.illumination < 12 {
-            axis.addSky(-8, because: "A new Moon is a clean start. Use it for one new beginning, not a full overhaul.")
+            axis.addSky(-8, because: "This is a clean start. Use it for one new beginning, not a full overhaul.")
         } else if sky.moonPhase.name.contains("Waning") {
-            axis.addSky(4, because: "The Moon is waning. This is a better time to take care of what you already have.")
+            axis.addSky(4, because: "This is a better time to take care of what you already have.")
         }
         let fresh = aspectPull(sky, transiting: [.uranus, .jupiter], natal: [.sun, .mars, .uranus, .mercury])
         if fresh > 0 {
-            axis.addSky(-fresh, because: "Uranus or Jupiter is pushing the part of your chart that wants a change.")
+            axis.addSky(-fresh, because: "There is room for one change, not a full restart.")
         }
         let steady = aspectPull(sky, transiting: [.saturn], natal: [.sun, .moon, .saturn])
         if steady > 0 {
-            axis.addSky(steady, because: "Saturn is backing the habits you already keep.")
+            axis.addSky(steady, because: "The habits you already keep are the better bet today.")
         }
-        axis.addSky(-visiting([.uranus, .jupiter], houses: [1, 5, 9, 11], sky: sky, each: 3, cap: 6))
-        axis.addSky(visiting([.saturn], houses: [2, 6, 10], sky: sky, each: 4, cap: 6))
+        axis.addSky(-visiting([.uranus, .jupiter], houses: [1, 5, 9, 11], sky: sky, chart: chart, each: 3, cap: 6))
+        axis.addSky(visiting([.saturn], houses: [2, 6, 10], sky: sky, chart: chart, each: 4, cap: 6))
         if sky.retrogrades.contains(.mercury) || sky.retrogrades.contains(.venus) {
-            axis.addSky(5, because: "A retrograde asks you to review what you already have before you add anything new.")
+            axis.addSky(5, because: "Review what you already have before you add anything new.")
         }
 
         if let house = natalHouse(chart, .uranus), [1, 5, 9, 11].contains(house) { axis.addPerson(-5) }
@@ -288,19 +288,19 @@ enum LifeDialBuilder {
 
     private static func energy(profile: UserProfile?, chart: NatalChart?, sky: SkySnapshot, moon: Ephemeris.Position?) -> LifeDial {
         var axis = Axis()
-        if let house = sky.houses[.moon] {
+        if EverydayVoice.housesAreReliable(chart), let house = sky.houses[.moon] {
             if [12, 4].contains(house) {
-                axis.addSky(-12, because: "The Moon is in a quiet house. Rest is part of the work.")
+                axis.addSky(-12, because: "Rest is part of the work today.")
             } else if [1, 6, 10].contains(house) {
-                axis.addSky(12, because: "The Moon is in a house of doing. The energy needs somewhere to go.")
+                axis.addSky(12, because: "The energy needs somewhere to go. Give it one clear task.")
             }
         }
         if let moon {
             switch moon.sign.element {
             case "Water":
-                axis.addSky(-7, because: "A water Moon means your body should set the pace.")
+                axis.addSky(-7, because: "Let your energy set the pace.")
             case "Fire":
-                axis.addSky(8, because: "A fire Moon wants movement more than planning.")
+                axis.addSky(8, because: "Movement will feel better than more planning.")
             case "Earth":
                 axis.addSky(3)
             default:
@@ -309,22 +309,22 @@ enum LifeDialBuilder {
             axis.addSky((moon.degreeInSign - 15) * 0.18)
         }
         if sky.moonPhase.name.contains("Waning") || sky.moonPhase.name == "Last Quarter" {
-            axis.addSky(-5, because: "The Moon is waning. This is a better time to recover than to start something big.")
+            axis.addSky(-5, because: "This is a better time to recover than to start something big.")
         } else if sky.moonPhase.name.contains("Waxing") || sky.moonPhase.name == "First Quarter" {
-            axis.addSky(5, because: "The Moon is waxing. Effort you start now has room to grow.")
+            axis.addSky(5, because: "Effort you start now has room to grow.")
         }
         let drive = aspectPull(sky, transiting: [.mars, .sun], natal: [.mars, .sun, .ascendant])
         if drive > 0 {
-            axis.addSky(drive, because: "Mars is active in your chart. Use it on one clear task.")
+            axis.addSky(drive, because: "Use the extra energy on one clear task.")
         }
         let fade = aspectPull(sky, transiting: [.neptune, .moon], natal: [.moon, .neptune])
         if fade > 0 {
-            axis.addSky(-fade, because: "Neptune blurs the edges. Rest will be more honest than pushing.")
+            axis.addSky(-fade, because: "The edges may feel fuzzy. Rest will be more honest than pushing.")
         }
-        axis.addSky(visiting([.mars, .sun], houses: [1, 10], sky: sky, each: 4, cap: 6))
-        axis.addSky(-visiting([.neptune], houses: [12, 4], sky: sky, each: 4, cap: 6))
+        axis.addSky(visiting([.mars, .sun], houses: [1, 10], sky: sky, chart: chart, each: 4, cap: 6))
+        axis.addSky(-visiting([.neptune], houses: [12, 4], sky: sky, chart: chart, each: 4, cap: 6))
         if sky.retrogrades.contains(.mars) {
-            axis.addSky(-6, because: "Mars is retrograde, so push less and aim better.")
+            axis.addSky(-6, because: "Push less and aim better.")
         }
 
         if let house = natalHouse(chart, .mars), [1, 8, 10].contains(house) { axis.addPerson(5) }
@@ -408,7 +408,8 @@ enum LifeDialBuilder {
     }
 
     /// Transiting planets currently walking a set of natal houses. The Moon is scored on its own.
-    private static func visiting(_ planets: Set<Planet>, houses: Set<Int>, sky: SkySnapshot, each: Double, cap: Double) -> Double {
+    private static func visiting(_ planets: Set<Planet>, houses: Set<Int>, sky: SkySnapshot, chart: NatalChart?, each: Double, cap: Double) -> Double {
+        guard EverydayVoice.housesAreReliable(chart) else { return 0 }
         let hits = planets.filter { planet in
             planet != .moon && sky.houses[planet].map(houses.contains) == true
         }.count
@@ -416,7 +417,8 @@ enum LifeDialBuilder {
     }
 
     private static func natalHouse(_ chart: NatalChart?, _ planet: Planet) -> Int? {
-        chart?.placement(planet)?.houseNumber
+        guard EverydayVoice.housesAreReliable(chart) else { return nil }
+        return chart?.placement(planet)?.houseNumber
     }
 
     private static func share(_ chart: NatalChart?, _ name: String) -> Int {

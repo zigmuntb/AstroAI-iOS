@@ -22,7 +22,7 @@ struct BirthplaceView: View {
                 ScreenTitle(
                     eyebrow: "Birthplace",
                     title: "Where were you born?",
-                    subtitle: "The city sets the houses of your chart."
+                    subtitle: "Your birth city makes the reading more specific. Skip this if you don't know it."
                 )
 
                 searchField

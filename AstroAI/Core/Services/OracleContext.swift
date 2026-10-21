@@ -115,16 +115,35 @@ struct OracleContext {
     }
 
     private func chartDescription(_ chart: NatalChart) -> String {
-        var lines = ["Natal chart (\(chart.houseSystem)): " + chart.placements.map(Self.describe).joined(separator: "; ") + "."]
+        let placements = chart.isTimeKnown
+            ? chart.placements
+            : chart.placements.filter { $0.planet != .moon && $0.planet != .ascendant }
+        var lines = ["Natal chart (\(chart.houseSystem)): " + placements.map(Self.describe).joined(separator: "; ") + "."]
+        if !chart.isTimeKnown {
+            lines.append("Birth time is missing or approximate. The natal Moon sign and rising sign are omitted. Do not invent them. Today's Moon in the sky is still usable.")
+        }
         if let element = chart.elements.max(by: { $0.percent < $1.percent }),
            let modality = chart.modalities.max(by: { $0.percent < $1.percent }) {
             lines.append("Dominant element: \(element.name). Dominant modality: \(modality.name).")
         }
-        let aspects = chart.aspects.sorted { $0.orb < $1.orb }.prefix(5).map { "\($0.first.name) \($0.kind.name.lowercased()) \($0.second.name)" }
+        let aspects = chart.aspects
+            .filter { chart.isTimeKnown || ($0.first != .moon && $0.second != .moon && $0.first != .ascendant && $0.second != .ascendant) }
+            .sorted { $0.orb < $1.orb }
+            .prefix(5)
+            .map { "\($0.first.name) \($0.kind.name.lowercased()) \($0.second.name)" }
         if !aspects.isEmpty {
             lines.append("Tightest natal aspects: " + aspects.joined(separator: ", ") + ".")
         }
-        lines.append(cuspsDescription(chart))
+        if !chart.hasLocation {
+            lines.append("Birthplace is missing. Do not mention houses or a rising sign.")
+        } else if !chart.isTimeKnown {
+            lines.append("Birth time is missing or approximate. Do not state houses, the rising sign, or a natal Moon sign.")
+        }
+        if chart.hasLocation, chart.isTimeKnown {
+            lines.append(cuspsDescription(chart))
+        } else {
+            lines.append("House cusps: unavailable. Do not mention houses.")
+        }
         return lines.joined(separator: "\n")
     }
 
@@ -142,7 +161,11 @@ struct OracleContext {
     }
 
     private var transitsDescription: String? {
-        let transits = sky.transits.prefix(Self.maxTransits)
+        let transits = sky.transits.filter { transit in
+            guard let chart else { return false }
+            if chart.isTimeKnown { return true }
+            return transit.natal != .moon && transit.natal != .ascendant
+        }.prefix(Self.maxTransits)
         guard chart != nil, !transits.isEmpty else { return nil }
         let items = transits.map {
             "transiting \($0.title) (orb \(NatalChartCalculator.formatDegrees($0.orb)), \($0.isApplying ? "applying" : "separating"))"

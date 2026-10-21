@@ -72,7 +72,7 @@ struct OracleView: View {
                 } label: {
                     Image(systemName: "arrow.clockwise")
                 }
-                .accessibilityLabel("New reading")
+                .accessibilityLabel("New conversation")
             }
             ToolbarItem(placement: .topBarTrailing) {
                 ProfileToolbarButton(action: viewModel.openProfile)
@@ -97,15 +97,11 @@ struct OracleView: View {
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onSurfaceVariant)
                 .fixedSize(horizontal: false, vertical: true)
-            if !viewModel.transitBadge.isEmpty {
-                Text(viewModel.transitBadge)
-                    .font(AppFont.labelLarge)
-                    .foregroundStyle(AppColor.secondary)
-            }
-            Text("Generated from your chart. Not a forecast.")
+            Text("Answers use your chart when it helps. They are not forecasts, and they cannot tell you what someone else feels.")
                 .font(AppFont.bodySmall)
                 .foregroundStyle(AppColor.secondary)
-                .padding(.top, Spacing.xs)
+                .fixedSize(horizontal: false, vertical: true)
+            AstrologyDisclosure(text: viewModel.astrologyDetail)
         }
     }
 
@@ -176,13 +172,7 @@ struct OracleView: View {
 
             VStack(alignment: .leading, spacing: Spacing.md) {
                 if let note = message.transitNote {
-                    Label(note, systemImage: "circle.dashed")
-                        .font(AppFont.labelMedium)
-                        .tracking(0.4)
-                        .foregroundStyle(AppColor.secondary)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(AppColor.secondaryContainer.opacity(0.45), in: .capsule)
+                    AstrologyDisclosure(text: note)
                 }
                 if let title = message.title {
                     Text(title)
@@ -237,7 +227,7 @@ struct OracleView: View {
             oracleHeader
             HStack(spacing: Spacing.sm) {
                 ProgressView().tint(AppColor.primaryContainer)
-                Text("Reading your chart…")
+                Text("Thinking this through…")
                     .font(AppFont.quote)
                     .foregroundStyle(AppColor.onSurfaceVariant)
             }
@@ -288,7 +278,7 @@ struct OracleView: View {
 
     private var suggestionsList: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            Text("Try asking")
+            Text("You could ask")
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
             VStack(spacing: Spacing.sm) {
@@ -313,7 +303,7 @@ struct OracleView: View {
                     .foregroundStyle(AppColor.onSurfaceVariant)
             }
             Spacer(minLength: Spacing.sm)
-            Button("Unlimited Dialogue", action: viewModel.openPaywall)
+            Button("Unlimited questions", action: viewModel.openPaywall)
                 .font(AppFont.labelMedium.weight(.semibold))
                 .underline()
                 .foregroundStyle(AppColor.primary)
@@ -330,7 +320,7 @@ struct OracleView: View {
                 Image(systemName: "square.on.square")
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .padding(.leading, Spacing.xs)
-                TextField("Ask about your chart, current transits, or patterns...", text: $viewModel.draft)
+                TextField("Ask about your day, a relationship, or a decision", text: $viewModel.draft)
                     .font(AppFont.bodyMedium)
                     .focused($isInputFocused)
                     .submitLabel(.send)

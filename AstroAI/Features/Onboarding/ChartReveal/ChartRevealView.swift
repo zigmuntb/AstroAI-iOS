@@ -53,7 +53,7 @@ struct ChartRevealView: View {
             .padding(.vertical, 6)
             .background(AppColor.surfaceContainerHigh, in: .capsule)
 
-            Text("A first look at your chart.")
+            Text("A first look at you.")
                 .font(AppFont.displayMobile)
                 .foregroundStyle(AppColor.onSurface)
                 .multilineTextAlignment(.center)
@@ -75,7 +75,7 @@ struct ChartRevealView: View {
             ) { viewModel.select($0) }
             HStack(spacing: 6) {
                 Circle().fill(AppColor.secondary).frame(width: 5, height: 5)
-                Text("TAP A PLANET TO READ IT")
+                Text("TAP A SYMBOL TO READ IT")
                     .tracking(0.8)
             }
             .font(AppFont.labelMedium)
@@ -131,7 +131,7 @@ struct ChartRevealView: View {
 
     private var actions: some View {
         VStack(spacing: Spacing.md) {
-            PrimaryButton(title: "Explore my chart", action: viewModel.explore)
+            PrimaryButton(title: "See my day", action: viewModel.explore)
             Button(action: viewModel.toggleExplanation) {
                 HStack(spacing: Spacing.xs) {
                     Text("See how it works")
@@ -142,7 +142,7 @@ struct ChartRevealView: View {
             .buttonStyle(.astroGhost)
 
             if viewModel.showsExplanation {
-                Text("Your chart uses the planet positions at the time and place you were born. Sun, Moon, and rising sign are your Big Three. The reading says how they work together.")
+                Text("This reading uses the positions of the planets at your birth. The Sun describes how you go after things. The Moon describes what helps you feel safe. A rising sign, when your birth time and place are exact, describes a first impression. It is a pattern, not a prediction.")
                     .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .multilineTextAlignment(.center)

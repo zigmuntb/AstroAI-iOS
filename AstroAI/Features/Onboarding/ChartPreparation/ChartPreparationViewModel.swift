@@ -96,14 +96,14 @@ final class ChartPreparationViewModel {
 
     private func resetSteps() {
         let place = draft.birthPlace
-        let placeDetail = place.map { "\($0.title) · \($0.coordinates)" } ?? "No birthplace, so houses start from the Sun"
+        let placeDetail = place.map { "\($0.title)" } ?? "No birthplace. House areas stay out of the daily reading."
         let timeDetail = draft.birthTime.map { "Using \($0.formatted(date: .omitted, time: .shortened))" }
-            ?? "No birth time, so using noon"
+            ?? "No birth time. The rising sign and house areas stay out."
 
         steps = [
-            Step(id: 0, title: "Finding the birthplace", detail: placeDetail),
-            Step(id: 1, title: "Calculating the houses", detail: timeDetail),
-            Step(id: 2, title: "Writing your reading", detail: "Putting the planets into plain language...")
+            Step(id: 0, title: "Checking your birthplace", detail: placeDetail),
+            Step(id: 1, title: "Seeing what the time allows", detail: timeDetail),
+            Step(id: 2, title: "Writing your reading", detail: "Turning the calculation into everyday language...")
         ]
 
         let sun = astrology.sunSign(for: draft.birthDate)

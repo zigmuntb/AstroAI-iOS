@@ -33,13 +33,16 @@ enum NatalChartCalculator {
 
         let aspects = findAspects(points.map { ($0.planet, $0.longitude) })
         let sunLongitude = positions.first { $0.planet == .sun }?.longitude ?? 0
+        let housesAreReliable = birth.place != nil && birth.isTimeKnown
         let placements = points.map { point in
             placement(
                 planet: point.planet,
                 longitude: point.longitude,
                 isRetrograde: point.isRetrograde,
                 house: point.planet == .ascendant ? 1 : NatalChart.house(for: point.longitude, cusps: cusps, sunLongitude: sunLongitude),
-                aspects: aspects
+                aspects: aspects,
+                housesAreReliable: housesAreReliable,
+                timeIsKnown: birth.isTimeKnown
             )
         }
 
@@ -48,7 +51,7 @@ enum NatalChartCalculator {
 
         return NatalChart(
             placements: placements,
-            synthesis: synthesis(placements: placements, elements: elements, aspects: aspects),
+            synthesis: synthesis(placements: placements, elements: elements, aspects: aspects, timeIsKnown: birth.isTimeKnown, hasLocation: birth.place != nil),
             tension: tension(aspects: aspects, elements: elements),
             elements: elements,
             modalities: modalities,
@@ -121,22 +124,30 @@ enum NatalChartCalculator {
 
     // MARK: - Placements
 
-    private static func placement(planet: Planet, longitude: Double, isRetrograde: Bool, house: Int, aspects: [ChartAspect]) -> PlanetPlacement {
+    private static func placement(planet: Planet, longitude: Double, isRetrograde: Bool, house: Int, aspects: [ChartAspect], housesAreReliable: Bool, timeIsKnown: Bool) -> PlanetPlacement {
         let sign = ZodiacSign.containing(longitude)
         let houseLabel: String = switch planet {
-        case .ascendant: "Ascendant"
-        case .northNode: "Houses \(AstrologyLexicon.roman(house)) • \(AstrologyLexicon.roman((house + 5) % 12 + 1))"
-        default: "House \(AstrologyLexicon.roman(house))"
+        case .ascendant: "Rising sign"
+        case .northNode where housesAreReliable: "Houses \(AstrologyLexicon.roman(house)) • \(AstrologyLexicon.roman((house + 5) % 12 + 1))"
+        case .northNode: "Direction of growth"
+        case _ where housesAreReliable: "House \(AstrologyLexicon.roman(house))"
+        default: "Sign"
         }
 
         let summary: String
         switch planet {
         case .ascendant:
-            summary = "People first see you as \(sign.qualities). Your chart ruler is \(sign.ruler.name)."
+            summary = "People may first notice you as \(sign.qualities)."
+        case .moon where !timeIsKnown:
+            summary = "The Moon describes feelings, and its sign changes during the day. Without an exact birth time, that sign is left out. Today's mood still uses the Moon in the sky, which does not need a birth time."
+        case .northNode where housesAreReliable:
+            summary = "A direction of growth is toward the \(sign.qualities) side of \(sign.name), especially around \(AstrologyLexicon.houseTheme(house)). This is a theme, not a deadline."
         case .northNode:
-            summary = "You grow by leaving the comfort of \(sign.opposite.name) and practicing the \(sign.qualities) side of \(sign.name). This shows up most around \(AstrologyLexicon.houseTheme(house))."
+            summary = "A direction of growth is toward the \(sign.qualities) side of \(sign.name). House areas need an exact birth time and place, so those are left out."
+        case _ where housesAreReliable:
+            summary = "Your \(planet.meaning) tends to come out as \(sign.qualities). In the part of life about \(AstrologyLexicon.houseTheme(house)), that style shows up more often."
         default:
-            summary = "Your \(planet.meaning) comes out as \(sign.qualities). In the \(AstrologyLexicon.ordinal(house)) house, this is about \(AstrologyLexicon.houseTheme(house))."
+            summary = "Your \(planet.meaning) tends to come out as \(sign.qualities). An exact birth time and place are needed before this can name a house."
         }
 
         var details: [String] = []
@@ -156,7 +167,7 @@ enum NatalChartCalculator {
             sign: sign,
             degree: formatDegrees(longitude.truncatingRemainder(dividingBy: 30)) + (isRetrograde && planet != .northNode ? " ℞" : ""),
             house: houseLabel,
-            title: "\(sign.archetype) \(planet.titleSuffix)",
+            title: planet == .moon && !timeIsKnown ? "Feelings · birth time needed" : "\(sign.archetype) \(planet.titleSuffix)",
             summary: summary,
             detail: details.joined(separator: " "),
             aspectNote: aspectNote,
@@ -195,20 +206,34 @@ enum NatalChartCalculator {
 
     // MARK: - Synthesis
 
-    private static func synthesis(placements: [PlanetPlacement], elements: [ChartShare], aspects: [ChartAspect]) -> String {
+    private static func synthesis(placements: [PlanetPlacement], elements: [ChartShare], aspects: [ChartAspect], timeIsKnown: Bool, hasLocation: Bool) -> String {
         let find = { (planet: Planet) in placements.first { $0.planet == planet } }
         guard let sun = find(.sun), let moon = find(.moon) else { return "" }
 
-        var text = "Sun in \(sun.sign.name), Moon in \(moon.sign.name)"
-        if let rising = find(.ascendant) {
-            text += ", \(rising.sign.name) rising"
+        var text = "You tend to go after things in a \(sun.sign.qualities) way."
+        if timeIsKnown {
+            text += " Your feelings tend to be \(moon.sign.qualities)."
+        } else {
+            text += " Feelings need an exact birth time before a Moon sign can be named."
         }
-        text += ". Your core is \(sun.sign.qualities). Your feelings are \(moon.sign.qualities)."
+        if hasLocation, timeIsKnown, let rising = find(.ascendant) {
+            text += " People may first notice the \(rising.sign.qualities) side of you."
+        }
         if let element = elements.first {
-            text += " \(element.name) is the strongest element (\(element.percent)%), so the chart leans toward \(element.keyword.lowercased())."
+            text += " The strongest style here is \(element.keyword.lowercased()) (\(element.percent)% \(element.name.lowercased()))."
+        }
+        text += timeIsKnown
+            ? " In astrology that is a \(sun.sign.name) Sun and a \(moon.sign.name) Moon."
+            : " In astrology that is a \(sun.sign.name) Sun. The Moon sign is left out until the birth time is known."
+        if hasLocation, timeIsKnown, let rising = find(.ascendant) {
+            text += " The rising sign is \(rising.sign.name)."
+        } else if !hasLocation {
+            text += " Without a birthplace, there is no rising sign."
+        } else {
+            text += " The birth time is not exact enough for a rising sign."
         }
         if let key = aspects.first(where: { $0.first.isLuminaryOrAngle || $0.second.isLuminaryOrAngle }) {
-            text += " The closest important link is \(key.first.name) \(key.kind.name.lowercased()) \(key.second.name). "
+            text += " The closest link is between your \(key.first.meaning) and your \(key.second.meaning). "
             text += AstrologyLexicon.aspectSentence(key.kind, key.first, key.second)
         }
         return text

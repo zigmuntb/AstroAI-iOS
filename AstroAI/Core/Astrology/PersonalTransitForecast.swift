@@ -105,9 +105,16 @@ enum PersonalTransitForecast {
             when: peak.when,
             whenLabel: stamp(peak.when),
             title: peak.title,
-            houseLine: "Exact. Your \(AstrologyLexicon.ordinal(house)) house: \(AstrologyLexicon.houseTheme(house)).",
+            houseLine: houseLine(house: house, chart: chart),
             advice: advice(peak.kind)
         )
+    }
+
+    private static func houseLine(house: Int, chart: NatalChart) -> String {
+        guard chart.hasLocation, chart.isTimeKnown else {
+            return "This uses your birth chart. House areas need an exact birth time and place, so they are left out."
+        }
+        return "This touches the part of life about \(AstrologyLexicon.houseTheme(house)). Astrologers call that the \(AstrologyLexicon.ordinal(house)) house."
     }
 
     private static func advice(_ kind: AspectKind) -> String {

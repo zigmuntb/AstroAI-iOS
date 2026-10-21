@@ -23,7 +23,7 @@ struct AnimatedDateOfBirthView: View {
                 ScreenTitle(
                     eyebrow: "Celestial Anchor",
                     title: "When did your story begin?",
-                    subtitle: "Your birth date helps us build the foundation of your personal chart."
+                    subtitle: "Your birth date is enough for a personal daily reading. Time and place can come later."
                 )
 
                 zodiac
@@ -95,13 +95,13 @@ struct AnimatedDateOfBirthView: View {
                     .font(AppFont.headlineMedium)
                     .foregroundStyle(AppColor.onSurface)
                     .contentTransition(.opacity)
-                Text("\(viewModel.sunSign.solarHouseName) · \(viewModel.sunSign.solarHouseTheme)")
+                Text(viewModel.sunSign.qualities)
                     .font(AppFont.bodySmall)
                     .foregroundStyle(AppColor.onSurfaceVariant)
-                    .lineLimit(1)
+                    .lineLimit(2)
                     .minimumScaleFactor(0.75)
                     .contentTransition(.opacity)
-                Text("\(viewModel.moonPhase.name) · \(viewModel.illuminationText)")
+                Text("Moon \(viewModel.illuminationText)")
                     .font(AppFont.labelMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .lineLimit(1)

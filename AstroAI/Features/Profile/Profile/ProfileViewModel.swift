@@ -49,8 +49,8 @@ final class ProfileViewModel {
 
     var preferenceRows: [PreferenceRow] {
         [
-            PreferenceRow(icon: "bell.badge", title: "Notifications", subtitle: "Morning reading, exact aspects, moon phases", trailing: .icon("chevron.right")),
-            PreferenceRow(icon: "safari", title: "House System", subtitle: "Used for your natal chart", trailing: .picker(houseSystem)),
+            PreferenceRow(icon: "bell.badge", title: "Notifications", subtitle: "Morning reminder, close moments, shifts in mood", trailing: .icon("chevron.right")),
+            PreferenceRow(icon: "safari", title: "Chart settings", subtitle: "How the birth chart is calculated", trailing: .picker(houseSystem)),
             PreferenceRow(icon: "lock", title: "Privacy", subtitle: "Chart and journal stay on this device", trailing: .icon("chevron.right"))
         ]
     }
