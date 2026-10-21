@@ -43,7 +43,7 @@ final class SettingsViewModel {
 
     var isPremium: Bool { userService.profile?.isPremium ?? false }
 
-    var membershipTitle: String { isPremium ? "AstroAI Sanctuary Edition" : "AstroAI Seeker Edition" }
+    var membershipTitle: String { isPremium ? "StellarSage Sanctuary Edition" : "StellarSage Seeker Edition" }
     var membershipBadge: String { isPremium ? (subscriptions.renewalDescription ?? "Sanctuary") : "Free Tier" }
     var membershipText: String {
         isPremium

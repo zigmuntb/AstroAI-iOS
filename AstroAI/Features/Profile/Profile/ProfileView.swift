@@ -181,7 +181,7 @@ struct ProfileView: View {
                 Image(systemName: "sparkles")
                     .foregroundStyle(AppColor.onPrimary)
             }
-            Text("Unlock AstroAI Sanctuary")
+            Text("Unlock StellarSage Sanctuary")
                 .font(AppFont.headlineMedium)
                 .foregroundStyle(AppColor.onPrimary)
             Text("Unlimited questions, a fuller reading of your chart, and more than one person.")

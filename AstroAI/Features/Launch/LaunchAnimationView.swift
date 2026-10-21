@@ -30,7 +30,7 @@ struct LaunchAnimationView: View {
             .onAppear(perform: start)
             .task { await holdThenExit() }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("AstroAI")
+            .accessibilityLabel("StellarSage")
             .accessibilityAddTraits(.isModal)
     }
 
@@ -240,7 +240,7 @@ private struct LaunchPlate: View {
 
     private var wordmark: some View {
         let appear = launchProgress(LaunchTiming.word, at: time)
-        return Text("ASTROAI")
+        return Text("STELLARSAGE")
             .font(.title3.weight(.semibold))
             .tracking(CGFloat(lerp(8, 2.5, appear)))
             .foregroundStyle(AppColor.onSurface)

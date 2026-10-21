@@ -64,12 +64,12 @@ struct LegalDocumentView: View {
     }
 
     private static let privacy = """
-        AstroAI stores what you enter so it can calculate a birth chart on this iPhone. This policy describes that data. AstroAI does not run an account server, and it does not sell personal information.
+        StellarSage stores what you enter so it can calculate a birth chart on this iPhone. This policy describes that data. StellarSage does not run an account server, and it does not sell personal information.
 
         Stored on this iPhone
         The app saves your name, birth date and time, birth city, coordinates, time zone, natal chart, journal, saved people and their birth data, preferences, and profile photo. The profile photo is a file in the app's documents. The rest is stored as ordinary app data on the device. The app does not encrypt this store.
 
-        None of that chart, journal, or profile data is uploaded to an AstroAI server. There is no AstroAI account to sign in to.
+        None of that chart, journal, or profile data is uploaded to a StellarSage server. There is no StellarSage account to sign in to.
 
         Oracle
         The Oracle runs on this iPhone. It is given your name, chart, and the people you saved, including their names, so it can answer about them. It does not remove your name or your birth data. The question is not sent to a server.
@@ -80,20 +80,20 @@ struct LegalDocumentView: View {
         Searching for a birth city sends the city name you type to Apple Maps, so the chart can use coordinates and a time zone. The rest of your chart is not part of that search.
 
         Purchases
-        Sanctuary is an auto-renewable subscription sold by Apple. Apple processes the payment. AstroAI does not receive your payment card number. Apple may provide the app with the fact that the subscription is active and when it renews.
+        Sanctuary is an auto-renewable subscription sold by Apple. Apple processes the payment. StellarSage does not receive your payment card number. Apple may provide the app with the fact that the subscription is active and when it renews.
 
         Deletion
-        Settings includes Erase Chart and Journal. That deletes the chart, journal, saved people, photo, and calculations from this iPhone and returns you to the start of the app. Deleting AstroAI also removes this local data. Canceling the subscription is separate: Settings, Apple ID, Subscriptions.
+        Settings includes Erase Chart and Journal. That deletes the chart, journal, saved people, photo, and calculations from this iPhone and returns you to the start of the app. Deleting StellarSage also removes this local data. Canceling the subscription is separate: Settings, Apple ID, Subscriptions.
 
         Children
-        AstroAI is not directed at children under 13.
+        StellarSage is not directed at children under 13.
 
         Contact
-        Questions about this policy can be sent through the support link on the AstroAI page in the App Store.
+        Questions about this policy can be sent through the support link on the StellarSage page in the App Store.
         """
 
     private static let terms = """
-        AstroAI is a birth-chart and reflection app. These terms cover use of the app and the Sanctuary subscription. The Apple Standard EULA linked below also applies.
+        StellarSage is a birth-chart and reflection app. These terms cover use of the app and the Sanctuary subscription. The Apple Standard EULA linked below also applies.
 
         Sanctuary
         Sanctuary is an auto-renewable subscription. The purchase screen shows the plan name, length, price, and what is included before you confirm. Payment is charged to your Apple ID.

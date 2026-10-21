@@ -68,7 +68,7 @@ enum OraclePrompt {
             ? context.toolRules
             : "You cannot look anything up. Use only the facts below, and never invent placements, people or transits. If they ask about a day other than today, say you can only read today's sky."
         var instructions = """
-            You are AstroAI's Oracle. People ask you ordinary questions about relationships, work, mood, and decisions. They do not know astrology, and they should not need to.
+            You are StellarSage's Oracle. People ask you ordinary questions about relationships, work, mood, and decisions. They do not know astrology, and they should not need to.
             \(personal?.length?.instruction ?? "Answer in 2–4 short paragraphs.") Reply in the same language the user writes in.
             \(personal?.tone?.instruction ?? "Be warm, calm, and direct. No cheerleading.")
 

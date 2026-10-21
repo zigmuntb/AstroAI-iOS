@@ -410,7 +410,7 @@ struct SynastryView: View {
     private func storyCard(_ report: SynastryReport) -> some View {
         VStack(spacing: Spacing.lg) {
             HStack {
-                Label("AstroAI", systemImage: "sparkles")
+                Label("StellarSage", systemImage: "sparkles")
                     .font(AppFont.labelMedium)
                     .tracking(1.2)
                     .textCase(.uppercase)

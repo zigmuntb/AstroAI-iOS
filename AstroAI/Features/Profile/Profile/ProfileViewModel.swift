@@ -56,10 +56,10 @@ final class ProfileViewModel {
     }
 
     let footerQuote = "\u{201C}The soul moves in circles, not straight lines.\u{201D}"
-    let versionLine = "AstroAI v2.4"
+    let versionLine = "StellarSage v2.4"
 
     var membershipTitle: String {
-        isPremium ? "AstroAI Sanctuary • Sanctuary Member" : "AstroAI Seeker • Free Member"
+        isPremium ? "StellarSage Sanctuary • Sanctuary Member" : "StellarSage Seeker • Free Member"
     }
 
     /// Read live from the observable user service, so the photo updates right after editing.

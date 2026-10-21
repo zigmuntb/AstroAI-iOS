@@ -38,7 +38,7 @@ struct WelcomeView: View {
     private var header: some View {
         HStack {
             CelestialMark().frame(width: 30, height: 30)
-            Text("ASTROAI")
+            Text("STELLARSAGE")
                 .font(AppFont.labelLarge)
                 .tracking(2)
             Spacer()

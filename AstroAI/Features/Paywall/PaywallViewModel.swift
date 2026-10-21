@@ -112,7 +112,7 @@ final class PaywallViewModel {
             if restored {
                 router?.dismissSheet()
             } else {
-                alert = AlertContent(title: "Nothing to Restore", message: "No previous AstroAI subscription was found for this Apple ID.")
+                alert = AlertContent(title: "Nothing to Restore", message: "No previous StellarSage subscription was found for this Apple ID.")
             }
         } catch {
             isPurchasing = false

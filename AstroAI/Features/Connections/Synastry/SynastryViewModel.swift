@@ -101,7 +101,7 @@ final class SynastryViewModel {
 
     var shareText: String {
         let quote = report?.quote ?? ""
-        return "\(title) — relationship chart\n“\(quote)”\nFrom AstroAI."
+        return "\(title) — relationship chart\n“\(quote)”\nFrom StellarSage."
     }
 
     func load() async {

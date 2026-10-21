@@ -268,7 +268,7 @@ struct SettingsView: View {
                 icon: "iphone",
                 title: "On this iPhone",
                 badge: "Local",
-                text: "Your chart, birth place, journal, and saved people stay in the app on this device. They are not encrypted, and they are not sent to an AstroAI server."
+                text: "Your chart, birth place, journal, and saved people stay in the app on this device. They are not encrypted, and they are not sent to a StellarSage server."
             )
             SectionDivider()
             PrivacyRow(

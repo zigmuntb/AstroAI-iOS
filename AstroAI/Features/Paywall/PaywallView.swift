@@ -98,7 +98,7 @@ struct PaywallView: View {
         VStack(spacing: Spacing.sm) {
             HStack(spacing: 6) {
                 Circle().fill(gold).frame(width: 5, height: 5)
-                Text("AstroAI Sanctuary".uppercased())
+                Text("StellarSage Sanctuary".uppercased())
                     .font(AppFont.labelSmall)
                     .tracking(2.4)
                     .foregroundStyle(gold)

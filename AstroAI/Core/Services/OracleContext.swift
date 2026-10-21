@@ -82,7 +82,7 @@ struct OracleContext {
             lines.append("Interested in: " + profile.interests.map(\.title).sorted().joined(separator: ", ") + ".")
         }
         if !profile.intentions.isEmpty {
-            lines.append("What they hope to get from AstroAI: " + profile.intentions.map(\.title).sorted().joined(separator: ", ") + ".")
+            lines.append("What they hope to get from StellarSage: " + profile.intentions.map(\.title).sorted().joined(separator: ", ") + ".")
         }
         let others = connections.dropFirst(peopleNotes.count).prefix(Self.maxConnections - peopleNotes.count)
         if !peopleNotes.isEmpty {

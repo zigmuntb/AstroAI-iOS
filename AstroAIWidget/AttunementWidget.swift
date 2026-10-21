@@ -38,7 +38,7 @@ private struct AttunementEntry: TimelineEntry {
 
     static func current() -> AttunementEntry {
         guard let snapshot = SnapshotStore.load() else {
-            return AttunementEntry(date: .now, moonGlyph: "☽", moonLine: "Your focus today", transitLine: "Open AstroAI for today's reading.")
+            return AttunementEntry(date: .now, moonGlyph: "☽", moonLine: "Your focus today", transitLine: "Open StellarSage for today's reading.")
         }
         return AttunementEntry(
             date: snapshot.updated,
