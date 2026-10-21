@@ -41,6 +41,7 @@ final class TodayViewModel {
             tarotImageData = card.data
             tarotDescription = card.description
         }
+        refreshSunSign()
     }
 
     // MARK: - Display
@@ -61,6 +62,19 @@ final class TodayViewModel {
         (reading?.date ?? .now).formatted(.dateTime.weekday(.wide).month(.wide).day())
     }
 
+    /// Sun sign in the zodiac chosen in settings, including a sidereal shift.
+    private(set) var sunSign: ZodiacSign?
+
+    func refreshSunSign() {
+        guard let birth = userService.profile?.birth else {
+            sunSign = nil
+            return
+        }
+        sunSign = NatalChartCalculator.positions(at: birth.moment, options: astrology.chartOptions)
+            .first { $0.planet == .sun }?
+            .sign
+    }
+
     var moonLine: String {
         guard let reading else { return "" }
         return "\(reading.moonPhase) \(reading.moonSign.glyph)"
@@ -76,6 +90,7 @@ final class TodayViewModel {
     // MARK: - Actions
 
     func load() async {
+        refreshSunSign()
         guard reading == nil, !isLoading else { return }
         isLoading = true
         errorMessage = nil

@@ -42,7 +42,15 @@ struct TodayView: View {
             .padding(.bottom, Spacing.lg)
         }
         .scrollIndicators(.hidden)
-        .screenBackground()
+        .background {
+            ZStack {
+                AppColor.surface
+                if let sign = viewModel.sunSign {
+                    ConstellationBackdrop(sign: sign)
+                }
+            }
+            .ignoresSafeArea()
+        }
         .navigationTitle("Today")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -51,6 +59,7 @@ struct TodayView: View {
             }
         }
         .task { await viewModel.load() }
+        .onAppear { viewModel.refreshSunSign() }
         .sheet(isPresented: $viewModel.isTarotComposerPresented, onDismiss: viewModel.tarotComposerDismissed) {
             tarotComposer
                 .presentationDetents([.medium, .large])
