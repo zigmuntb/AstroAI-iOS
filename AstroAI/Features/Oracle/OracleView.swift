@@ -287,31 +287,15 @@ struct OracleView: View {
     }
 
     private var suggestionsList: some View {
-        VStack(alignment: .leading, spacing: Spacing.lg) {
+        VStack(alignment: .leading, spacing: Spacing.md) {
             Text("Try asking")
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
-            VStack(spacing: 0) {
-                ForEach(Array(viewModel.suggestions.enumerated()), id: \.element) { index, suggestion in
-                    if index > 0 { HairlineDivider() }
-                    Button {
+            VStack(spacing: Spacing.sm) {
+                ForEach(viewModel.suggestions, id: \.self) { suggestion in
+                    AskPromptButton(question: suggestion, isEnabled: !viewModel.isTyping) {
                         viewModel.ask(suggestion)
-                    } label: {
-                        HStack(spacing: Spacing.md) {
-                            Text(suggestion)
-                                .font(AppFont.bodyLarge)
-                                .foregroundStyle(AppColor.onSurface)
-                                .multilineTextAlignment(.leading)
-                            Spacer(minLength: 0)
-                            Image(systemName: "arrow.up.right")
-                                .font(.body.weight(.semibold))
-                                .foregroundStyle(AppColor.outline)
-                        }
-                        .frame(minHeight: 44)
-                        .contentShape(.rect)
                     }
-                    .buttonStyle(.plain)
-                    .disabled(viewModel.isTyping)
                 }
             }
         }

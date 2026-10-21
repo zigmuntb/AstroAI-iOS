@@ -353,34 +353,21 @@ struct TodayView: View {
     }
 
     private func oracle(_ reading: DailyReading) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
-            Text("Ask the Oracle")
-                .font(AppFont.headlineSmall)
-                .foregroundStyle(AppColor.onSurface)
-            Text("\(reading.moonSign.name) is the focus")
-                .font(AppFont.bodySmall)
-                .foregroundStyle(AppColor.secondary)
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                Text("Ask the Oracle")
+                    .font(AppFont.headlineSmall)
+                    .foregroundStyle(AppColor.onSurface)
+                Text("\(reading.moonSign.name) is the focus")
+                    .font(AppFont.bodySmall)
+                    .foregroundStyle(AppColor.secondary)
+            }
 
-            VStack(spacing: 0) {
-                ForEach(Array(reading.oracleQuestions.enumerated()), id: \.element) { index, question in
-                    if index > 0 { HairlineDivider() }
-                    Button {
+            VStack(spacing: Spacing.sm) {
+                ForEach(reading.oracleQuestions, id: \.self) { question in
+                    AskPromptButton(question: question) {
                         viewModel.ask(question)
-                    } label: {
-                        HStack(spacing: Spacing.md) {
-                            Text(question)
-                                .font(AppFont.bodyLarge)
-                                .foregroundStyle(AppColor.onSurface)
-                                .multilineTextAlignment(.leading)
-                            Spacer(minLength: 0)
-                            Image(systemName: "chevron.right")
-                                .font(.body.weight(.semibold))
-                                .foregroundStyle(AppColor.outline)
-                        }
-                        .frame(minHeight: 44)
-                        .contentShape(.rect)
                     }
-                    .buttonStyle(.plain)
                 }
             }
         }
