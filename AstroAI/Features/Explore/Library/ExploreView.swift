@@ -17,7 +17,7 @@ struct ExploreView: View {
             VStack(alignment: .leading, spacing: 0) {
                 VStack(alignment: .leading, spacing: Spacing.xl) {
                     blueprintCard
-                    if let year = viewModel.year, viewModel.showsYear {
+                    if let year = viewModel.filteredYear, viewModel.showsYear {
                         yearCard(year)
                     }
                     if viewModel.showsMonth {
@@ -47,10 +47,10 @@ struct ExploreView: View {
     @ViewBuilder
     private var content: some View {
         if let library = viewModel.library {
-            if !viewModel.transits.isEmpty {
-                transitsSection(range: library.weekRange)
+            if !viewModel.filteredWeek.isEmpty {
+                weekSection(range: library.weekRange)
             }
-            if !viewModel.lifeCycles.isEmpty {
+            if !viewModel.filteredCycles.isEmpty {
                 cyclesSection
             } else if viewModel.showsLockedForecasts {
                 lockedForecasts
@@ -110,7 +110,7 @@ struct ExploreView: View {
 
     // MARK: - Year and month
 
-    private func yearCard(_ year: YearAhead) -> some View {
+    private func yearCard(_ year: ExploreYearCard) -> some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             HStack(alignment: .firstTextBaseline) {
                 Text(year.eyebrow.uppercased())
@@ -122,29 +122,24 @@ struct ExploreView: View {
                     .font(AppFont.labelMedium)
                     .foregroundStyle(AppColor.outline)
             }
-            Text(year.title)
+            Text(year.headline)
                 .font(AppFont.headlineSmall)
                 .foregroundStyle(AppColor.onSurface)
-            Text(year.lordLine)
-                .font(AppFont.bodyMedium.weight(.medium))
-                .foregroundStyle(AppColor.onSurface)
-            Text(year.theme)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(year.summary)
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onSurfaceVariant)
                 .fixedSize(horizontal: false, vertical: true)
-            Text(year.refrain)
-                .font(AppFont.bodyMedium.italic())
-                .foregroundStyle(AppColor.onSurface)
-                .fixedSize(horizontal: false, vertical: true)
-            if let turning = year.turningLine {
-                Text(turning)
-                    .font(AppFont.bodySmall)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Go carefully")
+                    .font(AppFont.labelLarge)
+                    .foregroundStyle(AppColor.secondary)
+                Text(year.caution)
+                    .font(AppFont.bodyMedium)
+                    .foregroundStyle(AppColor.onSurface)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            Text(year.basis)
-                .font(AppFont.labelMedium)
-                .foregroundStyle(AppColor.outline)
+            AstrologyDisclosure(text: year.detail)
         }
         .card(.tinted)
     }
@@ -157,16 +152,20 @@ struct ExploreView: View {
                 trailing: viewModel.timeline?.rangeLabel ?? "",
                 trailingColor: AppColor.outline
             )
-            if viewModel.monthEvents.isEmpty {
+            Text("What may ask for your attention, and a way to meet it.")
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+                .fixedSize(horizontal: false, vertical: true)
+            if viewModel.filteredMonth.isEmpty {
                 Text("Nothing exact lines up with your chart in this stretch.")
                     .font(AppFont.bodySmall)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .padding(.top, Spacing.sm)
             } else {
                 VStack(spacing: 0) {
-                    ForEach(Array(viewModel.monthEvents.enumerated()), id: \.element.id) { index, event in
+                    ForEach(Array(viewModel.filteredMonth.enumerated()), id: \.element.id) { index, card in
                         if index > 0 { HairlineDivider() }
-                        monthRow(event)
+                        recommendation(card)
                     }
                 }
                 .padding(.top, Spacing.sm)
@@ -174,91 +173,61 @@ struct ExploreView: View {
         }
     }
 
-    private func monthRow(_ event: PersonalTransitEvent) -> some View {
-        HStack(alignment: .top, spacing: Spacing.md) {
-            GlyphBadge(glyph: event.glyph, size: 40)
-            VStack(alignment: .leading, spacing: Spacing.xs) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(event.title)
-                        .font(AppFont.bodyMedium.weight(.medium))
-                        .foregroundStyle(AppColor.onSurface)
-                        .fixedSize(horizontal: false, vertical: true)
-                    Spacer(minLength: Spacing.sm)
-                    Text(event.whenLabel)
-                        .font(AppFont.labelMedium)
-                        .foregroundStyle(AppColor.outline)
-                        .multilineTextAlignment(.trailing)
-                }
-                Text(event.houseLine)
-                    .font(AppFont.labelMedium)
-                    .foregroundStyle(AppColor.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text(event.advice)
-                    .font(AppFont.bodySmall)
-                    .foregroundStyle(AppColor.onSurfaceVariant)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .padding(.vertical, 12)
-        .accessibilityElement(children: .combine)
-    }
-
-    // MARK: - Weekly Ephemeris
-
-    private func transitsSection(range: String) -> some View {
+    private func weekSection(range: String) -> some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             sectionTitle("This Week", icon: "clock.arrow.circlepath", trailing: range, trailingColor: AppColor.outline)
+            Text("How the mood shifts, and what to do with it.")
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+                .fixedSize(horizontal: false, vertical: true)
 
             VStack(spacing: 0) {
-                ForEach(Array(viewModel.transits.enumerated()), id: \.element.id) { index, transit in
+                ForEach(Array(viewModel.filteredWeek.enumerated()), id: \.element.id) { index, card in
                     if index > 0 { HairlineDivider() }
-                    transitRow(transit, tone: TransitTone.allCases[index % TransitTone.allCases.count])
+                    recommendation(card)
                 }
             }
             .padding(.top, Spacing.sm)
         }
     }
 
-    private func transitRow(_ transit: Transit, tone: TransitTone) -> some View {
+    private func recommendation(_ card: ExploreCard) -> some View {
         HStack(alignment: .top, spacing: Spacing.md) {
-            GlyphBadge(glyph: transit.glyph, size: 40, foreground: tone.foreground, background: tone.background)
-
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(alignment: .firstTextBaseline, spacing: Spacing.sm) {
-                    Text(transit.kind)
-                        .font(AppFont.labelLarge)
-                        .foregroundStyle(tone.foreground)
+            GlyphBadge(glyph: card.glyph, size: 40)
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(card.headline)
+                        .font(AppFont.bodyMedium.weight(.medium))
+                        .foregroundStyle(AppColor.onSurface)
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: Spacing.sm)
-                    Text(transit.date)
+                    Text(card.when)
                         .font(AppFont.labelMedium)
                         .foregroundStyle(AppColor.outline)
                         .multilineTextAlignment(.trailing)
-                        .layoutPriority(1)
                 }
-                Text(transit.title)
-                    .font(AppFont.bodyMedium.weight(.medium))
-                    .foregroundStyle(AppColor.onSurface)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text(transit.detail)
-                    .font(AppFont.bodySmall)
+                Text(card.summary)
+                    .font(AppFont.bodyMedium)
                     .foregroundStyle(AppColor.onSurfaceVariant)
                     .fixedSize(horizontal: false, vertical: true)
+                AstrologyDisclosure(text: card.detail)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.vertical, 12)
-        .accessibilityElement(children: .combine)
     }
 
     private var cyclesSection: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            sectionTitle("Life Cycles", icon: "clock.arrow.circlepath", trailing: "Your chart", trailingColor: AppColor.secondary)
+            sectionTitle("Longer chapters", icon: "clock.arrow.circlepath", trailing: "Your chart", trailingColor: AppColor.secondary)
+            Text("Dates that can mark a longer theme. They do not decide what happens.")
+                .font(AppFont.bodySmall)
+                .foregroundStyle(AppColor.onSurfaceVariant)
+                .fixedSize(horizontal: false, vertical: true)
 
             VStack(spacing: 0) {
-                ForEach(Array(viewModel.lifeCycles.enumerated()), id: \.element.id) { index, transit in
+                ForEach(Array(viewModel.filteredCycles.enumerated()), id: \.element.id) { index, card in
                     if index > 0 { HairlineDivider() }
-                    transitRow(transit, tone: TransitTone.allCases[index % TransitTone.allCases.count])
+                    recommendation(card)
                 }
             }
             .padding(.top, Spacing.sm)
@@ -305,23 +274,3 @@ struct ExploreView: View {
     }
 }
 
-/// Rotating badge tints for the weekly transit rows.
-private enum TransitTone: CaseIterable {
-    case champagne, lilac, rose
-
-    var background: Color {
-        switch self {
-        case .champagne: AppColor.secondaryContainer
-        case .lilac: AppColor.primaryFixed
-        case .rose: AppColor.dustyRose.opacity(0.3)
-        }
-    }
-
-    var foreground: Color {
-        switch self {
-        case .champagne: AppColor.secondary
-        case .lilac: AppColor.primary
-        case .rose: AppColor.dustyRose
-        }
-    }
-}

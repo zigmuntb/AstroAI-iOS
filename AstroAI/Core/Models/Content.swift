@@ -74,12 +74,14 @@ struct LuckyNumbers: Codable, Hashable {
 // MARK: - Explore
 
 struct Transit: Codable, Hashable, Identifiable {
-    var id: String { "\(title)-\(date)" }
+    var id: String { "\(kind)-\(date)" }
     let glyph: String
     let kind: String
     let date: String
     let title: String
     let detail: String
+    /// Structured sky fact behind this row. Nil only for older in-memory values.
+    var fact: ExploreSkyFact? = nil
 }
 
 /// The coming week's sky, plus the personal life-cycle forecast Sanctuary unlocks.

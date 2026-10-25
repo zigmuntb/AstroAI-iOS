@@ -16,6 +16,12 @@ struct PersonalTransitEvent: Hashable, Identifiable {
     let title: String
     let houseLine: String
     let advice: String
+    let transiting: Planet
+    let natal: Planet
+    let aspect: AspectKind
+    let skySign: ZodiacSign
+    /// Nil when the birth time or birthplace cannot support houses.
+    let lifeHouse: Int?
 }
 
 /// The coming month of exact transits to this chart, earliest first.
@@ -97,7 +103,9 @@ enum PersonalTransitForecast {
 
     private static func event(for peak: SkyPeak, chart: NatalChart, options: ChartOptions) -> PersonalTransitEvent {
         let longitude = SkyPeaks.longitude(of: peak.transiting, at: peak.when, options: options)
-        let house = chart.house(for: longitude)
+        let houseNumber = chart.house(for: longitude)
+        let lifeHouse = EverydayVoice.housesAreReliable(chart) ? houseNumber : nil
+        let skySign = ZodiacSign.containing(longitude)
         return PersonalTransitEvent(
             id: peak.id,
             glyph: peak.transiting.glyph,
@@ -105,8 +113,19 @@ enum PersonalTransitForecast {
             when: peak.when,
             whenLabel: stamp(peak.when),
             title: peak.title,
-            houseLine: houseLine(house: house, chart: chart),
-            advice: advice(peak.kind)
+            houseLine: houseLine(house: houseNumber, chart: chart),
+            advice: ExploreVoice.notice(
+                transiting: peak.transiting,
+                natal: peak.target.planet,
+                aspect: peak.kind,
+                skySign: skySign,
+                house: lifeHouse
+            ),
+            transiting: peak.transiting,
+            natal: peak.target.planet,
+            aspect: peak.kind,
+            skySign: skySign,
+            lifeHouse: lifeHouse
         )
     }
 
@@ -115,16 +134,6 @@ enum PersonalTransitForecast {
             return "This uses your birth chart. House areas need an exact birth time and place, so they are left out."
         }
         return "This touches the part of life about \(AstrologyLexicon.houseTheme(house)). Astrologers call that the \(AstrologyLexicon.ordinal(house)) house."
-    }
-
-    private static func advice(_ kind: AspectKind) -> String {
-        switch kind {
-        case .conjunction: "Give this theme the day. Don't split your attention."
-        case .square: "Name what feels stuck before you decide. Don't force it."
-        case .opposition: "Both sides matter. Don't pick a winner today."
-        case .trine: "Use the ease. Don't spend it all at once."
-        case .sextile: "A small yes is enough. Don't force a bigger one."
-        }
     }
 
     private static func rangeLabel(from start: Date, to end: Date) -> String {

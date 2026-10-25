@@ -73,14 +73,9 @@ final class AstrologyService: AstrologyServicing {
 
     func library(for birth: BirthData?) async throws -> ExploreLibrary {
         let now = Date.now
-        let cycles: [Transit]
-        if let birth {
-            let chart = NatalChartCalculator.chart(for: birth, options: chartOptions)
-            cycles = LifeCycleForecast.events(for: chart, born: birth.date, options: chartOptions, now: now)
-        } else {
-            cycles = []
-        }
-        return ExploreLibrary(weekRange: Self.weekRange(around: now), transits: weekSkyEvents(from: now), lifeCycles: cycles)
+        let chart = birth.map { NatalChartCalculator.chart(for: $0, options: chartOptions) }
+        let cycles = chart.map { LifeCycleForecast.events(for: $0, born: birth?.date, options: chartOptions, now: now) } ?? []
+        return ExploreLibrary(weekRange: Self.weekRange(around: now), transits: weekSkyEvents(from: now, chart: chart), lifeCycles: cycles)
     }
 
     /// Seven civil days starting today, e.g. "Oct 5 — Oct 11".
@@ -94,7 +89,7 @@ final class AstrologyService: AstrologyServicing {
 
     /// Moon sign changes and the four lunar phases across the seven days shown in the header.
     /// Times are the actual crossings, not a noon sample of the day the event falls on.
-    private func weekSkyEvents(from now: Date) -> [Transit] {
+    private func weekSkyEvents(from now: Date, chart: NatalChart?) -> [Transit] {
         let calendar = Calendar.current
         let start = calendar.startOfDay(for: now)
         let end = calendar.date(byAdding: .day, value: 7, to: start) ?? start.addingTimeInterval(7 * 86_400)
@@ -111,13 +106,15 @@ final class AstrologyService: AstrologyServicing {
             if next.moonSign != previous.moonSign {
                 let when = refine(from: cursor, to: nextDate) { $0.moonSign == next.moonSign }
                 if when >= start, when < end {
-                    let sign = skySample(at: when).moonSign
+                    let sky = skySample(at: when)
+                    let house = lifeHouse(chart, longitude: sky.moonLongitude)
                     events.append((when, Transit(
-                        glyph: sign.glyph,
+                        glyph: sky.moonSign.glyph,
                         kind: "Lunar Ingress",
                         date: Self.eventStamp(when),
-                        title: "Moon enters \(sign.name)",
-                        detail: "The mood shifts toward \(sign.qualities) themes."
+                        title: "Moon enters \(sky.moonSign.name)",
+                        detail: "The mood shifts toward \(sky.moonSign.qualities) themes.",
+                        fact: .moonIngress(sign: sky.moonSign, house: house)
                     )))
                 }
             }
@@ -132,12 +129,14 @@ final class AstrologyService: AstrologyServicing {
                     }
                     guard when >= start, when < end else { continue }
                     let sky = skySample(at: when)
+                    let house = lifeHouse(chart, longitude: sky.moonLongitude)
                     events.append((when, Transit(
                         glyph: "☽",
                         kind: phase.title,
                         date: Self.eventStamp(when),
                         title: "\(phase.title) in \(sky.moonSign.name)",
-                        detail: "\(NatalChartCalculator.formatDegrees(sky.degreeInSign)) \(sky.moonSign.glyph) · \(phase.detail)"
+                        detail: "\(NatalChartCalculator.formatDegrees(sky.degreeInSign)) \(sky.moonSign.glyph) · \(phase.detail)",
+                        fact: .moonPhase(name: phase.title, sign: sky.moonSign, house: house)
                     )))
                 }
             }
@@ -149,8 +148,14 @@ final class AstrologyService: AstrologyServicing {
         return events.sorted { $0.date < $1.date }.map(\.transit)
     }
 
+    private func lifeHouse(_ chart: NatalChart?, longitude: Double) -> Int? {
+        guard let chart, EverydayVoice.housesAreReliable(chart) else { return nil }
+        return chart.house(for: longitude)
+    }
+
     private struct SkySample {
         let moonSign: ZodiacSign
+        let moonLongitude: Double
         let degreeInSign: Double
         let elongation: Double
     }
@@ -161,6 +166,7 @@ final class AstrologyService: AstrologyServicing {
         let moon = positions.first { $0.planet == .moon }?.longitude ?? 0
         return SkySample(
             moonSign: ZodiacSign.containing(moon),
+            moonLongitude: moon,
             degreeInSign: moon.truncatingRemainder(dividingBy: 30),
             elongation: Self.forward(from: sun, to: moon)
         )

@@ -17,6 +17,10 @@ final class ExploreViewModel {
     private(set) var isPremium = false
     private(set) var timeline: PersonalTransitTimeline?
     private(set) var year: YearAhead?
+    private(set) var yearCard: ExploreYearCard?
+    private(set) var monthCards: [ExploreCard] = []
+    private(set) var weekCards: [ExploreCard] = []
+    private(set) var cycleCards: [ExploreCard] = []
     /// Placements drawn on the blueprint card. Empty until the user's chart is calculated.
     private(set) var placements: [PlanetPlacement] = []
     /// "Scorpio Sun · Cancer Moon · Leo Rising", from the user's chart.
@@ -28,13 +32,26 @@ final class ExploreViewModel {
 
     @ObservationIgnored private let astrology: AstrologyServicing
     @ObservationIgnored private let userService: UserServicing
+    @ObservationIgnored private let polisher: any ExploreCopyPolishing
     @ObservationIgnored private weak var router: MainRouting?
     @ObservationIgnored private var chartKey: ChartKey?
+    @ObservationIgnored private var natalChart: NatalChart?
+    @ObservationIgnored private var polishToken = 0
+    @ObservationIgnored private var polishMemory: [String: [String: String]] = [:]
+    @ObservationIgnored private var failedPolishKeys = Set<String>()
+    @ObservationIgnored private var pendingDrafts: [ExploreDraft] = []
+    @ObservationIgnored private var draftKey = ""
 
-    init(astrology: AstrologyServicing, userService: UserServicing, router: MainRouting) {
+    init(
+        astrology: AstrologyServicing,
+        userService: UserServicing,
+        router: MainRouting,
+        polisher: any ExploreCopyPolishing = FoundationExplorePolisher()
+    ) {
         self.astrology = astrology
         self.userService = userService
         self.router = router
+        self.polisher = polisher
     }
 
     // MARK: - Display state
@@ -43,42 +60,42 @@ final class ExploreViewModel {
         searchText.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    var transits: [Transit] {
-        guard let library else { return [] }
-        return library.transits.filter { matches($0.title, $0.detail, $0.kind, $0.date) }
+    var filteredYear: ExploreYearCard? {
+        guard let yearCard else { return nil }
+        guard !query.isEmpty else { return yearCard }
+        let fields = [yearCard.eyebrow, yearCard.headline, yearCard.summary, yearCard.caution, yearCard.detail, yearCard.trailing]
+        return fields.contains { $0.localizedCaseInsensitiveContains(query) } ? yearCard : nil
     }
 
-    var lifeCycles: [Transit] {
-        guard isPremium, let library else { return [] }
-        return library.lifeCycles.filter { matches($0.title, $0.detail, $0.kind, $0.date) }
+    var filteredMonth: [ExploreCard] { monthCards.filter(matches) }
+    var filteredWeek: [ExploreCard] { weekCards.filter(matches) }
+
+    var filteredCycles: [ExploreCard] {
+        guard isPremium else { return [] }
+        return cycleCards.filter(matches)
     }
 
     /// Free accounts see the promise, not the dates. Hidden while a search is active.
     var showsLockedForecasts: Bool {
-        library != nil && !isPremium && query.isEmpty && !(library?.lifeCycles.isEmpty ?? true)
+        library != nil && !isPremium && query.isEmpty && !cycleCards.isEmpty
     }
 
     var hasNoResults: Bool {
-        library != nil && !query.isEmpty && transits.isEmpty && lifeCycles.isEmpty && monthEvents.isEmpty && !showsYear
-    }
-
-    var monthEvents: [PersonalTransitEvent] {
-        guard let timeline else { return [] }
-        return timeline.events.filter { matches($0.title, $0.houseLine, $0.advice, $0.whenLabel) }
+        library != nil && !query.isEmpty && filteredWeek.isEmpty && filteredCycles.isEmpty && filteredMonth.isEmpty && filteredYear == nil
     }
 
     var showsMonth: Bool {
-        timeline != nil && (query.isEmpty || !monthEvents.isEmpty)
+        timeline != nil && (query.isEmpty || !filteredMonth.isEmpty)
     }
 
     var showsYear: Bool {
-        guard let year else { return false }
-        guard !query.isEmpty else { return true }
-        return matches(year.eyebrow, year.title, year.lordLine, year.theme, year.refrain, year.turningLine ?? "", year.basis)
+        filteredYear != nil
     }
 
-    private func matches(_ fields: String...) -> Bool {
-        query.isEmpty || fields.contains { $0.localizedCaseInsensitiveContains(query) }
+    var weekRange: String { library?.weekRange ?? "" }
+
+    private func matches(_ card: ExploreCard) -> Bool {
+        query.isEmpty || [card.headline, card.summary, card.detail, card.when].contains { $0.localizedCaseInsensitiveContains(query) }
     }
 
     // MARK: - Actions
@@ -87,7 +104,6 @@ final class ExploreViewModel {
         refreshPremium()
         guard !isLoading else { return }
         isLoading = true
-        defer { isLoading = false }
         do {
             library = try await astrology.library(for: userService.profile?.birth)
             errorMessage = nil
@@ -98,9 +114,12 @@ final class ExploreViewModel {
         }
         await refreshChart()
         refreshForecasts()
+        isLoading = false
+        await polishIfNeeded()
     }
 
     func retry() async {
+        failedPolishKeys.removeAll()
         await load()
     }
 
@@ -146,13 +165,97 @@ final class ExploreViewModel {
 
     private func refreshForecasts() {
         guard let birth = userService.profile?.birth else {
+            natalChart = nil
             timeline = nil
             year = nil
+            rebuildCards()
             return
         }
         let chart = NatalChartCalculator.chart(for: birth, options: astrology.chartOptions)
+        natalChart = chart
         timeline = PersonalTransitForecast.timeline(chart: chart, options: astrology.chartOptions)
         year = AnnualProfection.reading(chart: chart, born: birth.date)
+        rebuildCards()
+    }
+
+    private func rebuildCards() {
+        let profile = userService.profile
+        let focus = profile?.personal?.currentFocus?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let hasFocus = focus?.isEmpty == false
+        let focusOnYear = hasFocus && year != nil
+        yearCard = year.map { ExploreVoice.year($0, profile: profile, includeFocus: focusOnYear) }
+        let events = timeline?.events ?? []
+        monthCards = events.enumerated().map { index, event in
+            ExploreVoice.month(event, profile: profile, includeFocus: !focusOnYear && index == 0 && hasFocus)
+        }
+        let week = library?.transits ?? []
+        let focusOnWeek = hasFocus && !focusOnYear && events.isEmpty
+        weekCards = week.enumerated().map { index, transit in
+            ExploreVoice.sky(transit, profile: profile, chart: natalChart, includeFocus: focusOnWeek && index == 0)
+        }
+        cycleCards = (library?.lifeCycles ?? []).map {
+            ExploreVoice.sky($0, profile: profile, chart: natalChart, includeFocus: false)
+        }
+        pendingDrafts = freshDrafts()
+        draftKey = pendingDrafts.map { "\($0.id)|\($0.summary)" }.joined(separator: "\n")
+        if let summaries = polishMemory[draftKey] {
+            apply(summaries)
+        }
+    }
+
+    private func freshDrafts() -> [ExploreDraft] {
+        var drafts: [ExploreDraft] = []
+        if let yearCard { drafts.append(yearCard.draft) }
+        drafts.append(contentsOf: monthCards.map(\.draft))
+        drafts.append(contentsOf: weekCards.map(\.draft))
+        if isPremium {
+            drafts.append(contentsOf: cycleCards.map(\.draft))
+        }
+        return Array(drafts.prefix(8))
+    }
+
+    // MARK: - Polish
+
+    private func polishIfNeeded() async {
+        let drafts = pendingDrafts
+        let key = draftKey
+        guard !drafts.isEmpty else { return }
+        if polishMemory[key] != nil { return }
+        if failedPolishKeys.contains(key) { return }
+        polishToken += 1
+        let token = polishToken
+        let outcome = await polisher.polish(drafts)
+        guard token == polishToken, key == draftKey else { return }
+        switch outcome {
+        case .unavailable:
+            return
+        case .unchanged:
+            failedPolishKeys.insert(key)
+        case .summaries(let summaries):
+            polishMemory[key] = summaries
+            apply(summaries)
+        }
+    }
+
+    private func apply(_ summaries: [String: String]) {
+        if let yearCard, let text = summaries[yearCard.id] {
+            self.yearCard?.summary = text
+        }
+        for index in monthCards.indices {
+            if let text = summaries[monthCards[index].id] {
+                monthCards[index].summary = text
+            }
+        }
+        for index in weekCards.indices {
+            if let text = summaries[weekCards[index].id] {
+                weekCards[index].summary = text
+            }
+        }
+        for index in cycleCards.indices {
+            if let text = summaries[cycleCards[index].id] {
+                cycleCards[index].summary = text
+            }
+        }
     }
 
     private static func blueprintLine(for chart: NatalChart) -> String {

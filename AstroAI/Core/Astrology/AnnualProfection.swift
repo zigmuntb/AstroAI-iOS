@@ -16,6 +16,15 @@ struct YearAhead: Hashable {
     /// Set when the birthday, and the next house, are close.
     let turningLine: String?
     let basis: String
+    let house: Int
+    let sign: ZodiacSign
+    let lord: Planet
+    let lordSign: ZodiacSign?
+    /// Nil when houses are not reliable, or the lord has no house.
+    let lordHouse: Int?
+    let daysUntilBirthday: Int
+    /// True when the year is counted from the Sun because the birth time or place is not exact.
+    let countedFromSun: Bool
 }
 
 enum AnnualProfection {
@@ -52,6 +61,8 @@ enum AnnualProfection {
             trailing = "Until \(stamp(nextBirthday))"
         }
 
+        let lordPlacement = chart.placement(lord)
+        let houses = EverydayVoice.housesAreReliable(chart)
         return YearAhead(
             eyebrow: eyebrow,
             trailing: trailing,
@@ -60,18 +71,25 @@ enum AnnualProfection {
             theme: "This year is about \(AstrologyLexicon.houseTheme(house)). \(lord.name) sets the pace.",
             refrain: refrain(for: house),
             turningLine: turning,
-            basis: root.basis
+            basis: root.basis,
+            house: house,
+            sign: sign,
+            lord: lord,
+            lordSign: lordPlacement?.sign,
+            lordHouse: houses ? lordPlacement?.houseNumber : nil,
+            daysUntilBirthday: days,
+            countedFromSun: root.countedFromSun
         )
     }
 
     // MARK: - Pieces
 
-    private static func rootSign(of chart: NatalChart) -> (sign: ZodiacSign, basis: String)? {
+    private static func rootSign(of chart: NatalChart) -> (sign: ZodiacSign, basis: String, countedFromSun: Bool)? {
         if chart.isTimeKnown, chart.hasLocation, let rising = chart.placement(.ascendant) {
-            return (rising.sign, "Counted in whole signs from your rising sign.")
+            return (rising.sign, "Counted in whole signs from your rising sign.", false)
         }
         if let sun = chart.placement(.sun) {
-            return (sun.sign, "Counted in whole signs from your Sun, because the birth time is not exact.")
+            return (sun.sign, "Counted in whole signs from your Sun, because the birth time is not exact.", true)
         }
         return nil
     }

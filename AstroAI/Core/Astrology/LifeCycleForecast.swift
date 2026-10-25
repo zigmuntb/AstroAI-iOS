@@ -25,8 +25,9 @@ enum LifeCycleForecast {
         let target = natal.longitude
         let horizon = calendar.date(byAdding: .year, value: 32, to: now) ?? now.addingTimeInterval(32 * 365.25 * 86_400)
         let hits = conjunctions(of: .saturn, with: target, from: now, until: horizon, options: options, clusterDays: 400, limit: 3)
-        let house = chart.house(for: target)
-        let place = "your natal Saturn at \(natal.degree) \(natal.sign.glyph), in your \(AstrologyLexicon.ordinal(house)) house: \(AstrologyLexicon.houseTheme(house))"
+        let house = lifeHouse(chart, longitude: target)
+        let degree = natal.degree
+        let reliableHouse = house
 
         return hits.enumerated().map { index, date in
             let retrograde = isRetrograde(.saturn, at: date, options: options)
@@ -37,14 +38,26 @@ enum LifeCycleForecast {
             default: "Middle exact"
             }
             let motion = retrograde ? " Saturn is retrograde." : ""
+            let place = reliableHouse.map {
+                "your natal Saturn at \(degree) \(natal.sign.glyph), in your \(AstrologyLexicon.ordinal($0)) house: \(AstrologyLexicon.houseTheme($0))"
+            } ?? "your natal Saturn at \(degree) \(natal.sign.glyph)"
             return DatedTransit(
                 date: date,
                 transit: Transit(
                     glyph: Planet.saturn.glyph,
                     kind: "Saturn Return",
                     date: stamp(date),
-                    title: "\(exact) at \(natal.degree) \(natal.sign.name)",
-                    detail: "Saturn in the sky meets \(place).\(motion)\(agePhrase(born: born, on: date))"
+                    title: "\(exact) at \(degree) \(natal.sign.name)",
+                    detail: "Saturn in the sky meets \(place).\(motion)\(agePhrase(born: born, on: date))",
+                    fact: .saturnReturn(
+                        sign: natal.sign,
+                        degree: degree,
+                        house: reliableHouse,
+                        age: age(born: born, on: date),
+                        index: index,
+                        count: hits.count,
+                        retrograde: retrograde
+                    )
                 )
             )
         }
@@ -57,7 +70,7 @@ enum LifeCycleForecast {
             let sun = longitude(of: .sun, at: eclipse.date, options: options)
             let sign = ZodiacSign.containing(sun)
             let degree = NatalChartCalculator.formatDegrees(sun.truncatingRemainder(dividingBy: 30))
-            let house = chart.house(for: sun)
+            let house = lifeHouse(chart, longitude: sun)
             return DatedTransit(
                 date: eclipse.date,
                 transit: Transit(
@@ -65,7 +78,14 @@ enum LifeCycleForecast {
                     kind: "Solar Eclipse",
                     date: stamp(eclipse.date),
                     title: "\(eclipse.kind) in \(sign.name)",
-                    detail: "\(degree) \(sign.glyph). It falls in your \(AstrologyLexicon.ordinal(house)) house: \(AstrologyLexicon.houseTheme(house)).\(agePhrase(born: born, on: eclipse.date))"
+                    detail: "\(degree) \(sign.glyph).\(house.map { " It falls in your \(AstrologyLexicon.ordinal($0)) house: \(AstrologyLexicon.houseTheme($0))." } ?? "")\(agePhrase(born: born, on: eclipse.date))",
+                    fact: .solarEclipse(
+                        kind: eclipse.kind,
+                        sign: sign,
+                        degree: degree,
+                        house: house,
+                        age: age(born: born, on: eclipse.date)
+                    )
                 )
             )
         }
@@ -80,7 +100,7 @@ enum LifeCycleForecast {
         var found: [DatedTransit] = []
         while found.count < 2, let ingress = nextStableIngress(after: cursor, leaving: leaving, options: options) {
             let longitude = self.longitude(of: .northNode, at: ingress.date, options: options)
-            let house = chart.house(for: longitude)
+            let house = lifeHouse(chart, longitude: longitude)
             found.append(DatedTransit(
                 date: ingress.date,
                 transit: Transit(
@@ -88,7 +108,13 @@ enum LifeCycleForecast {
                     kind: "Nodal Shift",
                     date: stamp(ingress.date),
                     title: "North Node enters \(ingress.sign.name)",
-                    detail: "It leaves \(leaving.name) and enters your \(AstrologyLexicon.ordinal(house)) house: \(AstrologyLexicon.houseTheme(house)). The node stays in one sign for about 18 months.\(agePhrase(born: born, on: ingress.date))"
+                    detail: "It leaves \(leaving.name).\(house.map { " It enters your \(AstrologyLexicon.ordinal($0)) house: \(AstrologyLexicon.houseTheme($0))." } ?? "") The node stays in one sign for about 18 months.\(agePhrase(born: born, on: ingress.date))",
+                    fact: .nodalShift(
+                        entering: ingress.sign,
+                        leaving: leaving,
+                        house: house,
+                        age: age(born: born, on: ingress.date)
+                    )
                 )
             ))
             cursor = ingress.date.addingTimeInterval(86_400)
@@ -228,8 +254,18 @@ enum LifeCycleForecast {
         date.formatted(Date.FormatStyle().month(.abbreviated).day().year().locale(locale))
     }
 
+    private static func lifeHouse(_ chart: NatalChart, longitude: Double) -> Int? {
+        guard EverydayVoice.housesAreReliable(chart) else { return nil }
+        return chart.house(for: longitude)
+    }
+
+    private static func age(born: Date?, on date: Date) -> Int? {
+        guard let born, let years = calendar.dateComponents([.year], from: born, to: date).year, years >= 0 else { return nil }
+        return years
+    }
+
     private static func agePhrase(born: Date?, on date: Date) -> String {
-        guard let born, let years = calendar.dateComponents([.year], from: born, to: date).year, years >= 0 else { return "" }
+        guard let years = age(born: born, on: date) else { return "" }
         return " At age \(years)."
     }
 }
