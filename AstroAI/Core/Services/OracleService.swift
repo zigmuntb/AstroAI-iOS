@@ -64,6 +64,39 @@ extension AsyncThrowingStream where Failure == Error {
     }
 }
 
+/// Uses Apple Intelligence when it can answer.
+/// When it is turned off, or the phone cannot run it, offers the downloadable on-device model.
+final class AvailableOracleService: OracleServicing {
+    private let onDevice: OracleServicing
+    private let local: OracleServicing
+
+    init(onDevice: OracleServicing, local: OracleServicing) {
+        self.onDevice = onDevice
+        self.local = local
+    }
+
+    private var current: OracleServicing {
+        OnDeviceOracleService.isSupported ? onDevice : local
+    }
+
+    var quota: OracleQuota { current.quota }
+    var requiresNetwork: Bool { current.requiresNetwork }
+    var modelInstall: OracleModelInstall? { current.modelInstall }
+
+    func ask(_ question: String, history: [ChatMessage], isPremium: Bool) -> AsyncThrowingStream<ChatMessage, Error> {
+        current.ask(question, history: history, isPremium: isPremium)
+    }
+
+    func resetSession() {
+        onDevice.resetSession()
+        local.resetSession()
+    }
+
+    func installModel() -> AsyncThrowingStream<Double, Error> {
+        local.installModel()
+    }
+}
+
 /// Network stub kept for a future online Oracle. Phones without Apple Intelligence use `LocalModelOracleService`.
 final class OracleService: OracleServicing {
     private let network: NetworkManaging

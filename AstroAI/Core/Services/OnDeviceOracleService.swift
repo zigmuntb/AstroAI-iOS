@@ -30,11 +30,26 @@ final class OnDeviceOracleService: OracleServicing {
     /// How many recent messages are carried over when the context window overflows.
     private let carriedOverMessages = OraclePrompt.carriedOverMessages
 
-    /// The model may still be downloading or Apple Intelligence may be turned off;
-    /// that is checked per request, so only device eligibility matters here.
+    /// Apple Intelligence can answer, or its model is still downloading.
+    /// A phone that cannot run it, or one where it is turned off, uses the downloadable model instead.
     static var isSupported: Bool {
-        if case .unavailable(.deviceNotEligible) = SystemLanguageModel.default.availability { return false }
-        return true
+        supports(SystemLanguageModel.default.availability)
+    }
+
+    static func supports(_ availability: SystemLanguageModel.Availability) -> Bool {
+        switch availability {
+        case .available:
+            return true
+        case .unavailable(let reason):
+            switch reason {
+            case .modelNotReady:
+                return true
+            case .deviceNotEligible, .appleIntelligenceNotEnabled:
+                return false
+            @unknown default:
+                return true
+            }
+        }
     }
 
     init(

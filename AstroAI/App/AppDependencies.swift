@@ -43,16 +43,16 @@ final class AppDependencies {
         journalService = JournalService(storage: storage, astrology: astrologyService, userService: userService)
         let oracleQuota = OracleQuotaStore(storage: storage)
         let oracleMemory = OracleMemoryStore(storage: storage)
-        oracleService = OnDeviceOracleService.isSupported
-            ? OnDeviceOracleService(
+        oracleService = AvailableOracleService(
+            onDevice: OnDeviceOracleService(
                 userService: userService,
                 astrology: astrologyService,
                 connections: connectionsService,
                 journal: journalService,
                 memory: oracleMemory,
                 quotaStore: oracleQuota
-            )
-            : LocalModelOracleService(
+            ),
+            local: LocalModelOracleService(
                 userService: userService,
                 astrology: astrologyService,
                 connections: connectionsService,
@@ -61,6 +61,7 @@ final class AppDependencies {
                 quotaStore: oracleQuota,
                 storage: storage
             )
+        )
         let subscriptions = SubscriptionService(userService: userService)
         subscriptions.start()
         subscriptionService = subscriptions

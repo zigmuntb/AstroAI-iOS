@@ -243,7 +243,7 @@ struct OracleView: View {
             Text("Install the Oracle")
                 .font(AppFont.headlineMedium)
                 .foregroundStyle(AppColor.onSurface)
-            Text("Apple Intelligence isn't available here, so the Oracle uses a free open model. It downloads once (\(install.sizeDescription)) and then answers stay on this phone, without a server.")
+            Text(installExplanation(install))
                 .font(AppFont.bodyMedium)
                 .foregroundStyle(AppColor.onSurfaceVariant)
                 .fixedSize(horizontal: false, vertical: true)
@@ -267,6 +267,13 @@ struct OracleView: View {
             }
         }
         .card(.tinted, padding: Spacing.md + 4)
+    }
+
+    private func installExplanation(_ install: OracleModelInstall) -> String {
+        let reason = install.appleIntelligenceIsOff
+            ? "Apple Intelligence is turned off, so the Oracle uses a free open model."
+            : "Apple Intelligence isn't available on this phone, so the Oracle uses a free open model."
+        return "\(reason) It downloads once (\(install.sizeDescription)) and then answers stay on this phone, without a server."
     }
 
     @ViewBuilder

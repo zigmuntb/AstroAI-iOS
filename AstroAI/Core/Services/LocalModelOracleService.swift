@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import FoundationModels
 import HuggingFace
 import MLX
 import MLXHuggingFace
@@ -18,9 +19,11 @@ nonisolated private let logger = Logger(subsystem: "com.BogdanArsenkin.AstroAI",
 struct OracleModelInstall: Equatable {
     /// Rough download size, for example "about 400 MB".
     let sizeDescription: String
+    /// Apple Intelligence can run on this phone, but the user has not turned it on.
+    let appleIntelligenceIsOff: Bool
 }
 
-/// Oracle for phones without Apple Intelligence.
+/// Oracle when Apple Intelligence is off or the phone cannot run it.
 ///
 /// Downloads a small open model once, then answers fully on device.
 final class LocalModelOracleService: OracleServicing {
@@ -58,7 +61,8 @@ final class LocalModelOracleService: OracleServicing {
 
     var modelInstall: OracleModelInstall? {
         guard storage.load(String.self, for: .localOracleModel) == nil else { return nil }
-        return OracleModelInstall(sizeDescription: LocalOracleModel.sizeDescription)
+        let turnedOff = SystemLanguageModel.default.availability == .unavailable(.appleIntelligenceNotEnabled)
+        return OracleModelInstall(sizeDescription: LocalOracleModel.sizeDescription, appleIntelligenceIsOff: turnedOff)
     }
 
     func installModel() -> AsyncThrowingStream<Double, Error> {
