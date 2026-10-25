@@ -70,6 +70,7 @@ struct AppCoordinatorView: View {
             }
         }
         .tint(AppColor.primary)
+        .dismissKeyboardOnTap()
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active, !showsLaunchAnimation else { return }
             coordinator.attune()
