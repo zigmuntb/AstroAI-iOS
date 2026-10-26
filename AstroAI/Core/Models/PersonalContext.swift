@@ -84,9 +84,9 @@ enum AnswerTone: String, CaseIterable, Codable, Identifiable {
     /// Instruction for the Oracle model.
     var instruction: String {
         switch self {
-        case .gentle: "Be kind and reassuring. Keep the words simple."
-        case .balanced: "Be warm and honest. Keep the words simple."
-        case .direct: "Be direct. Name hard patterns clearly, without dressing them up."
+        case .gentle: "Sound kind. Still answer the question plainly."
+        case .balanced: "Sound warm and plain."
+        case .direct: "Be direct and specific."
         }
     }
 }
@@ -104,8 +104,8 @@ enum AnswerLength: String, CaseIterable, Codable, Identifiable {
 
     var instruction: String {
         switch self {
-        case .brief: "Answer in 1–2 short paragraphs, in plain language."
-        case .detailed: "Answer in 3–5 short paragraphs. Explain the astrology in plain words, then say what it means for their life."
+        case .brief: "Keep the answer short. A simple question gets one or two sentences."
+        case .detailed: "Give a fuller answer when the question needs it, still starting with the answer itself."
         }
     }
 }

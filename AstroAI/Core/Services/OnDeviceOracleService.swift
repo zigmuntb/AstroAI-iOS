@@ -22,8 +22,10 @@ final class OnDeviceOracleService: OracleServicing {
 
     /// Created lazily so it always carries the latest profile, chart, sky and connections.
     private var session: LanguageModelSession?
-    /// Data the current session was built with.
-    private var sessionSnapshot: (profile: UserProfile?, connections: [Connection], day: Date, options: ChartOptions)?
+    /// Instructions for the current session, so a new question can start a fresh transcript without rebuilding the chart.
+    private var sessionInstructions: String?
+    /// Data the current session was built with. `guidanceID` changes when Today's recommendation changes.
+    private var sessionSnapshot: (profile: UserProfile?, connections: [Connection], day: Date, options: ChartOptions, guidanceID: String)?
     /// Keeps the tool lookups alive for the session.
     private var toolbox: OracleToolbox?
 
@@ -76,7 +78,18 @@ final class OnDeviceOracleService: OracleServicing {
             guard isPremium || quota.remaining > 0 else { throw OracleError.limitReached }
             guard model.isAvailable else { throw OracleError.modelUnavailable }
 
-            let history = history.last?.text == question ? Array(history.dropLast()) : history
+            let facts = await OraclePrompt.skyFacts(profile: userService.profile, astrology: astrology)
+            let prior = OraclePrompt.priorTurns(from: history, question: question)
+            let otherDay = await OraclePrompt.otherDay(in: question, profile: userService.profile, astrology: astrology, today: facts.sky.date)
+            let prompt = OraclePrompt.turn(
+                question,
+                model: .appleIntelligence,
+                reading: facts.reading,
+                otherDay: otherDay,
+                profile: userService.profile,
+                now: facts.sky.date,
+                history: prior
+            )
             let id = UUID()
             let date = Date()
             var answer = ""
@@ -86,16 +99,16 @@ final class OnDeviceOracleService: OracleServicing {
             }
 
             do {
-                try await streamAnswer(to: question, in: activeSession(history: history), emit: emit)
+                try await streamAnswer(to: prompt, in: activeSession(question: question, history: prior, facts: facts), emit: emit)
             } catch LanguageModelSession.GenerationError.exceededContextWindowSize {
-                let session = await makeSession(history: Array(history.suffix(carriedOverMessages)))
-                try await streamAnswer(to: question, in: session, emit: emit)
+                let carried = OraclePrompt.continuesConversation(question, history: prior) ? prior : []
+                let session = await makeSession(history: carried, facts: facts)
+                try await streamAnswer(to: prompt, in: session, emit: emit)
             } catch LanguageModelSession.GenerationError.guardrailViolation {
                 continuation.yield(ChatMessage(
                     id: id,
                     role: .oracle,
-                    text: "The stars are silent on this one. Let's turn to another question about your path.",
-                    title: "A veiled answer",
+                    text: OraclePrompt.unavailableReply,
                     date: date
                 ))
                 return
@@ -108,25 +121,34 @@ final class OnDeviceOracleService: OracleServicing {
 
     func resetSession() {
         session = nil
+        sessionInstructions = nil
         sessionSnapshot = nil
         toolbox = nil
     }
 
     // MARK: - Session
 
-    /// Reuses the current session unless the user's data changed since it was created.
-    private func activeSession(history: [ChatMessage]) async -> LanguageModelSession {
-        if let session, let sessionSnapshot,
-           sessionSnapshot.profile == userService.profile,
-           sessionSnapshot.connections == connections.connections(),
-           sessionSnapshot.options == astrology.chartOptions,
-           Calendar.current.isDateInToday(sessionSnapshot.day) {
+    /// A follow-up stays in the current session. A new question gets a new transcript so the previous reply cannot be copied.
+    private func activeSession(question: String, history: [ChatMessage], facts: OraclePrompt.SkyFacts) async -> LanguageModelSession {
+        let continuing = OraclePrompt.continuesConversation(question, history: history)
+        let sameFacts = sessionSnapshot?.profile == userService.profile
+            && sessionSnapshot?.connections == connections.connections()
+            && sessionSnapshot?.options == astrology.chartOptions
+            && sessionSnapshot?.guidanceID == facts.guidanceID
+            && Calendar.current.isDateInToday(sessionSnapshot?.day ?? .distantPast)
+        if continuing, let session, sameFacts {
             return session
         }
-        return await makeSession(history: session == nil ? [] : Array(history.suffix(carriedOverMessages)))
+        if !continuing, sameFacts, let sessionInstructions, let toolbox {
+            let session = LanguageModelSession(tools: toolbox.tools, instructions: sessionInstructions)
+            self.session = session
+            return session
+        }
+        let carried = continuing ? Array(history.suffix(carriedOverMessages)) : []
+        return await makeSession(history: carried, facts: facts)
     }
 
-    private func makeSession(history: [ChatMessage]) async -> LanguageModelSession {
+    private func makeSession(history: [ChatMessage], facts: OraclePrompt.SkyFacts) async -> LanguageModelSession {
         let material = await OraclePrompt.make(
             userService: userService,
             astrology: astrology,
@@ -134,12 +156,14 @@ final class OnDeviceOracleService: OracleServicing {
             journal: journal,
             memory: memory,
             history: history,
-            offersTools: true
+            model: .appleIntelligence,
+            facts: facts
         )
         let session = LanguageModelSession(tools: material.toolbox.tools, instructions: material.instructions)
         self.session = session
+        self.sessionInstructions = material.instructions
         self.toolbox = material.toolbox
-        sessionSnapshot = (material.profile, material.connections, material.date, material.options)
+        sessionSnapshot = (material.profile, material.connections, material.date, material.options, material.guidanceID)
         return session
     }
 
@@ -148,7 +172,7 @@ final class OnDeviceOracleService: OracleServicing {
     private func streamAnswer(to question: String, in session: LanguageModelSession, emit: (String) -> Void) async throws {
         do {
             for try await snapshot in session.streamResponse(to: question) {
-                emit(snapshot.content.trimmingCharacters(in: .whitespacesAndNewlines))
+                emit(OraclePrompt.deliver(snapshot.content))
             }
         } catch let error as LanguageModelSession.GenerationError {
             logger.error("Generation failed: \(String(reflecting: error), privacy: .public)")
